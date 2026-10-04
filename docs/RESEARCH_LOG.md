@@ -206,3 +206,11 @@ Reviewed UeBlueprintDumper source/argument parser and the old zMCDungeons-SDK in
 ### Next work
 
 Obtain the collector ZIP from the active installed Dungeons 1 copy, analyze real call metadata and author the runtime/identity probe. Continue stable locks, gear manager/loadouts, inventory/review/controller UI and native salvage with the test matrix. Windows/game access remains required for runtime completion.
+
+## 2026-10-04 — Xbox executable access-denied collector fix
+
+User confirmed `C:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks` and supplied a Windows PowerShell failure reading the adjacent Dungeons.exe hash. Executable collection ran before the protected dumper block, so optional metadata aborted the whole run. No game asset inspection occurred in that attempt.
+
+Made version/hash reads individually best-effort and protected executable enumeration. Unavailable values remain null, errors are recorded per executable and in manifest warnings, and archive inspection continues. Required archive/tool failures still produce nonzero status. No elevation, ownership or ACL changes are needed for an optional hash. Documented using a fresh output path because the failed run already created its default folder.
+
+Local PowerShell regression passed with a synthetic UnauthorizedAccessException on Dungeons.exe: six dumps, valid ZIP, warning/error metadata and successful status, alongside the existing path/input/failure checks. Repository syntax/JSON validation passed. The same regression is included in Windows CI under PowerShell 7 and 5.1. Actual game inspection remains pending the user's retry.

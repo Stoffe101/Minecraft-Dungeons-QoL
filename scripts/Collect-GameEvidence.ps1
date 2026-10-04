@@ -19,6 +19,7 @@ if (Test-Path $out) { throw "Output already exists: $out. Choose a new -OutputDi
 if (Test-Path "$out.zip") { throw "Evidence archive already exists: $out.zip" }
 New-Item -ItemType Directory -Force $out | Out-Null
 $issues = New-Object System.Collections.Generic.List[string]
+$warnings = New-Object System.Collections.Generic.List[string]
 $pakFiles = @(Get-ChildItem $paks -File -Filter "*.pak")
 $sourceCommit = "unknown (repository ZIP or Git unavailable)"
 if (Get-Command git -ErrorAction SilentlyContinue) {
@@ -38,15 +39,24 @@ $report = [ordered]@{
     pakFiles = @($pakFiles | ForEach-Object { [ordered]@{ name = $_.Name; bytes = $_.Length } })
     executables = @()
     issues = @()
+    warnings = @()
     note = "Metadata and Blueprint disassembly only; native ABI and runtime safety are not certified. No hero saves read or copied."
 }
 # The Paks folder is under Dungeons/Content. Only inspect the adjacent Dungeons/Binaries tree.
 $bin = Join-Path $dungeons "Binaries"
-if (Test-Path $bin) {
-    $report.executables = @(Get-ChildItem $bin -Recurse -File -Filter "*.exe" | ForEach-Object {
-        [ordered]@{ name = $_.Name; fileVersion = $_.VersionInfo.FileVersion; sha256 = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() }
-    })
-}
+try {
+    if (Test-Path $bin) {
+        $report.executables = @(Get-ChildItem $bin -Recurse -File -Filter "*.exe" | ForEach-Object {
+            $entry = [ordered]@{ name = $_.Name; fileVersion = $null; sha256 = $null; errors = @() }
+            try { $entry.fileVersion = $_.VersionInfo.FileVersion }
+            catch { $entry.errors += "Version unavailable: $($_.Exception.Message)" }
+            try { $entry.sha256 = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() }
+            catch { $entry.errors += "Hash unavailable: $($_.Exception.Message)" }
+            if ($entry.errors.Count -gt 0) { $warnings.Add("Optional executable metadata incomplete for $($entry.name): $($entry.errors -join '; ')") }
+            $entry
+        })
+    }
+} catch { $warnings.Add("Optional executable enumeration failed: $($_.Exception.Message)") }
 try {
     $runner = $null
     if (-not $DumperExe) {
@@ -86,16 +96,19 @@ try {
     }
 } catch { $issues.Add($_.Exception.Message) }
 $report.issues = @($issues.ToArray())
+$report.warnings = @($warnings.ToArray())
 $report | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $out "REPORT.json")
 @(
     "# Dungeons 1 evidence collection"
     "Blueprint metadata/disassembly only. No hero saves or raw game assets included."
     "Native reflection signatures and runtime item identity still need independent verification."
     "Issues: $($issues.Count)"
+    "Optional metadata warnings: $($warnings.Count)"
     "Review REPORT.json and Dumper.log files before sharing."
 ) | Set-Content (Join-Path $out "README.md")
 Compress-Archive -Path (Join-Path $out "*") -DestinationPath "$out.zip"
 Write-Host "[OK] Evidence archive: $out.zip"
+foreach ($warning in $warnings) { Write-Warning $warning }
 if ($issues.Count -gt 0) {
     Write-Warning "Evidence collection had $($issues.Count) issue(s); archive includes diagnostics."
     exit 1
