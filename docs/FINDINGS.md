@@ -181,3 +181,20 @@ Its major limitation is that editing an existing Blueprint is substantially bett
 Upstream MCD-PE restoration describes final Steam class architecture; this repository has not independently verified Store/Xbox reflection metadata or complete parameter layouts. In particular, the cooked prototype's InventoryItem display/enchantment/CanSalvage instance calls are not all established as reflected functions by the inspected source. Native IsLocked describes vanilla slot state, not the user's persistent gear lock.
 
 The implemented diagnostic graph now snapshots items as well as slots, cancels on stash changes, uses a reflected inventory array local, checks sidecar class/write success and emits no destructive call. Reusing the exact LetMeMove paths would override that mod; relocating manager and loader maps resolves that packaging collision structurally. See REPO_AUDIT.md for the complete findings and runtime gaps.
+
+## Actual Store/Xbox archive catalog (2026-10-04)
+
+User evidence at source `3b86620` confirms the explicit Dungeons 1 key mounts this installation's catalog: 131,164 visible Dungeons paths, including 45,035 `.uasset` paths. This validates archive enumeration, not function parameter signatures or in-game execution. The broad Inventory export was interrupted by Windows PowerShell promoting the inspector's stderr to a terminating error at cosmetic `UMG_CosmeticButtonEquip.GetButtonReference`. Uploaded folders contain no class/function output; do not infer native API layouts from them.
+
+The catalog establishes these concrete inspection targets. Counts refer to matching asset paths, not independently verified Blueprint classes.
+
+| Collector group | Catalog path match under `Dungeons/Content/` | Asset count | Intended evidence |
+| --- | --- | --- | --- |
+| Inventory | `UI/Inventory/UMG_Inventory` | 9 | HUD, slot widgets, gear slots and inventory visibility |
+| Salvage | `UI/Inventory/Salvage/` | 7 | Confirm/cancel/toggle, undo and resource updates |
+| ItemWidgets | `UI/Inventory/UMG_Item` | 5 | Item power, usage and enchantment info |
+| ItemInspector | `UI/Inventory/Inspector2/UMG_InventoryItem` | 2 | Item inspector bindings |
+| SlotGrid | `UI/Grid/` | 5 | Cached grid and slot navigation |
+| PlayerController | `Actors/Characters/Player/BP_PlayerController` | 3 | Controller/interface/shared UI integration |
+
+Important names include `UMG_InventoryHUD`, `UMG_InventorySlotWidget`, `UMG_InventoryGearSlotWidget`, `UMG_SalvageButtonConfirm`, `UMG_SalvageButtonToggle`, `UMG_SalvageUndoButton`, `UMG_InventoryItemInspector`, `UMG_SlotGridWidget` and `BP_PlayerControllerSharedUI`. No ItemStash-named cooked asset is required for its native `/Script/Dungeons` class to exist. The next evidence is these assets' actual exported references/properties/functions, followed by a non-destructive in-game probe.
