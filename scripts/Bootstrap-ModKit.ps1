@@ -1,6 +1,7 @@
 param(
     [string]$UeEditorDirectory,
-    [string]$PaksPath
+    [string]$PaksPath,
+    [switch]$SkipEditorBuild
 )
 
 . (Join-Path $PSScriptRoot "Common.ps1")
@@ -43,7 +44,6 @@ New-Item -ItemType Directory -Force -Path $distDir | Out-Null
 $packageOutput = Get-DistPakPath
 Set-Content -Path (Join-Path $settingsDir "package_output.txt") -Value $packageOutput -NoNewline
 
-# Remove only the sample assets explicitly documented by the Mod Kit.
 $sampleFiles = @(
     (Join-Path $modKit "UE4Project\Content\Decor\Prefabs\Lever\T_Lever.png"),
     (Join-Path $modKit "UE4Project\Content\Decor\Prefabs\Lever\T_Lever.uasset"),
@@ -57,6 +57,10 @@ Write-Host "[OK] UE editor directory: $ue"
 Write-Host "[OK] Package output: $packageOutput"
 
 & (Join-Path $PSScriptRoot "Sync-GameApi.ps1")
+
+if (-not $SkipEditorBuild) {
+    & (Join-Path $PSScriptRoot "Build-ModKit-Editor.ps1") -UeEditorDirectory $ue
+}
 
 try {
     $resolvedPaks = Find-McdPaksPath -Override $PaksPath
