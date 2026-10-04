@@ -1,0 +1,141 @@
+# Architecture
+
+## Guiding principle
+
+Add behavior around the vanilla inventory rather than replacing it.
+
+Replacing a large vanilla UI asset is more fragile across game updates and creates conflicts with other mods. The preferred architecture is a Blueprint Loader actor plus lightweight overlay widgets.
+
+## Planned runtime components
+
+### BP_MCDQoL_Manager
+
+Loaded through Blueprint Loader in both Lobby and Ingame.
+
+Responsibilities:
+
+- locate the local player/controller
+- detect when the inventory UI exists
+- discover/track the currently selected inventory item
+- own service references
+- create/remove QoL overlay widgets
+- route input only while relevant UI is open
+
+### BP_MCDQoL_LockService
+
+Responsibilities:
+
+- build or read a stable item identity
+- query/set lock state
+- persist lock state
+- expose `IsProtected(Item)`
+- later include loadout-assigned protection
+
+### BP_MCDQoL_SalvageService
+
+Responsibilities:
+
+- maintain the current multi-select set
+- reject protected/equipped/invalid items
+- calculate a preflight summary where safely possible
+- present confirmation
+- revalidate every item immediately before salvage
+- call the native salvage path sequentially
+- abort safely if an item disappears or the native call fails
+
+It must not directly grant emeralds or enchantment points.
+
+### BP_MCDQoL_GearSetService
+
+Later phase.
+
+Responsibilities:
+
+- named gear sets/loadouts
+- assign melee / armor / ranged / artifacts
+- automatically protect referenced items
+- validate all references before equipping
+- call native equip functions sequentially
+- report partial failures rather than silently substituting gear
+
+### WBP_MCDQoL_Overlay
+
+Initial UI surface.
+
+Planned elements:
+
+- lock/unlock button next to selected-item context
+- obvious lock state indicator
+- multi-select mode toggle
+- selected-count indicator
+- `Review Salvage` button
+- gear-manager button in later phase
+
+### WBP_MCDQoL_SalvageReview
+
+Shows:
+
+- selected item count
+- protected/skipped count
+- item list
+- reward preview only if sourced from trustworthy game data/functions
+- final confirmation
+
+## Persistence
+
+Preferred mechanism: a project-owned Unreal `SaveGame` slot named:
+
+`MinecraftDungeonsQoL_v1`
+
+Do not modify the hero save structure.
+
+### Versioned data concept
+
+```text
+SaveVersion: 1
+Profiles:
+  <hero/profile key>:
+    LockedItemIds: [...]
+    Loadouts:
+      - Name
+        MeleeItemId
+        ArmorItemId
+        RangedItemId
+        ArtifactItemIds[3]
+Settings:
+  ConfirmMassSalvage: true
+```
+
+## Item identity
+
+Preferred order:
+
+1. native stable item GUID / unique ID
+2. stable native item-instance identifier
+3. fallback fingerprint only if no stable ID exists
+
+A fallback fingerprint would need to account for type, rarity, power, enchantments, gilded data, and other mutation-prone fields. It is a last resort because upgrades/rerolls may change those values.
+
+## Mass salvage transaction
+
+Phase-1 design:
+
+1. Enter selection mode.
+2. Select items.
+3. Locked/equipped/loadout items cannot be selected.
+4. Open review screen.
+5. Confirm once.
+6. Freeze the selected identities.
+7. For each identity:
+   - resolve current item
+   - revalidate protection
+   - invoke native salvage
+   - record success/failure
+8. Show summary.
+9. Clear selection.
+
+No custom multi-item undo is promised until we prove it can be made safe.
+
+## Multiplayer
+
+The mod should only manage the local player's inventory. It must never attempt to mutate remote players' items. Multiplayer testing is required before a public release.
