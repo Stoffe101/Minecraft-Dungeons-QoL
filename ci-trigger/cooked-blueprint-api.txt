@@ -1,1 +1,1 @@
-2026-10-04 inspect current cooked LetMeMove Blueprint
+2026-10-04 dump current cooked Kismet expression tree
