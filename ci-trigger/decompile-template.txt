@@ -1,0 +1,1 @@
+2026-10-04 initial KismetKompiler UE4.22 compatibility probe
