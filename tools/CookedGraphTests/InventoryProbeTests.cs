@@ -73,6 +73,30 @@ public static class InventoryProbeTests
         var cdo=(UAssetAPI.ExportTypes.NormalExport)actor.ClassDefaultObject.ToExport(asset);
         var replicates=cdo.Data.OfType<UAssetAPI.PropertyTypes.Objects.BoolPropertyData>().Single(x=>x.Name.ToString()=="bReplicates");
         Reject(()=>replicates.Value=true,()=>replicates.Value=false,"Inventory actor must not replicate");
-        InventoryProbeValidator.Validate(asset,code);Console.WriteLine("[PASS] inventory-read probe remains valid after 23 rejection tests");return 0;
+        var setText=calls.First(x=>x.StackNode.ToImport(asset).ObjectName.ToString()=="SetText");
+        var setTextArgument=setText.Parameters[0];
+        var conversions=code.OfType<EX_Let>().Where(x=>x.Expression is EX_Context c && c.ContextExpression is EX_FinalFunction f
+            && f.StackNode.ToImport(asset).ObjectName.ToString()=="Conv_StringToText").ToArray();
+        Reject(()=>setText.Parameters[0]=conversions[0].Expression,()=>setText.Parameters[0]=setTextArgument,
+            "Reference argument must be a typed value: SetText");
+        var toString=calls.Single(x=>x.StackNode.ToImport(asset).ObjectName.ToString()=="Conv_TextToString");
+        var textArgument=toString.Parameters[0];
+        var nameResult=code.OfType<EX_Let>().Single(x=>x.Expression is EX_Context c && c.ContextExpression is EX_FinalFunction f
+            && f.StackNode.ToImport(asset).ObjectName.ToString()=="GetDisplayNameText");
+        Reject(()=>toString.Parameters[0]=nameResult.Expression,()=>toString.Parameters[0]=textArgument,
+            "Reference argument must be a typed value: Conv_TextToString");
+        var pending=asset.Exports.FindIndex(x=>x.ObjectName.ToString()=="ProbePendingText");
+        Reject(()=>setText.Parameters[0]=new EX_LocalVariable {Variable=new KismetPropertyPointer(FPackageIndex.FromExport(pending))},
+            ()=>setText.Parameters[0]=setTextArgument,"Reference argument must be a typed value: SetText");
+        var concat=calls.First(x=>x.StackNode.ToImport(asset).ObjectName.ToString()=="Concat_StrStr");
+        var concatArgument=concat.Parameters[0];
+        var stringResult=code.OfType<EX_Let>().First(x=>x.Expression is EX_Context c && c.ContextExpression is EX_FinalFunction f
+            && f.StackNode.ToImport(asset).ObjectName.ToString()=="BuildString_Int");
+        Reject(()=>concat.Parameters[0]=stringResult.Expression,()=>concat.Parameters[0]=concatArgument,
+            "Reference argument must be a typed value: Concat_StrStr");
+        var rvalue=((EX_Context)nameResult.Expression).RValuePointer;
+        Reject(()=>((EX_Context)nameResult.Expression).RValuePointer=new KismetPropertyPointer(new FPackageIndex(0)),
+            ()=>((EX_Context)nameResult.Expression).RValuePointer=rvalue,"Native scalar return needs a matching typed local");
+        InventoryProbeValidator.Validate(asset,code);Console.WriteLine("[PASS] inventory-read probe remains valid after 28 rejection tests");return 0;
     }
 }

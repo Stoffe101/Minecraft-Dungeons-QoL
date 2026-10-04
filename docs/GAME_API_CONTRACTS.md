@@ -78,3 +78,7 @@ Require /Script/Engine.Controller.IsLocalPlayerController on the resolved player
 Native UI calls must be imported from /Script/UMG with these reflected owners: AddChildToCanvas → CanvasPanel; SetText → TextBlock; SetVisibility/RemoveFromParent → Widget; SetAnchors/SetAlignment/SetPosition/SetSize/SetZOrder → CanvasPanelSlot. Each setter takes one argument; RemoveFromParent takes none. Optional SetJustification/SetAutoWrapText are forbidden in the probe until a retail reflected contract is established.
 
 Native InventoryItem.GetDisplayNameText is present in supplied inventory-inspect metadata; GetDisplayItemPowerInt is present in HUD metadata. Emit explicit FinalFunction imports. Metadata supports ownership/signature; it does not prove that every runtime slot is valid.
+
+## UE4.22 native reference argument ABI
+
+Do not nest native text/string-producing calls in const-reference parameters. Materialize results as UTextProperty/UStrProperty function locals, set the EX_Context RValuePointer to the assigned property, and pass the local afterward. SetText and Conv_TextToString require FText; Conv_StringToText and string concatenation/building require FString. StepCompiledInRef may reuse an inner call's MostRecentPropertyAddress, which can point to the wrong type. See INVENTORY_CRASH_INVESTIGATION.md for version-pinned source evidence. This applies to both generators, not just the overlay.

@@ -438,30 +438,42 @@ KismetExpression CurrentSlotExpr() => new EX_ArrayGetByRef
 
 KismetExpression SlotItem(KismetExpression slot) => Ctx(slot, ImportedVar(slotItemMember), Ptr(slotItemMember));
 
+var temporaryIndex=0;
+KismetExpression Temporary(KismetExpression value,bool isText=false) {
+    UProperty reflected=isText ? new UTextProperty() : new UStrProperty();
+    reflected.ArrayDim=intDonor.Property.ArrayDim;reflected.ElementSize=0;
+    reflected.PropertyFlags=EPropertyFlags.CPF_None;reflected.RepNotifyFunc=new FName(asset,"None");
+    reflected.Next=new FPackageIndex(0);
+    var p=AddProperty(objectDonor,"MCDQoL_Value_"+(temporaryIndex++),FPackageIndex.FromExport(asset.Exports.IndexOf(uber)),
+        EnsureClass("/Script/CoreUObject",isText?"TextProperty":"StrProperty"),reflected);
+    uber.Children=uber.Children.Append(Exp(p)).ToArray();
+    if(value is EX_Context context)context.RValuePointer=Ptr(Exp(p));
+    Add(new EX_Let {Value=Ptr(Exp(p)),Variable=Local(p),Expression=value});return Local(p);
+}
 KismetExpression Fingerprint()
 {
     var item = Local(currentItem);
-    var displayText = Ctx(item, Virtual("GetDisplayNameText"));
-    var displayString = Static(textDefault, convTextToStringFn, displayText);
-    var withPower = Static(stringDefault, buildStringIntFn,
+    var displayText = Temporary(Ctx(item, Final(EnsureFunction(inventoryItemClass,"GetDisplayNameText"))),true);
+    var displayString = Temporary(Static(textDefault, convTextToStringFn, displayText));
+    var withPower = Temporary(Static(stringDefault, buildStringIntFn,
         displayString,
         Str("|P"),
-        Ctx(item, Virtual("GetDisplayItemPowerInt")),
-        Str(""));
-    var withEnchant = Static(stringDefault, buildStringIntFn,
+        Ctx(item, Final(EnsureFunction(inventoryItemClass,"GetDisplayItemPowerInt"))),
+        Str("")));
+    var withEnchant = Temporary(Static(stringDefault, buildStringIntFn,
         withPower,
         Str("|E"),
         new EX_StructMemberContext { StructMemberExpression = Ptr(enchantmentPointsMember), StructExpression = Local(salvageInfoLocal) },
-        Str(""));
+        Str("")));
     return Static(stringDefault, convStringToNameFn, withEnchant);
 }
 
-KismetExpression SlotText() => Static(stringDefault, buildStringIntFn,
+KismetExpression SlotText() => Temporary(Static(stringDefault, buildStringIntFn,
     Str("MCD QoL | slot "),
     Str(""),
     Inst(cursor),
     Str(" | F5 clear | F6/F7 browse | F8 protect | F9 select | F10 PREVIEW")
-);
+));
 
 KismetExpression Print(KismetExpression text) => Static(systemDefault, printStringFn,
     Self(), text, True(), False(), Yellow(), new EX_FloatConst { Value = 2.0f });

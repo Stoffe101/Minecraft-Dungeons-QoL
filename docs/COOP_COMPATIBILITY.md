@@ -1,6 +1,6 @@
 # Online and co-op compatibility
 
-Online play with friends is required. Compatibility is not established. The user reached camp with PR #12 but crashed opening inventory while online. The replacement probe is a candidate crash repair, not a multiplayer release.
+Online network play with friends is required: both hosting and joining. Splitscreen is not the current requirement. Compatibility is not established. The user reached camp with PR #12 but crashed opening inventory while online; PR #13 also crashed. The replacement probe is a candidate crash repair, not a multiplayer release.
 
 ## Local execution
 
