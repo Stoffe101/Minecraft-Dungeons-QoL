@@ -7,7 +7,7 @@ if (-not (Test-Path $modKit)) {
     throw "Dungeons Mod Kit not found. Run ./scripts/Bootstrap-ModKit.ps1 first."
 }
 
-$sourceDir = Join-Path $root "sdk\Source\Dungeons"
+$sourceDir = Join-Path $root "sdk\modkit\Source\Dungeons"
 $targetDir = Join-Path $modKit "UE4Project\Source\Dungeons"
 
 if (-not (Test-Path $sourceDir)) {
@@ -17,8 +17,8 @@ if (-not (Test-Path $sourceDir)) {
 New-Item -ItemType Directory -Force -Path $targetDir | Out-Null
 
 $ownedFiles = @(
-    "MCDQoLGameAPI.h",
-    "MCDQoLGameAPI.cpp"
+    "MCDQoLInventoryStubs.h",
+    "MCDQoLInventoryStubs.cpp"
 )
 
 foreach ($file in $ownedFiles) {
@@ -30,4 +30,12 @@ foreach ($file in $ownedFiles) {
     Copy-Item -Force -Path $source -Destination (Join-Path $targetDir $file)
 }
 
-Write-Host "[OK] Synced verified Dungeons mirror API into the Mod Kit project."
+# Clean obsolete project-owned mirror filenames from earlier research passes.
+foreach ($obsolete in @("MCDQoLGameAPI.h", "MCDQoLGameAPI.cpp")) {
+    $path = Join-Path $targetDir $obsolete
+    if (Test-Path $path) {
+        Remove-Item -Force $path
+    }
+}
+
+Write-Host "[OK] Synced canonical Dungeons reflection mirror into the Mod Kit project."
