@@ -1,5 +1,7 @@
 param(
-    [switch]$SkipCook
+    [switch]$SkipCook,
+    [switch]$SkipEditorBuild,
+    [string]$UeEditorDirectory
 )
 
 . (Join-Path $PSScriptRoot "Common.ps1")
@@ -12,6 +14,11 @@ if (-not (Test-Path $modKit)) {
 }
 
 & (Join-Path $PSScriptRoot "Sync-GameApi.ps1")
+
+if (-not $SkipEditorBuild) {
+    & (Join-Path $PSScriptRoot "Build-ModKit-Editor.ps1") -UeEditorDirectory $UeEditorDirectory
+}
+
 & (Join-Path $PSScriptRoot "Sync-Assets.ps1")
 
 $distDir = Join-Path $root "dist"
