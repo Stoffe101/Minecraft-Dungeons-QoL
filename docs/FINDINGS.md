@@ -50,6 +50,49 @@ The correct path should be discovered through Xbox app -> Minecraft Dungeons -> 
 
 Old guides that require dumping/re-registering the UWP package predate the modern Xbox installation model and are not the preferred route for this project.
 
+### Save/profile identity
+
+The current open-source MCDSaveEdit model exposes both:
+
+- `playerId`
+- `uniqueSaveId`
+
+on a hero profile.
+
+`uniqueSaveId` is the better candidate for a per-hero QoL namespace. We still need to prove the corresponding value is available from runtime Blueprints.
+
+Source:
+https://github.com/CutFlame/MCDSaveEdit
+
+### Item identity lead: inventoryIndex
+
+The save model exposes `inventoryIndex` on each item. MCDSaveEdit:
+
+- orders unequipped inventory by `InventoryIndex`
+- assigns a newly-added item `max(existing index) + 1`
+- keeps equipped gear in the same Items collection and distinguishes it with `equipmentSlot`
+
+This makes `inventoryIndex` a strong **provisional** per-hero item key if the same value is exposed at runtime.
+
+Important limitations:
+
+- moving an item between main inventory and storage assigns an index in the target collection
+- deleting the highest-index item can allow that number to be reused later
+- therefore `uniqueSaveId + inventoryIndex` alone must not be treated as a permanent globally unique ID
+
+For the first prototype, if no native GUID exists, use `uniqueSaveId + inventoryIndex` plus a sanity fingerprint and fail closed on mismatches.
+
+See `INVENTORY_IDENTITY.md`.
+
+### Encrypted game data
+
+The DungeonsModding/Useful-things repository contains the community extraction tooling/AES-key reference used for Dungeons data files.
+
+Research tooling should accept an AES key as a parameter rather than hardcoding or vendoring extraction data.
+
+Reference:
+https://github.com/DungeonsModding/Useful-things
+
 ### Salvage behavior
 
 Vanilla salvage:
@@ -68,15 +111,17 @@ Therefore bulk salvage should invoke the game's own salvage operation instead of
 3. A non-destructive overlay is preferable to replacing the entire vanilla inventory widget.
 4. Lock protection is not complete until it guards both our mass-salvage flow and the vanilla salvage action.
 5. Mass salvage needs a review/confirmation screen because true multi-item undo may not be safely available.
+6. `uniqueSaveId` is a promising hero namespace and `inventoryIndex` is a promising fallback item locator, but runtime verification is still required.
 
 ## Unknowns to resolve
 
 - exact runtime inventory widget class names on the current build
 - exact item instance class/struct
-- whether items expose a stable GUID
+- whether runtime items expose a native stable GUID or stronger ID
+- whether runtime items expose the saved `inventoryIndex`
+- whether runtime profile data exposes `uniqueSaveId`
 - salvage function/event name and ownership
 - equip/unequip function/event name and ownership
 - how vanilla undo stores its one-item state
 - best hook for blocking vanilla salvage of a locked item
 - whether the same inventory APIs are used in camp and missions
-- a stable hero/profile identifier for per-character lock/loadout data
