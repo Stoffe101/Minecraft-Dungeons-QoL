@@ -1,0 +1,57 @@
+name: Research Blueprint Template
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "ci-trigger/decompile-template.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  decompile:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Checkout KismetKompiler
+        shell: pwsh
+        run: |
+          git clone --recursive https://github.com/tge-was-taken/KismetKompiler.git .tools/KismetKompiler
+
+      - name: Checkout MIT Dungeons template
+        shell: pwsh
+        run: |
+          git clone https://github.com/StainlessStasis/LetMeMove.git .research/LetMeMove
+
+      - name: Build KismetKompiler
+        shell: pwsh
+        run: |
+          dotnet build .tools/KismetKompiler/src/KismetKompiler/KismetKompiler.csproj -c Release
+
+      - name: Decompile Dungeons 1 actor template
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force research/decompiled | Out-Null
+          dotnet run --project .tools/KismetKompiler/src/KismetKompiler/KismetKompiler.csproj -c Release --no-build -- decompile -v 4.22 -i ".research/LetMeMove/Content/Mods/LetMeMove/BP_WASD_Movement.uasset" -o "research/decompiled/BP_WASD_Movement.kms" --no-verify -f
+          if (-not (Test-Path "research/decompiled/BP_WASD_Movement.kms")) {
+            throw "KismetKompiler did not produce the expected KMS file."
+          }
+
+      - name: Save research result
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/decompiled/BP_WASD_Movement.kms
+          if (-not (git diff --cached --quiet)) {
+            git commit -m "research: decompile Dungeons Blueprint template"
+            git push
+          }
