@@ -145,7 +145,7 @@ var inventoryHudClass = EnsureGeneratedClass("/Game/UI/Inventory/UMG_InventoryHU
 var inventorySlotWidgetClass = EnsureGeneratedClass("/Game/UI/Inventory/UMG_InventorySlotBase", "UMG_InventorySlotBase_C", true);
 var sharedUiMember = EnsureMember(controllerBpClass, "ObjectProperty", "SharedUI");
 var inventoryHudMember = EnsureMember(sharedUiClass, "ObjectProperty", "InventoryHUD");
-var inventoryOpenMember = EnsureMember(inventoryHudClass, "BoolProperty", "IsInventoryOpen");
+var inventoryVisibleFn = EnsureFunction(EnsureClass("/Script/UMG", "Widget"), "IsVisible");
 var equipWidgetsMember = EnsureMember(inventoryHudClass, "ArrayProperty", "EquipSlots");
 var widgetNativeSlotMember = EnsureMember(inventorySlotWidgetClass, "ObjectProperty", "InventoryItemSlot");
 var getStashFn = EnsureFunction(EnsureClass("/Script/Dungeons", "BasePlayerController"), "GetItemStashComponent");
@@ -547,7 +547,7 @@ JumpIfNot(IsValid(Local(sharedUiLocal)), "INVALID_CONTEXT");
 SetLocalObj(inventoryHudLocal, new EX_DynamicCast { ClassPtr = inventoryHudClass,
     Target = Ctx(Local(sharedUiLocal), ImportedVar(inventoryHudMember), Ptr(inventoryHudMember)) });
 JumpIfNot(IsValid(Local(inventoryHudLocal)), "INVALID_CONTEXT");
-JumpIfNot(Ctx(Local(inventoryHudLocal), ImportedVar(inventoryOpenMember), Ptr(inventoryOpenMember)), "INVALID_CONTEXT");
+JumpIfNot(Ctx(Local(inventoryHudLocal), Final(inventoryVisibleFn)), "INVALID_CONTEXT");
 Add(new EX_Let { Value = Ptr(Exp(equipWidgetsLocal)), Variable = Local(equipWidgetsLocal),
     Expression = Ctx(Local(inventoryHudLocal), ImportedVar(equipWidgetsMember), Ptr(equipWidgetsMember)) });
 

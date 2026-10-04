@@ -84,7 +84,7 @@ Obj(pc,Static(gameplayDefault,Fn(gameplay,"GetPlayerController"),new EX_Self(),N
 Obj(controller,new EX_DynamicCast {ClassPtr=Existing("BP_PlayerController_C"),Target=L(pc)});Branch(Valid(L(controller)),"HIDE");
 Obj(shared,C(L(controller),V(Existing("SharedUI")),Index(shared)));Branch(Valid(L(shared)),"HIDE");
 Obj(hud,new EX_DynamicCast {ClassPtr=Existing("UMG_InventoryHUD_C"),Target=C(L(shared),V(Existing("InventoryHUD")),Index(hud))});Branch(Valid(L(hud)),"HIDE");
-Branch(C(L(hud),V(Existing("IsInventoryOpen"))),"HIDE");
+Branch(C(L(hud),F(Fn(widgetClass,"IsVisible"))),"HIDE");
 // One manager owns feedback; additional loader instances stay idle. No actor is destroyed.
 Add(Static(gameplayDefault,Fn(gameplay,"GetAllActorsOfClass"),new EX_Self(),O(Index(owner)),L(actorArray)));
 Branch(M("GreaterEqual_IntInt",Length(L(actorArray)),N(1)),"HIDE");

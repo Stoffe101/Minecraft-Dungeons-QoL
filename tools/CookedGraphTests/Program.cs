@@ -58,8 +58,8 @@ bool HasMember(KismetExpression root, string name)
     });
     return found;
 }
-var gate = code.OfType<EX_JumpIfNot>().Single(x => HasMember(x.BooleanExpression, "IsInventoryOpen"));
-var openMember = asset.Imports.Single(x => x.ObjectName.ToString() == "IsInventoryOpen");
+var gate = code.OfType<EX_JumpIfNot>().Single(x => DiagnosticGraphValidator.IsInventoryOpenCondition(asset,x.BooleanExpression));
+var openMember = asset.Imports.Single(x => x.ObjectName.ToString() == "IsVisible");
 var oldOpenName = openMember.ObjectName;
 Rejected(() => openMember.ObjectName = new FName(asset, "UnverifiedOpenFlag"), () => openMember.ObjectName = oldOpenName,
     "missing inventory-open guard", "Expected one inventory-open guard");

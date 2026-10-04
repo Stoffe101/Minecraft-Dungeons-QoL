@@ -19,10 +19,9 @@ public static class InventoryProbeTests
         Reject(()=>spawn.StackNode=save,()=>spawn.StackNode=oldFn,"Read probe contains forbidden call");
         var hotkey=names.First(x=>x.Value.ToString()=="F6");var oldName=hotkey.Value;
         Reject(()=>hotkey.Value=new FName(asset,"F8"),()=>hotkey.Value=oldName,"Read probe contains feature hotkey");
-        var open=asset.Imports.Single(x=>x.ObjectName.ToString()=="IsInventoryOpen");var oldOpen=open.ObjectName;
+        var open=asset.Imports.Single(x=>x.ObjectName.ToString()=="IsVisible");var oldOpen=open.ObjectName;
         Reject(()=>open.ObjectName=new FName(asset,"MissingOpen"),()=>open.ObjectName=oldOpen,"Expected one inventory-open guard");
-        bool IsOpen(KismetExpression root){var found=false;uint o=0;root.Visit(asset,ref o,(e,_)=>{if(e is EX_InstanceVariable v&&v.Variable.Old.IsImport()&&v.Variable.Old.ToImport(asset).ObjectName.ToString()=="IsInventoryOpen")found=true;});return found;}
-        var gate=code.OfType<EX_JumpIfNot>().Single(x=>IsOpen(x.BooleanExpression));uint fallthrough=0;
+        var gate=code.OfType<EX_JumpIfNot>().Single(x=>DiagnosticGraphValidator.IsInventoryOpenCondition(asset,x.BooleanExpression));uint fallthrough=0;
         for(int i=0;i<=Array.IndexOf(code,gate);i++){using var m=new MemoryStream();using var w=new AssetBinaryWriter(m,asset);fallthrough+=(uint)ExpressionSerializer.WriteExpression(code[i],w);}
         var target=gate.CodeOffset;
         Reject(()=>gate.CodeOffset=fallthrough,()=>gate.CodeOffset=target,"Inventory input/read reachable without open inventory");
@@ -51,6 +50,12 @@ public static class InventoryProbeTests
         Reject(()=>tickDefaults.Value.Remove(pauseFlag),()=>tickDefaults.Value.Insert(pauseIndex,pauseFlag),"Inventory actor tick flag must be enabled: bTickEvenWhenPaused");
         var interval=tickDefaults.Value.OfType<UAssetAPI.PropertyTypes.Objects.FloatPropertyData>().Single(x=>x.Name.ToString()=="TickInterval");
         Reject(()=>interval.Value=0.1f,()=>interval.Value=0f,"Inventory actor tick interval must be zero");
-        InventoryProbeValidator.Validate(asset,code);Console.WriteLine("[PASS] inventory-read probe remains valid after 15 rejection tests");return 0;
+        var visibility=(EX_Context)gate.BooleanExpression;var receiver=(EX_LocalVariable)visibility.ObjectExpression;var originalReceiver=receiver.Variable;
+        var wrongReceiver=new KismetPropertyPointer(FPackageIndex.FromExport(asset.Exports.FindIndex(x=>x.ObjectName.ToString()=="ProbeCanvas")));
+        Reject(()=>receiver.Variable=wrongReceiver,()=>receiver.Variable=originalReceiver,"Expected one inventory-open guard");
+        var visibleOwner=open.OuterIndex;
+        var textClass=FPackageIndex.FromImport(asset.Imports.FindIndex(x=>x.ObjectName.ToString()=="TextBlock"));
+        Reject(()=>open.OuterIndex=textClass,()=>open.OuterIndex=visibleOwner,"Expected one inventory-open guard");
+        InventoryProbeValidator.Validate(asset,code);Console.WriteLine("[PASS] inventory-read probe remains valid after 17 rejection tests");return 0;
     }
 }

@@ -144,6 +144,7 @@ try {
     "SHA-256: $((Get-FileHash $readPak -Algorithm SHA256).Hash.ToLowerInvariant())"
     "Loading-only probe reached camp on the user's Microsoft Store game. This new runtime remains untested."
     "Manager ticks while offline inventory pauses the world: enabled, pause-capable, zero interval."
+    "Open guard uses native Widget.IsVisible on InventoryHUD, matching the game controller."
     "No activation option is needed. Open inventory first; initial text should appear without pressing keys."
     "Only F6/F7 browse native inventory slots. No item changes, locks, sidecar saves or salvage."
     "While inventory is open, a text overlay should show slot count, current item name and power."

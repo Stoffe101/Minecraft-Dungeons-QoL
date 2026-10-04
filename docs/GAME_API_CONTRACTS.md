@@ -26,7 +26,7 @@ The `SalvageItemInSlot` return value is **not success**. The vanilla graph check
 1. Dynamic-cast the local controller to `/Game/Actors/Characters/Player/BP_PlayerController.BP_PlayerController_C`.
 2. Resolve its `SharedUI` object (`BP_PlayerControllerSharedUI_C`).
 3. Resolve `SharedUI.InventoryHUD`, declared as UserWidget, and dynamic-cast it to `/Game/UI/Inventory/UMG_InventoryHUD.UMG_InventoryHUD_C`.
-4. Read `IsInventoryOpen` (bool). `IsInventoryOpenCall` simply writes that field into its output parameter `Open`; it is not a bool return function.
+4. Call native `/Script/UMG.Widget.IsVisible` on the resolved InventoryHUD, matching the game's own UIToggleInventory check. The older `IsInventoryOpen` bool/`IsInventoryOpenCall` getter exists in metadata, but the collected HUD graph shows no writer; field presence alone does not establish its runtime open-state semantics.
 
 Widget classes must be imported as `WidgetBlueprintGeneratedClass` from `/Script/UMG`, rather than an actor `BlueprintGeneratedClass` from `/Script/Engine`.
 
@@ -67,3 +67,6 @@ The collected SetAnchors bytecode imports `Anchors` from **`/Script/Slate`**, no
 The user's collected BP_PlayerController.UIToggleInventory bytecode first toggles SharedUI.InventoryHUD, reads the resulting IsVisible state, checks IsGamePaused and OnlineUtil.IsOnlineSession, then calls GameplayStatics.SetGamePaused(Self,true) at statement 909 when inventory is visible, the game is not already paused and the session is offline. This makes pause-capable ticking a required lifecycle contract for an actor that only reads inventory while its UI is open.
 
 The manager's own PrimaryActorTick must explicitly enable bCanEverTick, bStartWithTickEnabled and bTickEvenWhenPaused, with TickInterval=0. This does not require enabling or changing game input settings, changing the player controller's tick flags, or unpausing the world. Actor tick validation is necessary but does not prove that the retail controller updates WasInputKeyJustPressed while inventory is open; confirm text first, then F6/F7 responses in-game.
+
+
+The executable gate now uses native Widget.IsVisible with zero parameters on the resolved MCDQoL_InventoryHUD local. This matches the collected controller's before/after ToggleWidget checks; it does not assume the otherwise unwritten IsInventoryOpen field is updated by the game. Shared validation verifies the receiver plus the function's Widget owner and /Script/UMG module. Wrong receivers/owners are rejected alongside missing/bypassed guards.

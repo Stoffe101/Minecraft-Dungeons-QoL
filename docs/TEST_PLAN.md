@@ -142,3 +142,5 @@ The PR #11 event entry repair still produced no text or visible F6/F7 response f
 4. If text still does not appear, preserve the installed pak's SHA-256 alongside the report. The screenshot's filename/location does not establish the installed build or which guard failed.
 
 Automatic tests reject all three disabled tick flags, omitted bTickEvenWhenPaused and a positive TickInterval. Packaging verification reopens the actual pak's manager to check those defaults. The original offline game pause is preserved; this probe performs no item/save mutations.
+
+The revised open guard calls Widget.IsVisible on InventoryHUD as the controller does. Additional negative tests reject checking visibility on the wrong local or importing IsVisible under the wrong native class. Inventory reads and UI construction remain unreachable before or after the closed path of that guard.

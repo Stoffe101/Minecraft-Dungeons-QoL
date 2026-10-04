@@ -79,6 +79,18 @@ public static class DiagnosticGraphValidator
             || calls[0].Parameters.Length != 1 || calls[0].Parameters[0] is not EX_IntConst n || n.Value != 10)
             throw new InvalidDataException("ReceiveTick must call the graph body at offset 10.");
     }
+    public static bool IsInventoryOpenCondition(UAsset asset, KismetExpression expression)
+    {
+        if (expression is not EX_Context { ObjectExpression: EX_LocalVariable hud,
+            ContextExpression: EX_FinalFunction call } || !hud.Variable.Old.IsExport()
+            || hud.Variable.Old.ToExport(asset).ObjectName.ToString() != "MCDQoL_InventoryHUD"
+            || !call.StackNode.IsImport() || call.Parameters.Length != 0) return false;
+        var function = call.StackNode.ToImport(asset);
+        if (function.ObjectName.ToString() != "IsVisible" || !function.OuterIndex.IsImport()) return false;
+        var owner = function.OuterIndex.ToImport(asset);
+        return owner.ObjectName.ToString() == "Widget" && owner.OuterIndex.IsImport()
+            && owner.OuterIndex.ToImport(asset).ObjectName.ToString() == "/Script/UMG";
+    }
     public static int Validate(UAsset asset, IReadOnlyList<KismetExpression> code, bool requireEquipmentGuards = true)
     {
         KismetSerializer.asset = asset;
@@ -153,7 +165,7 @@ public static class DiagnosticGraphValidator
             return seen;
         }
         var guards = Enumerable.Range(0, code.Count).Where(i => code[i] is EX_JumpIfNot g
-            && HasMember(g.BooleanExpression, "IsInventoryOpen")).ToArray();
+            && IsInventoryOpenCondition(asset, g.BooleanExpression)).ToArray();
         if (guards.Length != 1) throw new InvalidDataException("Expected one inventory-open guard.");
         var guard = guards[0];
         var beforeGate = Reach(0, guard);
