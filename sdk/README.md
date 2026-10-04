@@ -105,3 +105,7 @@ Declarations are adapted from:
 https://github.com/Minecraforever/MCD-PE
 
 MCD-PE is Apache-2.0 licensed. See `sdk/NOTICE.md` and `docs/THIRD_PARTY.md`.
+
+## Installed-game call-shape updates (2026-10-04)
+
+The editor mirror now includes InventoryItem CanSalvage/GetDisplayNameText/GetDisplayItemPowerInt and ItemStashComponent GetSalvageInfo(Item) -> ItemSalvageInfo, observed in the user’s UI assets. These are harmless project-authored editor bodies, not game implementations. Native flag/const/ABI certification and a real UE4.22 editor compile remain pending. See [GAME_API_CONTRACTS.md](../docs/GAME_API_CONTRACTS.md). No unverified physical-item ID was invented.

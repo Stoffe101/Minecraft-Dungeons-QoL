@@ -28,3 +28,5 @@ After each meaningful research or implementation pass:
 2. Add the findings/results to `RESEARCH_LOG.md`.
 3. Update `FINDINGS.md`, `ROADMAP.md`, `DECISIONS.md`, or `MODDING_RESEARCH.md` when new information changes them.
 4. Record tests actually performed. Do not mark untested behavior as working.
+
+- [Installed-game API contracts](GAME_API_CONTRACTS.md): observed UI/native call shapes and identity gaps from the successful legacy export.

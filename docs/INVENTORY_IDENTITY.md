@@ -124,3 +124,7 @@ Until those are tested, this document describes the safest provisional design ra
 Selection now snapshots both slot and item UObject and verifies object equality/current inventory membership before preview. This helps prevent selecting a replacement occupant in the same slot **within a session**; it is not restart identity. Clearing selection on stash changes also does not solve persisted multi-hero identity.
 
 Production requires a new versioned sidecar schema, verified hero/item identifiers, migration of legacy fingerprint records as unresolved protection, equipment/loadout checks and reconciliation after storage/upgrades. Native salvage is absent from the diagnostic build until these gates are resolved.
+
+## Installed-game metadata update (2026-10-04)
+
+The 31 UI/controller assets expose InventoryItem.Item, Meta, SerializableItemId/ItemId and slot GetChangeIndex, but no verified persistent physical-item or hero identifier. ItemId is used in type filtering/comparison; do not promote it to instance identity. The revised diagnostic explicitly compares the current item against the six equipped objects before selection/preview and reads enchantment refund points through vanilla GetSalvageInfo. These improvements do not resolve restart identity, cross-hero persistence, or vanilla salvage protection.

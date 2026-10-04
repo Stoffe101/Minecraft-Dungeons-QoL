@@ -49,6 +49,17 @@ UCLASS(BlueprintType)
 class DUNGEONS_API UInventoryItem : public UObject
 {
     GENERATED_BODY()
+
+public:
+    // Observed UE4.22 Blueprint call shapes; native function flags remain provisional.
+    UFUNCTION(BlueprintCallable, Category = "Dungeons")
+    bool CanSalvage() const;
+
+    UFUNCTION(BlueprintCallable, Category = "Dungeons")
+    FText GetDisplayNameText() const;
+
+    UFUNCTION(BlueprintCallable, Category = "Dungeons")
+    int32 GetDisplayItemPowerInt() const;
 };
 
 USTRUCT(BlueprintType)
@@ -178,6 +189,10 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Dungeons")
     FItemSalvageUndoInfo SalvageItemInSlot(UInventoryItemSlot* Slot, bool& Success);
+
+    // Vanilla inspector passes an InventoryItem and receives ItemSalvageInfo.
+    UFUNCTION(BlueprintCallable, Category = "Dungeons")
+    FItemSalvageInfo GetSalvageInfo(UInventoryItem* Item) const;
 
     UFUNCTION(BlueprintCallable, Category = "Dungeons")
     bool SalvageItemUndo(const FItemSalvageUndoInfo& UndoInfo);

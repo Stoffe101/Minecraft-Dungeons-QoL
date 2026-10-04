@@ -154,4 +154,6 @@ The service/widget layout above is the production target. The current cooked dia
 
 The manager materializes native inventory slots in a reflected array local, keeps paired selected slot/item arrays and a selection-owner stash reference, and previews one candidate per tick after validation. It clears state on invalid/new stash and F5 cancellation. No native inventory mutation call is emitted.
 
-This architecture still needs singleton lifecycle, actual inventory-open input gating, hero/item identity, explicit equipment-map exclusion, item labels/review UI and controller input. The raw cooked graph is a diagnostic bridge to the editor-authored production services, not their completed implementation.
+This architecture still needs singleton lifecycle, runtime validation of the emitted inventory-open/equipment-widget guards, hero/item identity, item labels/review UI and controller input. The raw cooked graph is a diagnostic bridge to the editor-authored production services, not their completed implementation.
+
+The manager now resolves the observed local controller SharedUI/InventoryHUD chain before input or native inventory reads. A closed/unavailable HUD clears transient selection. It snapshots the HUD six-slot equipment widget array and rejects matching equipped item objects before selecting and previewing; incomplete UI equipment state fails closed. This uses UI widgets rather than assuming GetEquipmentSlots returns an array (the native result is a map). See `GAME_API_CONTRACTS.md`.

@@ -84,6 +84,8 @@ $hash = (Get-FileHash $out -Algorithm SHA256).Hash.ToLowerInvariant()
     "Native salvage: DISABLED (no call emitted)"
     "Runtime validation: NOT PERFORMED by this build"
     ""
+    "Input only while the actual inventory HUD reports open; missing/closed UI clears selection."
+    "Six equipped gear items are excluded from selection and preview; unresolved equipment UI blocks candidates."
     "F5 clears selection; F6/F7 browse; F8 toggles prototype fingerprint protection; F9 selects; F10 twice previews."
     "Protection groups matching name/power/enchantment points across heroes; it is not persistent item identity."
     "Vanilla salvage is not intercepted. Loadouts and controller UI are not implemented."

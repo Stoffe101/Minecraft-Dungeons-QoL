@@ -95,4 +95,10 @@ Runtime diagnostic checks (pending):
 - Demonstrate the known same-fingerprint/multi-hero collision and changed-stat/localization behavior. Do not treat fingerprint groups as persistent item IDs.
 - F10 preview leaves all items and currencies unchanged. No diagnostic code path may call native salvage.
 
-The current prototype does not intercept vanilla salvage, so testing that action cannot establish lock safety. Controller, co-op, loadouts and inventory-open input gating remain required production work.
+The current prototype does not intercept vanilla salvage, so testing that action cannot establish lock safety. Controller, co-op, loadouts and runtime validation of inventory-open gating remain required production work.
+
+## Installed-game contract regression tests
+
+The validator requires an IsInventoryOpen guard that dominates all hotkey/GetInventorySlots/GetSalvageInfo instructions and proves its closed branch cannot reach those operations. It requires distinct current-item/equipment comparisons in selection and preview. Negative tests preserve instruction sizes while renaming the open property, redirecting its false branch to fallthrough, and substituting the comparison operand in each equipment guard. The unsupported InventoryItem instance enchantment-points call is also rejected. Total: 13 negative tests.
+
+Additional runtime checks: F6–F10 do nothing with inventory closed; closing inventory clears armed preview/selection; each of armor/melee/ranged/three artifacts is excluded; an unavailable equipment widget/native slot blocks selection; an item equipped after selection is skipped at preview; fingerprint enchantment points resolve without a missing instance function. These are pending actual-game tests.
