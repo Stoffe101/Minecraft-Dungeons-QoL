@@ -1,1 +1,1 @@
-2026-10-04 patched KismetKompiler with UAssetAPI 1.1.0-era source
+2026-10-04 retry with upstream UAssetAPI replacement
