@@ -1,0 +1,14 @@
+{
+  "name": "MinecraftDungeonsQoL",
+  "game": "Minecraft Dungeons 1",
+  "engineVersion": "4.22",
+  "primaryStoreEdition": "Microsoft Store / Xbox app",
+  "packageName": "MinecraftDungeonsQoL.pak",
+  "modKitRepository": "https://github.com/Dokucraft/Dungeons-Mod-Kit.git",
+  "modKitCommit": "c30e88ec5e99e401eadedddbe82af0265a056fe7",
+  "blueprintLoaderTriggers": [
+    "/Game/BPLoader/Lobby",
+    "/Game/BPLoader/Ingame"
+  ],
+  "saveSlot": "MinecraftDungeonsQoL_v1"
+}
