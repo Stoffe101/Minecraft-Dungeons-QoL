@@ -1,73 +1,105 @@
-# Microsoft Store / Xbox App Setup
+# Minecraft Launcher / Microsoft Store / Xbox App Setup
 
-The project's primary target is Minecraft Dungeons 1 owned through a Microsoft account.
+Last updated: 2026-10-04
 
-## Purchase source vs install source
+## The important distinction
 
-Owning Dungeons through the Microsoft Store does **not** necessarily mean the game files live in the Xbox app folder.
+Where Minecraft Dungeons was **purchased** and where its files are **installed** are not the same question.
 
-If you launch/install Dungeons from the normal Minecraft Launcher, the launcher can use the same Microsoft-account entitlement. In that case, the game may be installed in the Minecraft Launcher location instead of the Xbox app location.
+A player can own Dungeons through Microsoft Store and press Play in the normal Minecraft Launcher while the actual game files are still the Xbox/Microsoft Store-managed installation.
 
-The mod only cares about the actual `Dungeons\Content\Paks` folder that the running game uses.
+The mod must be installed into the `Paks` directory belonging to the copy that actually runs.
 
-## Minecraft Launcher install
+## Case A: Microsoft Store / Xbox-managed installation
 
-A common Minecraft Launcher Paks path is:
+This is the expected case for the primary project tester.
 
-```text
-%LOCALAPPDATA%\Mojang\products\dungeons\dungeons\Dungeons\Content\Paks
-```
+In the Xbox app:
 
-The launcher exposes the installation location on the Dungeons installation page. If the player owns the game through Microsoft Store but uses the Minecraft Launcher to install/run it, this is the path family we should prefer.
+1. Open Minecraft Dungeons.
+2. Choose **Manage**.
+3. Open **Files**.
+4. Note the installation directory.
 
-## Xbox app / Microsoft Store install
-
-If Dungeons is installed through the Xbox app, a common default Paks path is:
+A common path is:
 
 ```text
 C:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks
 ```
 
-If the game is installed on another drive, the same relative layout is commonly used there.
+or on another drive:
 
-## Which one wins?
+```text
+D:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks
+```
 
-Whichever installation contains the executable that the player actually launches is the authoritative one.
-
-Practical check:
-
-1. Open Minecraft Launcher.
-2. Open Minecraft Dungeons.
-3. Check the installation location.
-4. From that folder, locate:
-   `Dungeons\Content\Paks`
-5. Install Blueprint Loader and this mod into that installation's `~mods` folder.
-
-Our PowerShell detector already checks both major path families:
-
-- Minecraft Launcher: `%LOCALAPPDATA%\Mojang\products\dungeons\dungeons\Dungeons\Content\Paks`
-- Xbox app: `<drive>:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks`
-
-So owning through Microsoft Store while launching from the Minecraft Launcher requires no architectural change.
-
-## Mods folder
-
-Inside `Paks`, create:
+Create:
 
 ```text
 ~mods
 ```
 
-The project install script does this automatically.
+inside `Paks`.
 
-## Blueprint Loader
+If Minecraft Launcher displays only a drive such as `C:` or `D:` for the Dungeons installation, community Dungeons modding guidance says to treat it as the Microsoft Store/Xbox installation and use this path family.
 
-Blueprint Loader must be installed separately. This repository does not redistribute it.
+For this installation type, Dungeons can normally still be launched from Minecraft Launcher, Xbox app, Microsoft Store, or Start after mod installation.
 
-The original Dungeons 1 loader is available from Nexus Mods:
+## Case B: older standalone Minecraft Launcher installation
+
+If Minecraft Launcher shows a real installation directory rather than only a drive, locate:
+
+```text
+<installation>\dungeons\dungeons\Dungeons\Content\Paks
+```
+
+and create:
+
+```text
+~mods
+```
+
+inside it.
+
+Important caveat from Dungeons modding guidance: the old Launcher workflow may restore/delete modded files when starting the game through Minecraft Launcher.
+
+For that layout:
+
+1. install the mod
+2. do not reopen/reinstall through the Launcher before testing
+3. launch the installation's `Dungeons.exe` directly
+
+## Installing Blueprint Loader
+
+Blueprint Loader is a separate dependency:
+
 https://www.nexusmods.com/minecraftdungeons/mods/111
 
-## Project install
+Install it into the same active Dungeons installation.
+
+The project does not redistribute it.
+
+## Installing Minecraft Dungeons QoL
+
+Put:
+
+```text
+MinecraftDungeonsQoL.pak
+```
+
+into:
+
+```text
+Dungeons\Content\Paks\~mods
+```
+
+Example:
+
+```text
+D:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks\~mods\MinecraftDungeonsQoL.pak
+```
+
+## Automatic installer
 
 After building:
 
@@ -75,32 +107,38 @@ After building:
 ./scripts/Install.ps1
 ```
 
-If auto-detection selects the wrong installation because both are present, pass the desired Paks path explicitly:
+The project currently probes common Xbox paths and the legacy Mojang path.
 
-```powershell
-./scripts/Install.ps1 -PaksPath "$env:LOCALAPPDATA\Mojang\products\dungeons\dungeons\Dungeons\Content\Paks"
-```
-
-or:
+If more than one install exists, or the Launcher uses a custom folder, explicitly pass the correct path:
 
 ```powershell
 ./scripts/Install.ps1 -PaksPath "D:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks"
 ```
 
-You can also set:
+or set:
 
 ```powershell
 $env:MCD_PAKS_PATH = "D:\Path\To\Dungeons\Content\Paks"
 ```
 
+## Planned detector improvement
+
+The installer should be improved to distinguish:
+
+- Xbox/Store-managed install
+- legacy standalone Launcher install
+- Steam install
+
+rather than relying only on common paths.
+
 ## Old UWP guides
 
-Older guides describe dumping the protected UWP package and registering a separate modded app. That workflow was necessary for older Microsoft Store packaging. It is not our default approach for modern accessible installs.
+Very old Dungeons modding guides describe dumping a protected UWP package and registering a modified app package.
 
-## Source references
+That is not the preferred workflow for modern accessible Xbox app installations and is not the project's default target.
 
-- Minecraft Help: the Minecraft Launcher can install/play Dungeons using Microsoft-account ownership.
-- MCD Save Editor default Paks paths:
-  https://github.com/HollyGM/MinecraftDungeonsSaveEdit
-- Dokucraft Windows Store guide:
-  https://stash.dokucraft.co.uk/pages/help/modding-dungeons-windows-store
+## References
+
+- Dokucraft Dungeons Microsoft Store modding guide
+- Dokucraft Dungeons Launcher modding guide
+- Blueprint Loader for Dungeons 1
