@@ -41,3 +41,13 @@ The target is network multiplayer, including hosting and joining friends, not sp
 - https://dev.epicgames.com/documentation/unreal-engine/API/Runtime/CoreUObject/FFrame/StepCompiledInRef (current API corroborates the reference stepping concept; it is not the version-specific proof).
 - https://www.curseforge.com/minecraft-dungeons/mods/dungeons-gui-x
 - Supplied retail inventory metadata and private crash files inspected locally.
+
+## PR #14 packaged validation (2026-10-05)
+
+Implementation head 102510aed032b4350da9a8ed1dc984d79a38b5c5 passed Windows Cooked QoL Diagnostic Build run 37240868277 and Project Validation run 37240868108. Downloaded both executable artifacts, integrity-unpacked their paks and reran the 19 diagnostic and 28 probe rejection checks against their actual managers. All 47 passed. The packaged probe has 88 statements and 99 exports; its CDO remains non-replicated with all three tick flags enabled and zero interval.
+
+Inventory probe artifact 11317231607: https://github.com/Stoffe101/Minecraft-Dungeons-QoL/actions/runs/37240868277/artifacts/11317231607
+
+Inventory pak SHA-256: `776295667ee229670b882c5c85dd3d07ad1fe969fb2375667d238063f691efa9`. Diagnostic pak SHA-256: `59315a06a8c529a840cd7bc8b6cdc990db7aadf41a74a0741b260d6fd8142e56`. BUILD_INFO records CI synthetic merge 62e799811c567f082aca7e3e591414a353082c94. The offered inventory probe must replace all older QoL paks; Blueprint Loader remains external.
+
+Packaging/structural results do not establish a runtime crash fix. Online hosting, joining friends and the production feature set remain unverified or incomplete.

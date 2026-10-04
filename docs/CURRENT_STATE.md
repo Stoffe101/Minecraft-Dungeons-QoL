@@ -123,3 +123,13 @@ This validates packaging and structure only. Inventory-open crash repair, visibl
 PR #13 still crashes opening inventory online and is withdrawn. See INVENTORY_CRASH_INVESTIGATION.md for the new dump, UE4.22.3 source trace and typed-local repair. Both generators had unsafe nested native reference arguments. Their new scalar locals and result properties match compiler-style game/mod output; the shared validator now rejects the actual old package. Local generation and 47 regression checks pass. Runtime confirmation is pending.
 
 MODDING_OPTIONS_REVIEW.md records the expanded project/license review, existing MIT reuse and UE4SS as a potential live diagnostic/client bootstrap route with unverified Store compatibility. Required multiplayer is online hosting/joining friends, not splitscreen. No ready-made licensed complete implementation was established.
+
+## PR #14 packaged validation (2026-10-05)
+
+Implementation head 102510aed032b4350da9a8ed1dc984d79a38b5c5 passed Windows Cooked QoL Diagnostic Build run 37240868277 and Project Validation run 37240868108. Downloaded both executable artifacts, integrity-unpacked their paks and reran the 19 diagnostic and 28 probe rejection checks against their actual managers. All 47 passed. The packaged probe has 88 statements and 99 exports; its CDO remains non-replicated with all three tick flags enabled and zero interval.
+
+Inventory probe artifact 11317231607: https://github.com/Stoffe101/Minecraft-Dungeons-QoL/actions/runs/37240868277/artifacts/11317231607
+
+Inventory pak SHA-256: `776295667ee229670b882c5c85dd3d07ad1fe969fb2375667d238063f691efa9`. Diagnostic pak SHA-256: `59315a06a8c529a840cd7bc8b6cdc990db7aadf41a74a0741b260d6fd8142e56`. BUILD_INFO records CI synthetic merge 62e799811c567f082aca7e3e591414a353082c94. The offered inventory probe must replace all older QoL paks; Blueprint Loader remains external.
+
+Packaging/structural results do not establish a runtime crash fix. Online hosting, joining friends and the production feature set remain unverified or incomplete.
