@@ -16,12 +16,11 @@ Game-owned originals and generated replacement widgets must stay private and out
 
 ## Collect the missing packages
 
-After updating the repository, run this in its PowerShell terminal. Supply the same AES key used for the previous successful legacy evidence collection when prompted; the key is not written into the report.
+After updating the repository, run this in its PowerShell terminal. The AES key is the public game-archive decryption key already documented in GAME_EVIDENCE.md and verified by the previous collection on this installation. It is not a password you need to create or look up.
 
 ```powershell
 git pull
-$inventoryEvidenceKey = Read-Host 'AES key used for the previous evidence collection'
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Collect-LegacyGameEvidence.ps1 -PaksPath 'C:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks' -AesKey $inventoryEvidenceKey -CollectInventoryPatchSources
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Collect-LegacyGameEvidence.ps1 -PaksPath 'C:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks' -AesKey '0x7D5F892ECEBFA53CC22001DF48B871D51C0DF7C54CE41933BFB285219829B3A8' -CollectInventoryPatchSources
 ```
 
 Upload the resulting `.research/inventory-patch-sources-<timestamp>.zip`, whose full path the script prints. This collection reads game archives without modifying them. It includes metadata and precisely these cooked UI packages, plus available `.uexp` companions:
