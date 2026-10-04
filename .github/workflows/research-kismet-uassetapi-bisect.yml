@@ -48,7 +48,9 @@ jobs:
           $report = @("# KismetKompiler / UAssetAPI compatibility bisect", "")
           $winner = $null
 
-          git -C $sub fetch origin --tags
+          git -C $sub remote add upstream https://github.com/atenfyr/UAssetAPI.git 2>$null
+          git -C $sub fetch upstream --tags
+          foreach ($candidate in $candidates) { git -C $sub fetch upstream $candidate }
 
           foreach ($sha in $candidates) {
             Write-Host "=== Candidate $sha ==="
