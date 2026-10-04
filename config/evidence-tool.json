@@ -1,0 +1,9 @@
+{
+  "url": "https://github.com/CrystalFerrai/UeBlueprintDumper/releases/download/1.2.0/UeBlueprintDumper-1.2.0.zip",
+  "sha256": "013322648ec605a2958a776bf365708d0385916dcc14453ec6500662b4cd6247",
+  "runtimeUrl": "https://dotnetcli.blob.core.windows.net/dotnet/Runtime/8.0.31/dotnet-runtime-8.0.31-win-x64.zip",
+  "runtimeSha512": "9c55c58694676ee64b0eed2cd6d8cbf58b9aa8288420acc66841e15ca0099c75d4af0182d23a641c2342e5a151a325df4a12fa0bde2e47c0fb7e9a33e7b09896",
+  "runtimePlatform": "Windows x64",
+  "runtimeVersion": "8.0.31",
+  "upstreamCommit": "9726294772458eb6114946e967e204925f8b1b66"
+}

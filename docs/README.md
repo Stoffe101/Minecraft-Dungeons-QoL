@@ -6,6 +6,7 @@ This folder is the canonical project record.
 
 - **REPO_AUDIT.md** — baseline code analysis, safety gaps, applied fixes, evidence levels and next implementation sequence.
 - **CURRENT_STATE.md** — what exists right now, known blockers, next implementation target.
+- **GAME_EVIDENCE.md** — read-only Windows collection needed to verify the active installed game's APIs.
 - **FINDINGS.md** — verified technical findings and unknowns.
 - **MODDING_RESEARCH.md** — researched Dungeons 1 modding workflow, proven toolchain, reuse policy, and chosen implementation strategy.
 - **ARCHITECTURE.md** — planned runtime architecture and data model.

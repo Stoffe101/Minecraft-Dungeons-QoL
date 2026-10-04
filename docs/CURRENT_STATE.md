@@ -1,6 +1,6 @@
 # Current State
 
-Last updated: 2026-10-04 (repository audit and diagnostic safety pass)
+Last updated: 2026-10-04 (Windows CI and installed-game evidence tooling)
 
 ## Actual implementation
 
@@ -35,5 +35,9 @@ These are **generated behaviors, not user-tested runtime guarantees**. `PrintStr
 ## Validation and next work
 
 See `REPO_AUDIT.md` for findings/fixes and `RESEARCH_LOG.md` for actual checks. The diagnostic asset graph serializes, its package paths relocate, and the pak packages correctly. No in-game validation has been performed.
+
+The audited changes were merged through [PR #1](https://github.com/Stoffe101/Minecraft-Dungeons-QoL/pull/1) after both Windows workflows passed: [Project Validation](https://github.com/Stoffe101/Minecraft-Dungeons-QoL/actions/runs/37205700653) and [Cooked QoL Diagnostic Build](https://github.com/Stoffe101/Minecraft-Dungeons-QoL/actions/runs/37205700636). That proves the Windows tooling/build path, not game execution.
+
+`Collect-GameEvidence.ps1` now gathers read-only asset lists/Blueprint metadata and executable version/hash evidence from the active installation. It pins its dumper/runtime downloads, refuses invalid/ambiguous installations and preserves failure diagnostics. See `GAME_EVIDENCE.md`. No installed-game evidence has been collected here.
 
 The next blocker is runtime/reflection evidence from the actual Dungeons 1 executable, followed by stable hero/item identity, equipment guards and a proper review UI. Native salvage remains the intended production backend, gated behind that work. Standard UE4.22 Mod Kit Blueprint authoring remains the preferred route for the finished UI; KismetKompiler and UE4SS are optional research tools.
