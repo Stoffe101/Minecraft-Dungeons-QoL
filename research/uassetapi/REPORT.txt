@@ -8,3 +8,157 @@ ObjectVersion=VER_UE4_FIX_WIDE_STRING_CRC (517)
 Names=228
 Imports=67
 Exports=83
+
+== IMPORTS ==
+I1: /Script/Engine.Actor Default__Actor outer=-60
+I2: /Script/CoreUObject.BoolProperty bOrientRotationToMovement outer=-25
+I3: /Script/CoreUObject.Class EdGraphSchema_K2 outer=-58
+I4: /Script/CoreUObject.Class K2Node_CallFunction outer=-58
+I5: /Script/CoreUObject.Class K2Node_CommutativeAssociativeBinaryOperator outer=-58
+I6: /Script/CoreUObject.Class K2Node_DynamicCast outer=-58
+I7: /Script/CoreUObject.Class K2Node_Event outer=-58
+I8: /Script/CoreUObject.Class K2Node_FunctionEntry outer=-58
+I9: /Script/CoreUObject.Class K2Node_IfThenElse outer=-58
+I10: /Script/CoreUObject.Class K2Node_Knot outer=-58
+I11: /Script/CoreUObject.Class K2Node_VariableGet outer=-58
+I12: /Script/CoreUObject.Class K2Node_VariableSet outer=-58
+I13: /Script/CoreUObject.Class BoolProperty outer=-59
+I14: /Script/CoreUObject.Class FloatProperty outer=-59
+I15: /Script/CoreUObject.Class Function outer=-59
+I16: /Script/CoreUObject.Class IntProperty outer=-59
+I17: /Script/CoreUObject.Class MetaData outer=-59
+I18: /Script/CoreUObject.Class Object outer=-59
+I19: /Script/CoreUObject.Class ObjectProperty outer=-59
+I20: /Script/CoreUObject.Class StructProperty outer=-59
+I21: /Script/CoreUObject.Class Actor outer=-60
+I22: /Script/CoreUObject.Class Blueprint outer=-60
+I23: /Script/CoreUObject.Class BlueprintGeneratedClass outer=-60
+I24: /Script/CoreUObject.Class Character outer=-60
+I25: /Script/CoreUObject.Class CharacterMovementComponent outer=-60
+I26: /Script/CoreUObject.Class Controller outer=-60
+I27: /Script/CoreUObject.Class EdGraph outer=-60
+I28: /Script/CoreUObject.Class GameplayStatics outer=-60
+I29: /Script/CoreUObject.Class KismetMathLibrary outer=-60
+I30: /Script/CoreUObject.Class Pawn outer=-60
+I31: /Script/CoreUObject.Class PlayerCameraManager outer=-60
+I32: /Script/CoreUObject.Class PlayerController outer=-60
+I33: /Script/CoreUObject.Class SceneComponent outer=-60
+I34: /Script/CoreUObject.Class SCS_Node outer=-60
+I35: /Script/CoreUObject.Class SimpleConstructionScript outer=-60
+I36: /Script/CoreUObject.Class SceneThumbnailInfo outer=-62
+I37: /Script/CoreUObject.Function ReceiveTick outer=-21
+I38: /Script/CoreUObject.Function K2_GetPawn outer=-26
+I39: /Script/CoreUObject.Function GetPlayerController outer=-28
+I40: /Script/CoreUObject.Function Add_VectorVector outer=-29
+I41: /Script/CoreUObject.Function BreakRotator outer=-29
+I42: /Script/CoreUObject.Function Conv_VectorToRotator outer=-29
+I43: /Script/CoreUObject.Function GetForwardVector outer=-29
+I44: /Script/CoreUObject.Function GetRightVector outer=-29
+I45: /Script/CoreUObject.Function Greater_FloatFloat outer=-29
+I46: /Script/CoreUObject.Function MakeRotator outer=-29
+I47: /Script/CoreUObject.Function Multiply_VectorFloat outer=-29
+I48: /Script/CoreUObject.Function Normal outer=-29
+I49: /Script/CoreUObject.Function SelectFloat outer=-29
+I50: /Script/CoreUObject.Function Subtract_FloatFloat outer=-29
+I51: /Script/CoreUObject.Function VSize outer=-29
+I52: /Script/CoreUObject.Function GetCameraRotation outer=-31
+I53: /Script/CoreUObject.Function IsInputKeyDown outer=-32
+I54: /Script/Engine.GameplayStatics Default__GameplayStatics outer=-60
+I55: /Script/Engine.KismetMathLibrary Default__KismetMathLibrary outer=-60
+I56: /Script/CoreUObject.ObjectProperty CharacterMovement outer=-24
+I57: /Script/CoreUObject.ObjectProperty PlayerCameraManager outer=-32
+I58: /Script/CoreUObject.Package /Script/BlueprintGraph outer=0
+I59: /Script/CoreUObject.Package /Script/CoreUObject outer=0
+I60: /Script/CoreUObject.Package /Script/Engine outer=0
+I61: /Script/CoreUObject.Package /Script/InputCore outer=0
+I62: /Script/CoreUObject.Package /Script/UnrealEd outer=0
+I63: /Script/CoreUObject.ScriptStruct Rotator outer=-59
+I64: /Script/CoreUObject.ScriptStruct Vector outer=-59
+I65: /Script/CoreUObject.ScriptStruct PointerToUberGraphFrame outer=-60
+I66: /Script/CoreUObject.ScriptStruct Key outer=-61
+I67: /Script/CoreUObject.StructProperty RotationRate outer=-25
+
+== EXPORTS ==
+E1: PropertyExport UberGraphFrame
+E2: ClassExport BP_WASD_Movement_C
+E3: NormalExport Default__BP_WASD_Movement_C
+E4: NormalExport BP_WASD_Movement
+E5: PropertyExport DefaultSceneRoot
+E6: PropertyExport EntryPoint
+E7: FunctionExport ExecuteUbergraph_BP_WASD_Movement bytecode=76
+E8: PropertyExport CallFunc_Greater_FloatFloat_ReturnValue
+E9: PropertyExport CallFunc_IsInputKeyDown_ReturnValue
+E10: PropertyExport CallFunc_IsInputKeyDown_ReturnValue1
+E11: PropertyExport CallFunc_IsInputKeyDown_ReturnValue2
+E12: PropertyExport CallFunc_IsInputKeyDown_ReturnValue3
+E13: PropertyExport K2Node_DynamicCast_bSuccess
+E14: NormalExport EventGraph
+E15: NormalExport UserConstructionScript
+E16: PropertyExport CallFunc_BreakRotator_Pitch
+E17: PropertyExport CallFunc_BreakRotator_Roll
+E18: PropertyExport CallFunc_BreakRotator_Yaw
+E19: PropertyExport CallFunc_SelectFloat_ReturnValue
+E20: PropertyExport CallFunc_SelectFloat_ReturnValue1
+E21: PropertyExport CallFunc_SelectFloat_ReturnValue2
+E22: PropertyExport CallFunc_SelectFloat_ReturnValue3
+E23: PropertyExport CallFunc_Subtract_FloatFloat_ReturnValue
+E24: PropertyExport CallFunc_Subtract_FloatFloat_ReturnValue1
+E25: PropertyExport CallFunc_VSize_ReturnValue
+E26: PropertyExport K2Node_Event_DeltaSeconds
+E27: FunctionExport ReceiveTick bytecode=10
+E28: PropertyExport DeltaSeconds
+E29: NormalExport K2Node_CallFunction_10
+E30: NormalExport K2Node_CallFunction_11
+E31: NormalExport K2Node_CallFunction_12
+E32: NormalExport K2Node_CallFunction_13
+E33: NormalExport K2Node_CallFunction_14
+E34: NormalExport K2Node_CallFunction_15
+E35: NormalExport K2Node_CallFunction_16
+E36: NormalExport K2Node_CallFunction_17
+E37: NormalExport K2Node_CallFunction_18
+E38: NormalExport K2Node_CallFunction_19
+E39: NormalExport K2Node_CallFunction_2
+E40: NormalExport K2Node_CallFunction_20
+E41: NormalExport K2Node_CallFunction_21
+E42: NormalExport K2Node_CallFunction_22
+E43: NormalExport K2Node_CallFunction_23
+E44: NormalExport K2Node_CallFunction_25
+E45: NormalExport K2Node_CallFunction_28
+E46: NormalExport K2Node_CallFunction_3
+E47: NormalExport K2Node_CallFunction_31
+E48: NormalExport K2Node_CallFunction_36
+E49: NormalExport K2Node_CallFunction_4
+E50: NormalExport K2Node_CallFunction_5
+E51: NormalExport K2Node_CallFunction_6
+E52: NormalExport K2Node_CallFunction_7
+E53: NormalExport K2Node_CallFunction_8
+E54: NormalExport K2Node_CallFunction_9
+E55: NormalExport K2Node_CommutativeAssociativeBinaryOperator_0
+E56: NormalExport K2Node_DynamicCast_0
+E57: NormalExport K2Node_Event_2
+E58: NormalExport K2Node_FunctionEntry_0
+E59: NormalExport K2Node_IfThenElse_0
+E60: NormalExport K2Node_Knot_1
+E61: NormalExport K2Node_Knot_2
+E62: NormalExport K2Node_VariableGet_0
+E63: NormalExport K2Node_VariableGet_3
+E64: NormalExport K2Node_VariableSet_0
+E65: NormalExport K2Node_VariableSet_1
+E66: MetaDataExport PackageMetaData
+E67: PropertyExport CallFunc_GetPlayerController_ReturnValue
+E68: PropertyExport CallFunc_K2_GetPawn_ReturnValue
+E69: PropertyExport K2Node_DynamicCast_AsCharacter
+E70: NormalExport DefaultSceneRoot_GEN_VARIABLE
+E71: NormalExport SceneThumbnailInfo_0
+E72: NormalExport SCS_Node_0
+E73: NormalExport SimpleConstructionScript_0
+E74: PropertyExport CallFunc_Add_VectorVector_ReturnValue
+E75: PropertyExport CallFunc_Conv_VectorToRotator_ReturnValue
+E76: PropertyExport CallFunc_GetCameraRotation_ReturnValue
+E77: PropertyExport CallFunc_GetForwardVector_ReturnValue
+E78: PropertyExport CallFunc_GetRightVector_ReturnValue
+E79: PropertyExport CallFunc_MakeRotator_ReturnValue
+E80: PropertyExport CallFunc_MakeRotator_ReturnValue1
+E81: PropertyExport CallFunc_Multiply_VectorFloat_ReturnValue
+E82: PropertyExport CallFunc_Multiply_VectorFloat_ReturnValue1
+E83: PropertyExport CallFunc_Normal_ReturnValue
