@@ -1,90 +1,110 @@
 # Roadmap
 
-## Phase 0 — Foundation [IN PROGRESS]
+## Phase 0: Foundation [MOSTLY COMPLETE]
 
 - [x] Repository structure
-- [x] Docs system
+- [x] Canonical docs system
 - [x] Dungeons Mod Kit bootstrap script
-- [x] Microsoft Store/Xbox app path detection
+- [x] Minecraft Launcher path detection
+- [x] Xbox app / Microsoft Store path detection
 - [x] Build/install scripts
+- [x] README player installation instructions
 - [x] Initial architecture and safety rules
-- [ ] Verify scripts on a real Windows development machine
+- [ ] Verify PowerShell scripts on the user's real Windows install
 
-## Phase 1 — Runtime Inventory Research [NEXT]
+## Phase 1: Native Inventory Research [ACTIVE]
 
-- [x] Inspect public save-format item/profile identity fields
-- [x] Document provisional `uniqueSaveId + inventoryIndex + sanity fingerprint` fallback
-- [ ] Enumerate current runtime inventory-related assets/classes
-- [ ] Identify inventory widget
-- [ ] Identify selected item reference
-- [ ] Identify stable runtime item ID/GUID or verify the fallback fields at runtime
-- [ ] Identify native salvage function
-- [ ] Identify native equip/unequip function
-- [ ] Identify vanilla salvage button/event chain
-- [ ] Document exact paths/functions from the current build
+- [x] Inspect save-format item/profile identity fields
+- [x] Document provisional identity fallback
+- [x] Confirm final-build `UItemStashComponent`
+- [x] Confirm final-build `UInventoryItemSlot`
+- [x] Identify native inventory-slot enumeration
+- [x] Identify native equipped-slot enumeration
+- [x] Identify native salvage function
+- [x] Identify native salvage undo function
+- [x] Confirm vanilla has an inventory-slot-selected event
+- [ ] Find a Blueprint-accessible vanilla selected-slot path, if one exists
+- [ ] Verify stable runtime item instance identity
+- [ ] Identify/verify native equip flow needed for loadouts
 
-Exit criterion: we can inspect a selected item and safely invoke or block the same native action vanilla uses.
+## Phase 2: Playable Core Build [NEXT]
 
-## Phase 2 — Gear Lock Vertical Slice
-
-- [ ] Blueprint Loader Lobby map
-- [ ] Blueprint Loader Ingame map
-- [ ] Manager actor
-- [ ] Lock service
-- [ ] separate SaveGame persistence
-- [ ] lock toggle UI
-- [ ] lock icon/overlay
-- [ ] persistence across restart
-- [ ] protect locked item from vanilla salvage
-
-Exit criterion: a locked item cannot be accidentally salvaged through normal gameplay.
-
-## Phase 3 — Mass Salvage MVP
-
+- [ ] Blueprint Loader Lobby entry
+- [ ] Blueprint Loader Ingame entry
+- [ ] find local player and `UItemStashComponent`
+- [ ] enumerate inventory slots
+- [ ] enumerate and protect equipped slots
 - [ ] selection mode
-- [ ] multi-item selection state
-- [ ] protected/equipped filtering
-- [ ] review screen
-- [ ] single confirmation
-- [ ] native sequential salvage
-- [ ] completion/failure summary
-- [ ] keyboard/mouse test
-- [ ] controller test
+- [ ] in-session lock/protection set
+- [ ] mass-salvage preflight
+- [ ] native sequential `SalvageItemInSlot`
+- [ ] success/failure summary
+- [ ] package `MinecraftDungeonsQoL.pak`
+- [ ] launch test
 
-Exit criterion: 20+ mixed items can be safely reviewed and salvaged without touching protected gear.
+Exit criterion: a real player can safely select multiple unequipped items and salvage them in one confirmed batch without custom reward math.
 
-## Phase 4 — Gear Manager / Loadouts
+## Phase 3: Persistent Gear Lock
+
+- [ ] stable runtime identity
+- [ ] separate SaveGame persistence
+- [ ] lock/unlock UI
+- [ ] lock indicator
+- [ ] restart persistence
+- [ ] stale identity reconciliation
+- [ ] storage-transfer behavior
+- [ ] protect locked items from QoL mass salvage
+- [ ] protect locked items from vanilla salvage if a safe hook exists
+
+## Phase 4: Gear Manager / Loadouts
 
 - [ ] loadout data model
 - [ ] create/rename/delete
-- [ ] assign gear/artifacts
-- [ ] loadout items auto-lock/protect
-- [ ] one-click native equip flow
+- [ ] melee slot
+- [ ] armor slot
+- [ ] ranged slot
+- [ ] three artifact slots
+- [ ] loadout items auto-protected
+- [ ] verify native equip API
+- [ ] one-action equip flow
 - [ ] missing-item handling
 - [ ] multiple heroes/profiles
 
-## Phase 5 — Inventory QoL Expansion
+## Phase 5: UI/UX
+
+- [ ] integrate with vanilla inventory selection if feasible
+- [ ] otherwise polished overlay selector
+- [ ] keyboard/mouse
+- [ ] controller
+- [ ] common resolutions/UI scales
+- [ ] clear destructive confirmation
+- [ ] Dungeons-like visual language
+
+## Phase 6: Inventory QoL Expansion
 
 Candidates:
 
-- filters/sorting
-- select all eligible
+- Select all eligible
 - rarity filters
-- power threshold selection
+- power threshold
 - duplicate detection
 - enchanted/gilded protection rules
-- compare to equipped
-- tags/favorites
+- Unique protection
+- favorites/tags
 - salvage presets
+- reward preview
 
-## Phase 6 — Hardening / Release
+## Phase 7: Hardening / Release
 
-- [ ] Microsoft Store/Xbox app
-- [ ] Steam if a tester is available
-- [ ] camp and missions
-- [ ] offline and online multiplayer
+- [ ] Minecraft Launcher install
+- [ ] Xbox app / Microsoft Store install
+- [ ] Steam
+- [ ] camp
+- [ ] missions
+- [ ] offline
+- [ ] online multiplayer
 - [ ] multiple heroes
 - [ ] restart persistence
 - [ ] large inventories
-- [ ] coexistence with common Blueprint Loader mods
-- [ ] packaging/release documentation
+- [ ] common Blueprint Loader mod coexistence
+- [ ] release package + install guide
