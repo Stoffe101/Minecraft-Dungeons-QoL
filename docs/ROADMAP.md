@@ -116,4 +116,14 @@ Candidates:
 
 Completed this pass: safe diagnostic graph, cancellation and snapshot checks, template checksums/pinning, namespace relocation, MIT notice, graph regression validation and diagnostic packaging. `CURRENT_STATE.md` and `REPO_AUDIT.md` distinguish code generation from runtime verification.
 
-Immediate priorities: exact Store reflection signatures, diagnostic boot, stable hero/item identity, equipment-map guards, singleton/input lifecycle and actual overlay/review UI. Loadouts remain unimplemented. The diagnostic fingerprint must not be promoted to production identity.
+Immediate priorities: visible read-only inventory probe, stable hero/item identity, equipment guards, singleton/input lifecycle and actual overlay/review UI. Loadouts remain unimplemented. The diagnostic fingerprint must not be promoted to production identity.
+
+
+## 2026-10-04 runtime milestone
+
+- [x] Archetype-repaired event-free probe: character selection and camp load on the user's Microsoft Store installation.
+- [x] Generate a visible inventory-read probe with native UMG feedback and six negative regression tests.
+- [ ] Verify its inventory count, item name/power, F6/F7 browsing and inventory-close hiding in-game.
+- [ ] Integrate confirmed feedback into lock/select/preview runtime and validate it before native salvage.
+
+The loading milestone does not mark Phase 2 launch/features complete. Mission transitions, full event graph, persistence and all production lock/loadout/salvage behavior remain open.

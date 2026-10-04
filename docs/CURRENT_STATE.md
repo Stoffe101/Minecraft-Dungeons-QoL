@@ -1,4 +1,4 @@
-> Runtime status: both PR #7 and PR #8 diagnostics crashed at character selection on the Store build. Both are withdrawn. Property archetype repairs and an event-free loading probe are implemented; neither has passed an in-game retry.
+> Runtime status: the archetype-repaired loading probe reached camp on the user’s Store build without crashing. Feature code remains unverified. The next test is the separate visible inventory-read probe; earlier PR #7/#8 diagnostics remain withdrawn.
 
 # Current State
 
@@ -70,3 +70,12 @@ The new cooked dependency helper adds child, outer, array-inner and referenced-t
 PR #8 also crashed. The new dump's 43-child count and failing loop position match the first appended ubergraph locals. Their zero native property archetypes were another independently verified generation defect. Shared repair now provides correctly typed property CDO imports plus class/archetype creation preloads; 19 negative tests cover the emitted graph. See RESEARCH_LOG for exact evidence and inference limits.
 
 The next artifact to test is **MinecraftDungeonsQoL-load-probe**, whose manager event bodies immediately return. Remove all earlier QoL paks, keep Blueprint Loader, install only the probe, restart and select the character to enter camp. This isolates loading without executing feature code. A successful probe does not complete the mod or validate inventory behavior. The repaired full diagnostic remains unverified and must never be installed together with the probe.
+
+
+## Confirmed loading and visible inventory probe
+
+On 2026-10-04 the user confirmed PR #9's `MinecraftDungeonsQoL-load-probe` selected the character and reached camp without crashing. This confirms that repaired manager/sidecar schema can load through Blueprint Loader on that Store installation. It does not validate the full diagnostic functions, mission loading, save persistence or any promised feature.
+
+`CookedInventoryProbe` is the next runtime gate. It reuses the repaired manager schema, resolves the observed controller/SharedUI/InventoryHUD path and only reads native inventory slots/item name/power while inventory is open. F6/F7 browse indices. It constructs its own native TextBlock in HUD WholeCanvas, anchors it above the action bar, avoids hit testing, hides it when inventory closes, caches unchanged text, and recreates its own widget on canvas replacement. A first-manager check prevents simultaneous loader instances from producing multiple overlays. None of those new runtime behaviors are confirmed yet.
+
+The probe contains no item mutations, lock/select/preview hotkeys, fingerprint/refund reads, or sidecar load/save calls. The full diagnostic still exists as a separate unverified artifact. Never install multiple QoL variants together. Six new negative tests complement the existing 19 tests; bytecode/metadata validation does not replace rendering/native execution tests.

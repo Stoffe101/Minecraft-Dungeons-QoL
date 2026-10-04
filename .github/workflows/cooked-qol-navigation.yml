@@ -9,6 +9,7 @@ on:
       - "tools/CookedSaveGameSynth/**"
       - "tools/CookedGraphTests/**"
       - "tools/CookedLoadProbe/**"
+      - "tools/CookedInventoryProbe/**"
       - "scripts/Build-Diagnostic.ps1"
       - "config/cooked-template.json"
       - "ci-trigger/qol-navigation.txt"
@@ -52,4 +53,11 @@ jobs:
         with:
           name: MinecraftDungeonsQoL-load-probe
           path: dist/load-probe/*
+          if-no-files-found: error
+
+      - name: Upload inventory-read probe
+        uses: actions/upload-artifact@v4
+        with:
+          name: MinecraftDungeonsQoL-inventory-probe
+          path: dist/inventory-probe/*
           if-no-files-found: error
