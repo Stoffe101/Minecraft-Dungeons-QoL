@@ -11,6 +11,7 @@ if (-not (Test-Path $modKit)) {
     throw "Dungeons Mod Kit not found. Run ./scripts/Bootstrap-ModKit.ps1 first."
 }
 
+& (Join-Path $PSScriptRoot "Sync-GameApi.ps1")
 & (Join-Path $PSScriptRoot "Sync-Assets.ps1")
 
 $distDir = Join-Path $root "dist"
