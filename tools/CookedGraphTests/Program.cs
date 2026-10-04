@@ -9,6 +9,7 @@ if (args.Length != 1) { Console.Error.WriteLine("Usage: CookedGraphTests <diagno
 var asset = new UAsset(args[0], EngineVersion.VER_UE4_22);
 var fn = asset.Exports.OfType<FunctionExport>().Single(x => x.ObjectName.ToString().StartsWith("ExecuteUbergraph_"));
 var code = fn.ScriptBytecode;
+if (asset.Exports.Any(x => x.ObjectName.ToString() == "ProbeText")) return InventoryProbeTests.Run(asset, code);
 DiagnosticGraphValidator.Validate(asset, code);
 void Rejected(Action mutate, Action restore, string reason, string? expected = null)
 {

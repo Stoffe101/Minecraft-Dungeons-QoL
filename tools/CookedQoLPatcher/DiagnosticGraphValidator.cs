@@ -6,7 +6,7 @@ using UAssetAPI.Kismet.Bytecode.Expressions;
 
 public static class DiagnosticGraphValidator
 {
-    public static int Validate(UAsset asset, IReadOnlyList<KismetExpression> code)
+    public static int Validate(UAsset asset, IReadOnlyList<KismetExpression> code, bool requireEquipmentGuards = true)
     {
         KismetSerializer.asset = asset;
         CookedDependencyGraph.Validate(asset);
@@ -89,14 +89,14 @@ public static class DiagnosticGraphValidator
             uint offset = 0;
             code[i].Visit(asset, ref offset, (expr, _) => {
                 var name = expr is EX_FinalFunction ff ? Member(ff.StackNode) : "";
-                if (name is "WasInputKeyJustPressed" or "GetInventorySlots" or "GetSalvageInfo") sensitive = true;
+                if (name is "WasInputKeyJustPressed" or "GetInventorySlots" or "GetSalvageInfo" or "SpawnObject" or "AddChildToCanvas") sensitive = true;
             });
             if (sensitive && (beforeGate.Contains(i) || closedPath.Contains(i)))
                 throw new InvalidDataException("Inventory input/read reachable without open inventory.");
         }
         var equipmentGuards = code.OfType<EX_JumpIfNot>().Count(g =>
             HasMember(g.BooleanExpression, "MCDQoL_CurrentItem") && HasMember(g.BooleanExpression, "MCDQoL_EquipNativeSlot"));
-        if (equipmentGuards != 2) throw new InvalidDataException("Selection and preview need explicit equipment guards.");
+        if (requireEquipmentGuards && equipmentGuards != 2) throw new InvalidDataException("Selection and preview need explicit equipment guards.");
         return checked((int)position);
     }
 }

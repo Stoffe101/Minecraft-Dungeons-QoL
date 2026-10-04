@@ -9,6 +9,5 @@
     <PackageReference Include="UAssetAPI" Version="1.1.0" />
     <Compile Include="../CookedQoLPatcher/DiagnosticGraphValidator.cs" Link="DiagnosticGraphValidator.cs" />
     <Compile Include="../CookedQoLPatcher/CookedDependencyGraph.cs" Link="CookedDependencyGraph.cs" />
-    <Compile Include="../CookedInventoryProbe/InventoryProbeValidator.cs" Link="InventoryProbeValidator.cs" />
   </ItemGroup>
 </Project>

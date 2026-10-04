@@ -117,3 +117,16 @@ Validate every reflected child index/owner and preload edge, every field outer c
 5. Remove the probe before testing any full diagnostic. Do not install multiple QoL paks together, since their package paths collide.
 
 Automated archetype gates reject zero TemplateIndex, the wrong native property CDO, and missing class/archetype creation preload edges. Probe re-opening verifies that both manager functions contain only an empty return and EndOfScript and that reflected child indices/export count are preserved. These checks do not emulate the engine's loader.
+
+
+## Visible inventory-read probe (after confirmed camp loading)
+
+Close the game, remove every other MinecraftDungeonsQoL pak (including load-probe), keep Blueprint-Loader.pak and install only MinecraftDungeonsQoL-inventory-probe.pak.
+
+1. Select character and enter camp. Confirm no new crash.
+2. Open inventory. Expect a bottom-center `MCD QoL READ-ONLY` text block with inventory slot count, current item name and power. This cursor is separate from vanilla selection.
+3. Press F7/F6 to browse next/previous, including wrap and empty slots. Compare the shown item name/power with the actual inventory.
+4. Close inventory. Confirm the text hides and F6/F7 no longer browse. Reopen and confirm one overlay appears.
+5. If stable, enter a mission and repeat; record whether overlay ownership/lifecycle survives the transition.
+
+No F8/F9/F10 actions are active. No items or sidecar saves are changed. If text is missing, report that alongside crash/no-crash and inventory responsiveness; a missing overlay is not proof that the reads ran successfully. If it crashes, preserve fresh CrashContext/minidump. Layout at common resolutions/controller behavior require screenshots and actual testing later.

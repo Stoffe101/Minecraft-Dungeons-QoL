@@ -1,4 +1,4 @@
-> Runtime status: both PR #7 and PR #8 diagnostics crashed at character selection on the Store build. Both are withdrawn. Property archetype repairs and an event-free loading probe are implemented; neither has passed an in-game retry.
+> Runtime status: the archetype-repaired loading probe reached camp on the user’s Store build without crashing. Feature code remains unverified. The next test is the separate visible inventory-read probe; earlier PR #7/#8 diagnostics remain withdrawn.
 
 # Minecraft Dungeons QoL
 

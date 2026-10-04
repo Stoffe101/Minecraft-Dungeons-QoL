@@ -120,4 +120,36 @@ try {
 ) | Set-Content (Join-Path $probeDist "BUILD_INFO.md")
 Copy-Item (Join-Path $root "third_party/LetMeMove-LICENSE.txt") $probeDist -Force
 
+
+# Visible read-only inventory gate: separate artifact, never install together with other QoL paks.
+$readStage = Join-Path $work "inventory-stage"
+if (Test-Path $readStage) { Remove-Item $readStage -Recurse -Force }
+Copy-Item $stage $readStage -Recurse
+$readManager = Join-Path $readStage "Dungeons/Content/Mods/MinecraftDungeonsQoL/BP_MCDQoL_Manager.uasset"
+& dotnet run --project (Join-Path $root "tools/CookedInventoryProbe") -- $manager $readManager
+if ($LASTEXITCODE -ne 0) { throw "Inventory-read probe generation failed." }
+& dotnet run --project (Join-Path $root "tools/CookedGraphTests") -- $readManager
+if ($LASTEXITCODE -ne 0) { throw "Inventory-read probe regression tests failed." }
+$readDist = Join-Path $root "dist/inventory-probe"
+New-Item -ItemType Directory -Force $readDist | Out-Null
+$readPak = Join-Path $readDist "MinecraftDungeonsQoL-inventory-probe.pak"
+Push-Location $readStage
+try {
+    & python $u4pak pack $readPak Dungeons -p
+    if ($LASTEXITCODE -ne 0) { throw "Inventory-read probe packing failed." }
+} finally { Pop-Location }
+@(
+    "# Minecraft Dungeons QoL inventory-read probe"
+    "Source commit: $sourceSha"
+    "SHA-256: $((Get-FileHash $readPak -Algorithm SHA256).Hash.ToLowerInvariant())"
+    "Loading-only probe reached camp on the user's Microsoft Store game. This new runtime remains untested."
+    "Only F6/F7 browse native inventory slots. No item changes, locks, sidecar saves or salvage."
+    "While inventory is open, a text overlay should show slot count, current item name and power."
+    "Closing inventory hides the overlay. Its widget does not capture mouse/controller input."
+    "Remove ALL other MinecraftDungeonsQoL paks first; keep Blueprint-Loader.pak."
+    "Install only this pak in Paks\~mods. Restart, enter camp and open inventory."
+    "Report visible text, F6/F7 browsing, and whether closing inventory hides it."
+    "Mission transitions, resolution layout, native UMG creation and co-op remain unverified."
+) | Set-Content (Join-Path $readDist "BUILD_INFO.md")
+Copy-Item (Join-Path $root "third_party/LetMeMove-LICENSE.txt") $readDist -Force
 Write-Host "[OK] Built non-destructive diagnostic: $out"
