@@ -6,6 +6,33 @@ param(
 )
 # Read-only game inspection. Outputs metadata, never hero saves or raw game assets.
 . (Join-Path $PSScriptRoot "Common.ps1")
+function Invoke-EvidenceProcess {
+    param([string]$Executable, [string[]]$Arguments, [string]$LogPath)
+    $info = New-Object System.Diagnostics.ProcessStartInfo
+    $info.FileName = $Executable
+    # Windows argv quoting also works with .NET Framework / PowerShell 5.1.
+    $info.Arguments = (@($Arguments | ForEach-Object {
+        $escaped = [regex]::Replace($_, '(\\*)"', '$1$1\"')
+        $escaped = [regex]::Replace($escaped, '(\\+)$', '$1$1')
+        '"' + $escaped + '"'
+    }) -join ' ')
+    $info.UseShellExecute = $false
+    $info.CreateNoWindow = $true
+    $info.RedirectStandardOutput = $true
+    $info.RedirectStandardError = $true
+    $process = New-Object System.Diagnostics.Process
+    $process.StartInfo = $info
+    try {
+        if (-not $process.Start()) { throw "Could not start inspector: $Executable" }
+        $stdout = $process.StandardOutput.ReadToEndAsync()
+        $stderr = $process.StandardError.ReadToEndAsync()
+        $process.WaitForExit()
+        $output = $stdout.GetAwaiter().GetResult()
+        $errors = $stderr.GetAwaiter().GetResult()
+        [System.IO.File]::WriteAllText($LogPath, $output + "`n--- Inspector stderr ---`n" + $errors)
+        return $process.ExitCode
+    } finally { $process.Dispose() }
+}
 if ($AesKey -and $AesKey -notmatch '^(0x)?[0-9a-fA-F]{64}$') { throw "-AesKey must contain a 256-bit hexadecimal key (64 digits, optionally prefixed with 0x)." }
 $root = Get-ProjectRoot
 $paks = Find-McdPaksPath -Override $PaksPath
@@ -85,18 +112,34 @@ try {
         }
     }
     if (-not (Test-Path $DumperExe -PathType Leaf)) { throw "Dumper not found: $DumperExe" }
-    foreach ($term in @("ArchiveCatalog", "Inventory", "Salvage", "Equipment", "ItemStash", "SlotGrid", "PlayerController")) {
+    $groups = [ordered]@{
+        ArchiveCatalog = "Dungeons/"
+        Inventory = "Dungeons/Content/UI/Inventory/UMG_Inventory"
+        Salvage = "Dungeons/Content/UI/Inventory/Salvage/"
+        ItemWidgets = "Dungeons/Content/UI/Inventory/UMG_Item"
+        ItemInspector = "Dungeons/Content/UI/Inventory/Inspector2/UMG_InventoryItem"
+        SlotGrid = "Dungeons/Content/UI/Grid/"
+        PlayerController = "Dungeons/Content/Actors/Characters/Player/BP_PlayerController"
+    }
+    foreach ($term in $groups.Keys) {
         $termDir = Join-Path $out $term
         New-Item -ItemType Directory -Force $termDir | Out-Null
         $arguments = @("--list")
-        $match = $term
-        if ($term -eq "ArchiveCatalog") { $match = "Dungeons/" }
-        else { $arguments += "--dump" }
+        $match = $groups[$term]
+        if ($term -ne "ArchiveCatalog") { $arguments += "--dump" }
         if ($AesKey) { $arguments += @("--key", $AesKey) }
         $arguments += @($paks, "UE4_22", $match, $termDir)
-        if ($runner) { & $runner $DumperExe @arguments *> (Join-Path $termDir "Dumper.log") }
-        else { & $DumperExe @arguments *> (Join-Path $termDir "Dumper.log") }
-        if ($LASTEXITCODE -ne 0) { $issues.Add("$term dump returned exit code $LASTEXITCODE; see Dumper.log") }
+        $log = Join-Path $termDir "Dumper.log"
+        try {
+            if ($runner) { $code = Invoke-EvidenceProcess -Executable $runner -Arguments (@($DumperExe) + $arguments) -LogPath $log }
+            elseif ([System.IO.Path]::GetExtension($DumperExe) -eq '.ps1') {
+                # Script inspectors are supported for fixture tests/custom adapters.
+                & $DumperExe @arguments *> $log
+                $code = $LASTEXITCODE
+            } else { $code = Invoke-EvidenceProcess -Executable $DumperExe -Arguments $arguments -LogPath $log }
+            if ($code -ne 0) { $issues.Add("$term dump returned exit code $code; see Dumper.log") }
+            if ((Get-Content $log -Raw) -match '\[ERROR\]') { $issues.Add("$term contains inspector export errors; partial output retained in Dumper.log.") }
+        } catch { $issues.Add("$term inspection failed: $($_.Exception.Message)"); continue }
         $assetList = Join-Path $termDir "AssetList.txt"
         if ($term -eq "ArchiveCatalog") {
             if (Test-Path $assetList) { $report.archiveCatalogCount = @(Get-Content $assetList | Where-Object { $_.Trim() }).Count }
@@ -122,3 +165,4 @@ if ($issues.Count -gt 0) {
     Write-Warning "Evidence collection had $($issues.Count) issue(s); archive includes diagnostics."
     exit 1
 }
+exit 0

@@ -76,6 +76,34 @@ exit 0
     $failedReport = Get-Content (Join-Path $failedOut 'REPORT.json') -Raw | ConvertFrom-Json
     if ($failedReport.issues.Count -ne 14 -or -not (Test-Path "$failedOut.zip") -or $failedReport.archiveCatalogCount -ne 0) { throw "Failed dumper diagnostics were lost" }
     if ($TestBootstrap) {
+        $nativeSource = Join-Path $fixture 'native stderr inspector.cs'
+        $nativeExe = Join-Path $fixture 'native stderr inspector.exe'
+        @'
+using System;
+using System.IO;
+class FixtureInspector {
+    static void Main(string[] args) {
+        string directory = args[args.Length - 1];
+        string match = args[args.Length - 2];
+        File.WriteAllText(Path.Combine(directory, "AssetList.txt"), "Dungeons/Content/fixture.uasset\n");
+        if (Array.IndexOf(args, "--dump") >= 0) File.WriteAllText(Path.Combine(directory, "Class_fixture.txt"), "Synthetic partial metadata");
+        Console.WriteLine("UeBlueprintDumper synthetic stdout: " + match);
+        Console.Error.WriteLine("[ERROR] Synthetic export parse error; other exports can continue");
+    }
+}
+'@ | Set-Content $nativeSource
+        $compiler = Join-Path $env:WINDIR 'Microsoft.NET/Framework64/v4.0.30319/csc.exe'
+        & $compiler /nologo /target:exe "/out:$nativeExe" $nativeSource
+        if ($LASTEXITCODE -ne 0) { throw 'Native stderr fixture compilation failed' }
+        $nativeOut = Join-Path $fixture 'native stderr evidence'
+        & (Join-Path $PSScriptRoot 'Collect-GameEvidence.ps1') -PaksPath $paks -DumperExe $nativeExe -OutputDirectory $nativeOut
+        $nativeReport = Get-Content (Join-Path $nativeOut 'REPORT.json') -Raw | ConvertFrom-Json
+        if ($LASTEXITCODE -ne 1 -or $nativeReport.issues.Count -ne 7 -or $nativeReport.archiveCatalogCount -ne 1) { throw 'Native parser errors were not reported accurately' }
+        if (@(Get-ChildItem $nativeOut -Recurse -Filter Class_fixture.txt).Count -ne 6 -or -not (Test-Path "$nativeOut.zip")) { throw 'Native stderr interrupted remaining groups' }
+        foreach ($log in Get-ChildItem $nativeOut -Recurse -Filter Dumper.log) {
+            if ((Get-Content $log.FullName -Raw) -notmatch 'Synthetic export parse error') { throw 'Native stderr was not preserved' }
+        }
+        Write-Host '[PASS] Actual native stdout/stderr capture, quoted paths, partial export retention and continuation across all groups'
         $bootstrapOut = Join-Path $fixture 'real tool evidence'
         & (Join-Path $PSScriptRoot "Collect-GameEvidence.ps1") -PaksPath $paks -OutputDirectory $bootstrapOut
         $bootstrapReport = Get-Content (Join-Path $bootstrapOut 'REPORT.json') -Raw | ConvertFrom-Json

@@ -24,20 +24,22 @@ An already-installed dumper executable can be supplied with `-DumperExe`. If the
 
 ### All six asset lists empty with `AES key No`
 
-The user's Store/Xbox retry on 2026-10-04 enumerated 47 pak files but exposed no matching assets. The next check is an explicit AES-configured retry. This publicly documented **Dungeons 1** key appears in [an actual Dungeons localization mod's pak reader](https://github.com/Saad5400/minecraft-dungeons-arabic/blob/c1a8c20ea714ab63ea33b04025bc84c08747f12a/tools/pak.js) and a [Dungeons 1.17.0.0 extraction-tool comment](https://www.nexusmods.com/minecraftdungeons/mods/67?tab=posts). It has not yet been verified against this user's archives. No key is silently assumed by the collector.
+The user's initial Store/Xbox retry on 2026-10-04 enumerated 47 pak files but exposed no matching assets. The explicit AES retry subsequently exposed 131,164 paths, confirming this key works for catalog enumeration on that installation. This **Dungeons 1** key appears in [an actual Dungeons localization mod's pak reader](https://github.com/Saad5400/minecraft-dungeons-arabic/blob/c1a8c20ea714ab63ea33b04025bc84c08747f12a/tools/pak.js) and a [Dungeons 1.17.0.0 extraction-tool comment](https://www.nexusmods.com/minecraftdungeons/mods/67?tab=posts). No key is silently assumed by the collector.
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Collect-GameEvidence.ps1 -PaksPath "C:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks" -AesKey "0x7D5F892ECEBFA53CC22001DF48B871D51C0DF7C54CE41933BFB285219829B3A8" -OutputDirectory ".research\game-evidence-3"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Collect-GameEvidence.ps1 -PaksPath "C:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks" -AesKey "0x7D5F892ECEBFA53CC22001DF48B871D51C0DF7C54CE41933BFB285219829B3A8" -OutputDirectory ".research\game-evidence-4"
 ```
 
-Return `game-evidence-3.zip`, including failure logs if it still reports issues. This is an inspection setting, not a save edit or game installation change. A list-only `ArchiveCatalog` now checks all visible `Dungeons/` paths. If its count is zero even with a key, investigate key validity, archive readability or parser configuration rather than assuming inventory names are absent. A nonzero catalog narrows the issue to search terms/export parsing. The report records whether a key was supplied, without storing its value.
+Return `game-evidence-4.zip`, including failure logs if it still reports issues. This is an inspection setting, not a save edit or game installation change. A list-only `ArchiveCatalog` checks all visible `Dungeons/` paths. If its count is zero even with a key, investigate key validity, archive readability or parser configuration rather than assuming inventory names are absent. A nonzero catalog narrows the issue to search terms/export parsing. The report records whether a key was supplied, without storing its value.
+
+The previous broad Inventory export stopped at a cosmetic parser error under Windows PowerShell 5.1. The updated collector captures native stdout/stderr through a child process, retains `[ERROR]` messages as issues and continues the remaining groups. It now targets actual UI/controller paths from the verified catalog, avoiding cosmetic widgets and texture icons. Parser errors can still mean some functions are unavailable, so send the partial archive even when the script returns code 1.
 
 ## Output and failure handling
 
 | Output | Contents / purpose |
 | --- | --- |
 | `REPORT.json` | Tool source revision, engine selection, root pak names/sizes, adjacent executable versions/hashes, issues |
-| Six term folders | Inventory, Salvage, Equipment, ItemStash, SlotGrid, PlayerController asset lists and Blueprint metadata/disassembly |
+| Six targeted folders | Inventory, Salvage, ItemWidgets, ItemInspector, SlotGrid, PlayerController asset lists and Blueprint metadata/disassembly |
 | `ArchiveCatalog` | List-only catalog of visible Dungeons paths, with count in the manifest; no broad asset dump |
 | `Dumper.log` | Inspector output and parser/mount errors |
 | ZIP archive | All of the above, ready to review and return for analysis |
