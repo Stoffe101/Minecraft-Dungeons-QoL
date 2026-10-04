@@ -26,9 +26,39 @@ jobs:
         run: |
           git clone --recursive https://github.com/tge-was-taken/KismetKompiler.git .tools/KismetKompiler
           git -C .tools/KismetKompiler checkout 8fbb843db1da73f96fae1c10ef36752872feab73
-          Remove-Item -Recurse -Force .tools/KismetKompiler/external/UAssetAPI
-          git clone https://github.com/atenfyr/UAssetAPI.git .tools/KismetKompiler/external/UAssetAPI
-          git -C .tools/KismetKompiler/external/UAssetAPI checkout 3228c1e86261aa08131f7ec0ff1a395f5d0b2a84
+
+      - name: Replace old UAssetAPI submodule with working NuGet package
+        shell: pwsh
+        run: |
+          $projects = @(
+            ".tools/KismetKompiler/src/KismetKompiler/KismetKompiler.csproj",
+            ".tools/KismetKompiler/src/KismetKompiler.Library/KismetKompiler.Library.csproj"
+          )
+
+          foreach ($project in $projects) {
+            [xml]$xml = Get-Content $project
+
+            $projectRefs = @($xml.Project.ItemGroup.ProjectReference)
+            foreach ($ref in $projectRefs) {
+              if ($ref.Include -like "*UAssetAPI*") {
+                [void]$ref.ParentNode.RemoveChild($ref)
+              }
+            }
+
+            $itemGroup = $xml.CreateElement("ItemGroup")
+            $packageRef = $xml.CreateElement("PackageReference")
+            $packageRef.SetAttribute("Include", "UAssetAPI")
+            $packageRef.SetAttribute("Version", "1.1.0")
+            [void]$itemGroup.AppendChild($packageRef)
+            [void]$xml.Project.AppendChild($itemGroup)
+
+            $settings = New-Object System.Xml.XmlWriterSettings
+            $settings.Indent = $true
+            $settings.Encoding = New-Object System.Text.UTF8Encoding($false)
+            $writer = [System.Xml.XmlWriter]::Create((Resolve-Path $project), $settings)
+            $xml.Save($writer)
+            $writer.Close()
+          }
 
       - name: Checkout MIT Dungeons template
         shell: pwsh
@@ -57,6 +87,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add research/decompiled/BP_WASD_Movement.kms
           if (-not (git diff --cached --quiet)) {
-            git commit -m "research: decompile Dungeons Blueprint template with current UAssetAPI"
+            git commit -m "research: decompile Dungeons Blueprint template with UAssetAPI 1.1.0"
             git push
           }
