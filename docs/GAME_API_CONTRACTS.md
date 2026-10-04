@@ -58,3 +58,5 @@ UE4SS is an optional research route, not an established retail dependency. As of
 ## Feedback attachment field
 
 The same collected InventoryHUD package declares `WholeCanvas` as a native `/Script/UMG.CanvasPanel` and calls `AddChildToCanvas` in its vanilla graph. The inventory-read probe uses that field to parent its own native TextBlock, with native CanvasPanelSlot layout and TextBlock setters. This is an observed attachment point plus engine-documented API shape; the project's widget creation/rendering still requires an in-game test. It does not replace or overwrite any vanilla TextBlock content.
+
+The collected SetAnchors bytecode imports `Anchors` from **`/Script/Slate`**, not `/Script/UMG`; Vector2D comes from `/Script/CoreUObject`. The probe follows those observed owners, and a negative test rejects an Anchors import under the wrong module. Native struct module names must be verified independently of the UMG class consuming them.

@@ -122,7 +122,7 @@ Immediate priorities: visible read-only inventory probe, stable hero/item identi
 ## 2026-10-04 runtime milestone
 
 - [x] Archetype-repaired event-free probe: character selection and camp load on the user's Microsoft Store installation.
-- [x] Generate a visible inventory-read probe with native UMG feedback and six negative regression tests.
+- [x] Generate a visible inventory-read probe with native UMG feedback and seven negative regression tests.
 - [ ] Verify its inventory count, item name/power, F6/F7 browsing and inventory-close hiding in-game.
 - [ ] Integrate confirmed feedback into lock/select/preview runtime and validate it before native salvage.
 

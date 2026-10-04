@@ -47,7 +47,7 @@ var gameplay=Class("/Script/Engine","GameplayStatics");var gameplayDefault=Defau
 var system=Class("/Script/Engine","KismetSystemLibrary");var systemDefault=Default("/Script/Engine","KismetSystemLibrary");
 var math=Class("/Script/Engine","KismetMathLibrary");var arrayClass=Class("/Script/Engine","KismetArrayLibrary");var arrayDefault=Default("/Script/Engine","KismetArrayLibrary");
 var stringClass=Class("/Script/Engine","KismetStringLibrary");var stringDefault=Default("/Script/Engine","KismetStringLibrary");var textLib=Class("/Script/Engine","KismetTextLibrary");var textDefault=Default("/Script/Engine","KismetTextLibrary");
-var vector2=Import("/Script/CoreUObject","ScriptStruct","Vector2D",Package("/Script/CoreUObject"));var anchors=Import("/Script/CoreUObject","ScriptStruct","Anchors",Package("/Script/UMG"));
+var vector2=Import("/Script/CoreUObject","ScriptStruct","Vector2D",Package("/Script/CoreUObject"));var anchors=Import("/Script/CoreUObject","ScriptStruct","Anchors",Package("/Script/Slate"));
 var key=Existing("Key");var pc=Field("CallFunc_GetPlayerController_ReturnValue");var controller=Field("MCDQoL_Controller");var shared=Field("MCDQoL_SharedUI");var hud=Field("MCDQoL_InventoryHUD");var stash=Field("CallFunc_GetItemStashComponent_ReturnValue");var slots=Field("InventorySlots");var cursor=Field("CursorIndex");var currentSlot=Field("MCDQoL_CurrentSlot");var item=Field("MCDQoL_CurrentItem");
 KismetPropertyPointer Ptr(FPackageIndex x)=>new(x);
 KismetExpression L(PropertyExport p)=>new EX_LocalVariable {Variable=Ptr(Index(p))};

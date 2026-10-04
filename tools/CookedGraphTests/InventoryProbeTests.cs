@@ -31,6 +31,10 @@ public static class InventoryProbeTests
         var context=(EX_Context)((EX_LetObj)code[0]).AssignmentExpression; // First controller lookup.
         var skip=context.Offset;
         Reject(()=>context.Offset++,()=>context.Offset=skip,"Invalid context skip offset");
-        InventoryProbeValidator.Validate(asset,code);Console.WriteLine("[PASS] inventory-read probe remains valid after 6 rejection tests");return 0;
+
+        var anchor=asset.Imports.Single(x=>x.ObjectName.ToString()=="Anchors");var oldOuter=anchor.OuterIndex;
+        var umg=FPackageIndex.FromImport(asset.Imports.FindIndex(x=>x.ObjectName.ToString()=="/Script/UMG"));
+        Reject(()=>anchor.OuterIndex=umg,()=>anchor.OuterIndex=oldOuter,"Wrong native Anchors struct");
+        InventoryProbeValidator.Validate(asset,code);Console.WriteLine("[PASS] inventory-read probe remains valid after 7 rejection tests");return 0;
     }
 }

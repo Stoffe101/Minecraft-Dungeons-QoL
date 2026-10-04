@@ -21,6 +21,14 @@ public static class InventoryProbeValidator
                 };
                 if(forbidden.Contains(name))throw new InvalidDataException("Read probe contains forbidden call: "+name);
                 if(name!="")calls.Add(name);
+
+                if(e is EX_StructConst st && st.Struct.IsImport() && st.Struct.ToImport(asset).ObjectName.ToString()=="Anchors")
+                {
+                    var type=st.Struct.ToImport(asset);
+                    if(!type.OuterIndex.IsImport() || type.OuterIndex.ToImport(asset).ObjectName.ToString()!="/Script/Slate"
+                        || st.StructSize!=16)
+                        throw new InvalidDataException("Wrong native Anchors struct");
+                }
                 if(e is EX_NameConst n && new[]{"F5","F8","F9","F10"}.Contains(n.Value.ToString()))
                     throw new InvalidDataException("Read probe contains feature hotkey");
             });
