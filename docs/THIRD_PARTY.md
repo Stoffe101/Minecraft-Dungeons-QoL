@@ -7,10 +7,12 @@ https://github.com/Dokucraft/Dungeons-Mod-Kit
 
 License: MIT.
 
-Used as an external development dependency and pinned for reproducibility.
+Used as the canonical Dungeons 1 development/build dependency and pinned for reproducibility.
 
 Pinned commit:
 `c30e88ec5e99e401eadedddbe82af0265a056fe7`
+
+Its normal UE4.22 cook + u4pak packaging workflow is the preferred release path.
 
 ## LetMeMove!
 
@@ -19,7 +21,30 @@ https://github.com/StainlessStasis/LetMeMove
 
 License: MIT.
 
-Use: modern Dungeons 1 Blueprint Loader compatibility and package-layout reference. Any future direct reuse of its MIT assets must retain the required MIT notice.
+Use:
+
+- evidence that Blueprint Loader remains viable on current Dungeons 1
+- known-working actor Blueprint package reference
+- known-working BPLoader/Ingame level structure
+- possible template reuse where useful
+
+Any direct reuse must retain the MIT notice.
+
+## Camera Coordinates Overlay
+
+Repository:
+https://github.com/EvenTorset/Camera-Coordinates-Overlay
+
+Published mod page:
+https://www.nexusmods.com/minecraftdungeons/mods/112
+
+Use: reference and potential template for the proven Dungeons 1 pattern:
+
+`Blueprint Loader level -> actor -> Create Widget -> Add To Viewport`
+
+The Nexus permissions explicitly allow modification of the files and use of its assets in other mods. The GitHub repository itself does not expose an obvious standalone license, so any direct reuse should be documented as relying on the published Nexus asset permissions.
+
+This is currently the preferred existing UI/template reference.
 
 ## Blueprint Loader for Dungeons 1
 
@@ -28,7 +53,7 @@ https://www.nexusmods.com/minecraftdungeons/mods/111
 
 Blueprint Loader is a separate runtime dependency.
 
-Its Nexus permissions do not permit us to simply redistribute it as part of this project's release, therefore users install it separately.
+Its published permissions do not permit us to simply redistribute its assets as part of this project's release. Users install it separately from the original page.
 
 ## MCD-PE
 
@@ -37,9 +62,35 @@ https://github.com/Minecraforever/MCD-PE
 
 License: Apache-2.0.
 
-Use: research/reference for final-build Dungeons 1 native class/function architecture, particularly inventory, item slots, salvage, and UI event wiring.
+Use:
 
-The repository states that restored class architecture was checked against the final game binary. If code is copied or adapted rather than merely referenced, Apache-2.0 attribution/notice requirements must be followed.
+- final-build Dungeons 1 class/function research
+- `UItemStashComponent`
+- `UInventoryItemSlot`
+- equipment slot values
+- native salvage signatures
+- UI event wiring research
+
+The repository states that the restored class architecture was checked against the final game binary.
+
+If declarations/code are copied or adapted into editor stubs rather than merely referenced, Apache-2.0 attribution and notice requirements must be followed.
+
+## UAssetAPI
+
+Repository:
+https://github.com/atenfyr/UAssetAPI
+
+License: MIT.
+
+Use:
+
+- inspect known-working Dungeons `.uasset` files
+- import/export/function-table research
+- raw Kismet inspection
+- regression validation
+- possible permitted precooked Blueprint modification
+
+CI has verified that UAssetAPI 1.1.0 can parse a working Dungeons 1 Blueprint package.
 
 ## KismetKompiler
 
@@ -50,7 +101,9 @@ License: MIT.
 
 Potential use: decompile/recompile existing UE4 Blueprint bytecode in automated build/research workflows.
 
-Current status: research dependency only until UE4.22 compatibility with Dungeons assets is proven.
+Current status: experimental only. Its pinned UAssetAPI is too old for our Dungeons template and its source API does not directly compile against current UAssetAPI.
+
+The release pipeline must not depend on it until compatibility is proven.
 
 ## UeBlueprintDumper
 
@@ -68,7 +121,16 @@ https://github.com/CutFlame/MCDSaveEdit
 
 Use: save-format research only, including `uniqueSaveId`, `inventoryIndex`, `equipmentSlot`, and item fingerprint fields.
 
-Before copying any implementation code, its applicable license must be checked for the exact version/repository content being reused.
+Before copying implementation code, its applicable license must be checked for the exact version/repository content being reused.
+
+## Sources without reuse permission
+
+A public GitHub repository is not automatically reusable.
+
+If a project has no license and no separately published permission:
+
+- research/inspection is allowed for understanding behavior
+- do not copy its implementation or binary assets into this project
 
 ## Minecraft / Minecraft Dungeons assets
 
