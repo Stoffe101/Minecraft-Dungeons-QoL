@@ -1,0 +1,118 @@
+# Inventory Identity Strategy
+
+Last updated: 2026-10-04
+
+A lock system is only safe if it can recognize the **same physical item instance** later. Item type alone is not enough because a player can own multiple copies of the same weapon or armor.
+
+## Best-case target
+
+Use a native runtime item GUID or other persistent unique identifier if Minecraft Dungeons exposes one to Blueprint.
+
+This remains the preferred solution.
+
+## Verified save-format fields
+
+Current MCDSaveEdit source shows that each hero profile contains:
+
+- `uniqueSaveId`
+- `playerId`
+
+and each item contains:
+
+- `inventoryIndex`
+- `equipmentSlot`
+- `type`
+- `power`
+- `rarity`
+- enchantments
+- gilded/netherite enchant data
+- other state useful for sanity checking
+
+MCDSaveEdit also shows that unequipped inventory is ordered by `inventoryIndex` and that a newly-added item is assigned `max(existing inventoryIndex) + 1`.
+
+## Provisional fallback key
+
+If runtime Blueprint research finds no better native item ID:
+
+```text
+HeroKey = uniqueSaveId
+ItemLocator = inventoryIndex
+SanityFingerprint = selected immutable-or-mostly-stable item fields
+```
+
+A lock record might conceptually contain:
+
+```text
+HeroUniqueSaveId
+InventoryIndex
+Type
+Rarity
+FingerprintVersion
+OptionalFingerprintFields
+```
+
+## Why inventoryIndex alone is not enough
+
+It is a locator, not a proven permanent identity.
+
+### Storage transfer
+
+MCDSaveEdit's transfer flow adds an item to the target collection before removing it from the source collection. Adding it assigns the target collection's next index.
+
+Therefore moving an item between inventory and storage can change `inventoryIndex`.
+
+### Index reuse
+
+New items use `max index + 1`. If the current highest-index item is removed, a later item can potentially receive the same number.
+
+A stale lock keyed only by that number could then protect the wrong item.
+
+## Reconciliation rule
+
+If using the fallback locator:
+
+1. Resolve the hero by `uniqueSaveId`.
+2. Resolve the item by `inventoryIndex`.
+3. Compare stored sanity data.
+4. If the data agrees, treat the lock as valid.
+5. If it disagrees, **do not silently transfer the lock to the new item**.
+6. Mark the lock record stale/unresolved and fail closed for destructive operations until reconciliation is complete.
+
+## Storage handling options
+
+Once runtime behavior is known, choose one:
+
+1. Detect inventory-to-storage transfer and migrate the lock record to the item's new locator.
+2. Detect the same item through a stronger runtime object ID during the transfer and rewrite the stored locator.
+3. If neither is reliable, clearly document that locks are inventory-local in the first prototype and automatically clear/migrate only when identity can be proven.
+
+Option 1 or 2 is required before a polished release.
+
+## Equipped items
+
+Save-format research shows equipped gear remains in the same main Items collection and uses `equipmentSlot` to indicate its slot.
+
+Equipped items should always receive implicit protection, independent of explicit lock state.
+
+## Loadouts
+
+A loadout reference must use the same identity service as locks. Do not create a separate, weaker lookup method for gear sets.
+
+If a loadout reference no longer resolves confidently:
+
+- show the slot as missing/unresolved
+- do not substitute a similar-looking item automatically
+- retain protection only when identity is sufficiently verified
+
+## Runtime research checklist
+
+We still need to confirm:
+
+- whether the runtime item struct/object exposes `inventoryIndex`
+- whether a native GUID/ID exists but is omitted from the save representation
+- whether `uniqueSaveId` is available from the local hero/controller/profile at runtime
+- whether equipping preserves the runtime identity object
+- what happens to runtime identity during storage transfer
+- what happens to identity after Blacksmith upgrades or enchant rerolls
+
+Until those are tested, this document describes the safest provisional design rather than a final implementation contract.
