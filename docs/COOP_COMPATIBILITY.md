@@ -15,3 +15,7 @@ The dependency cannot be silently forked or bundled: its author requires permiss
 ## Acceptance
 
 Use the session matrix in TEST_PLAN.md. Require camp and mission startup, own inventory reads, overlay/input behavior, mission transitions, friend join/leave and rejoin. No remote inventories, replicated helper actors or gameplay RPCs should be introduced for the local QoL UI. Production actions require separate local ownership and game API validation.
+
+## 2026-10-05: Local inventory HUD feature path
+
+The user confirms the successful read-only probe was hosted and uses keyboard/mouse only. Joining players must also be supported. The new private feature patch runs from the inventory HUD's existing Tick, obtains its owning player, requires a local controller and visible inventory, and never asks for GameMode. This removes the old actor loader's inferred joining-client bootstrap limitation from this feature path. Native calls use that player's own stash. Actual online host and joining-client tests remain necessary; do not claim client support from graph checks alone.

@@ -55,7 +55,7 @@ jobs:
       - name: Build cooked runtime tools
         shell: pwsh
         run: |
-          foreach ($tool in @("CookedQoLPatcher", "CookedAssetRelocator", "CookedSaveGameSynth", "CookedGraphTests", "CookedLoadProbe", "CookedInventoryProbe")) {
+          foreach ($tool in @("CookedQoLPatcher", "CookedAssetRelocator", "CookedSaveGameSynth", "CookedGraphTests", "CookedLoadProbe", "CookedInventoryProbe", "CookedInventoryFeatures")) {
             dotnet build "tools/$tool/$tool.csproj" -c Release
             if ($LASTEXITCODE -ne 0) { throw "$tool build failed." }
           }
