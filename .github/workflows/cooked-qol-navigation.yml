@@ -1,0 +1,100 @@
+name: Cooked QoL Navigation Build
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "ci-trigger/qol-navigation.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch current working Dungeons loader shell
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force .research/qol-nav | Out-Null
+          Invoke-WebRequest -Uri "https://github.com/StainlessStasis/LetMeMove/releases/download/1.1.0/LetMeMove.zip" -OutFile ".research/qol-nav/LetMeMove.zip"
+          Expand-Archive ".research/qol-nav/LetMeMove.zip" ".research/qol-nav/zip" -Force
+          git clone --depth 1 https://github.com/Dokucraft/Dungeons-Mod-Kit.git .tools/Dungeons-Mod-Kit
+
+          $pak = Get-ChildItem ".research/qol-nav/zip" -Recurse -Filter "*.pak" | Select-Object -First 1
+          if (-not $pak) { throw "LetMeMove release did not contain a pak." }
+          New-Item -ItemType Directory -Force ".research/qol-nav/unpacked" | Out-Null
+          python ".tools/Dungeons-Mod-Kit/Tools/py/u4pak.py" unpack -C ".research/qol-nav/unpacked" $pak.FullName
+
+      - name: Patch runtime actor
+        shell: pwsh
+        run: |
+          $actor = Get-ChildItem ".research/qol-nav/unpacked" -Recurse -Filter "BP_WASD_Movement.uasset" | Select-Object -First 1
+          if (-not $actor) { throw "Cooked runtime actor not found." }
+
+          $patchedDir = ".research/qol-nav/patched"
+          New-Item -ItemType Directory -Force $patchedDir | Out-Null
+          $patched = Join-Path $patchedDir "BP_WASD_Movement.uasset"
+
+          dotnet run --project tools/CookedQoLPatcher/CookedQoLPatcher.csproj -- $actor.FullName $patched
+
+          Copy-Item $patched $actor.FullName -Force
+          Copy-Item ([System.IO.Path]::ChangeExtension($patched, ".uexp")) ([System.IO.Path]::ChangeExtension($actor.FullName, ".uexp")) -Force
+
+          dotnet run --project tools/UAssetProbe/UAssetProbe.csproj -- $actor.FullName | Out-File ".research/qol-nav/PATCHED_ACTOR_REPORT.txt"
+
+      - name: Repack installable navigation build
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force "dist/dev" | Out-Null
+          Push-Location ".research/qol-nav/unpacked"
+          try {
+            python "$env:GITHUB_WORKSPACE/.tools/Dungeons-Mod-Kit/Tools/py/u4pak.py" pack "$env:GITHUB_WORKSPACE/dist/dev/MinecraftDungeonsQoL-Navigation.pak" Dungeons -p
+          } finally {
+            Pop-Location
+          }
+
+          if (-not (Test-Path "dist/dev/MinecraftDungeonsQoL-Navigation.pak")) {
+            throw "Navigation pak was not produced."
+          }
+
+          python ".tools/Dungeons-Mod-Kit/Tools/py/u4pak.py" list "dist/dev/MinecraftDungeonsQoL-Navigation.pak" | Out-File ".research/qol-nav/PAK_LIST.txt"
+          $hash = (Get-FileHash "dist/dev/MinecraftDungeonsQoL-Navigation.pak" -Algorithm SHA256).Hash.ToLowerInvariant()
+          @(
+            "# Cooked QoL navigation development build"
+            ""
+            "Runtime shell: StainlessStasis/LetMeMove 1.1.0 (MIT)"
+            "Custom behavior: native Dungeons stash lookup + project-owned inventory cursor"
+            "F6: previous inventory slot"
+            "F7: next inventory slot"
+            "Status: on-screen slot index through KismetSystemLibrary.PrintString"
+            ""
+            "SHA-256: $hash"
+            ""
+            "Non-destructive development build. Lock/select/salvage are added in the next slices."
+          ) | Set-Content "dist/dev/NAVIGATION_BUILD.md"
+
+      - name: Commit development build
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist/dev/MinecraftDungeonsQoL-Navigation.pak dist/dev/NAVIGATION_BUILD.md
+          if (-not (git diff --cached --quiet)) {
+            git commit -m "build: produce cooked QoL navigation pak"
+            git pull --rebase origin main
+            git push
+          }
