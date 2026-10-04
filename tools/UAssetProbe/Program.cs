@@ -1,5 +1,7 @@
+using Newtonsoft.Json;
 using UAssetAPI;
 using UAssetAPI.ExportTypes;
+using UAssetAPI.Kismet;
 using UAssetAPI.UnrealTypes;
 
 if (args.Length != 1)
@@ -15,10 +17,6 @@ var versions = new[]
     EngineVersion.VER_UE4_21,
     EngineVersion.VER_UE4_22,
     EngineVersion.VER_UE4_23,
-    EngineVersion.VER_UE4_24,
-    EngineVersion.VER_UE4_25,
-    EngineVersion.VER_UE4_26,
-    EngineVersion.VER_UE4_27,
 };
 
 foreach (var version in versions)
@@ -42,14 +40,22 @@ foreach (var version in versions)
         }
 
         Console.WriteLine();
-        Console.WriteLine("== EXPORTS ==");
-        for (var i = 0; i < asset.Exports.Count; i++)
+        Console.WriteLine("== FUNCTIONS ==");
+        foreach (var fn in asset.Exports.OfType<FunctionExport>())
         {
-            var export = asset.Exports[i];
-            var extra = export is FunctionExport fn
-                ? $" bytecode={fn.ScriptBytecode?.Length ?? 0}"
-                : string.Empty;
-            Console.WriteLine($"E{i + 1}: {export.GetType().Name} {export.ObjectName}{extra}");
+            Console.WriteLine($"### {fn.ObjectName} bytecode={fn.ScriptBytecode?.Length ?? 0}");
+            if (fn.ScriptBytecode is { Length: > 0 })
+            {
+                try
+                {
+                    var json = KismetSerializer.SerializeScript(fn.ScriptBytecode);
+                    Console.WriteLine(json.ToString(Formatting.Indented));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Kismet serialization failed: {ex.GetType().Name}: {ex.Message}");
+                }
+            }
         }
 
         return 0;
