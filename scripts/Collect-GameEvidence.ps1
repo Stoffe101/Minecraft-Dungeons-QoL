@@ -6,6 +6,7 @@ param(
 )
 # Read-only game inspection. Outputs metadata, never hero saves or raw game assets.
 . (Join-Path $PSScriptRoot "Common.ps1")
+if ($AesKey -and $AesKey -notmatch '^(0x)?[0-9a-fA-F]{64}$') { throw "-AesKey must contain a 256-bit hexadecimal key (64 digits, optionally prefixed with 0x)." }
 $root = Get-ProjectRoot
 $paks = Find-McdPaksPath -Override $PaksPath
 if (-not $OutputDirectory) { $OutputDirectory = Join-Path $root ".research/game-evidence" }
@@ -40,6 +41,8 @@ $report = [ordered]@{
     executables = @()
     issues = @()
     warnings = @()
+    aesKeyProvided = [bool]$AesKey
+    archiveCatalogCount = 0
     note = "Metadata and Blueprint disassembly only; native ABI and runtime safety are not certified. No hero saves read or copied."
 }
 # The Paks folder is under Dungeons/Content. Only inspect the adjacent Dungeons/Binaries tree.
@@ -82,17 +85,23 @@ try {
         }
     }
     if (-not (Test-Path $DumperExe -PathType Leaf)) { throw "Dumper not found: $DumperExe" }
-    foreach ($term in @("Inventory", "Salvage", "Equipment", "ItemStash", "SlotGrid", "PlayerController")) {
+    foreach ($term in @("ArchiveCatalog", "Inventory", "Salvage", "Equipment", "ItemStash", "SlotGrid", "PlayerController")) {
         $termDir = Join-Path $out $term
         New-Item -ItemType Directory -Force $termDir | Out-Null
-        $arguments = @("--list", "--dump")
+        $arguments = @("--list")
+        $match = $term
+        if ($term -eq "ArchiveCatalog") { $match = "Dungeons/" }
+        else { $arguments += "--dump" }
         if ($AesKey) { $arguments += @("--key", $AesKey) }
-        $arguments += @($paks, "UE4_22", $term, $termDir)
+        $arguments += @($paks, "UE4_22", $match, $termDir)
         if ($runner) { & $runner $DumperExe @arguments *> (Join-Path $termDir "Dumper.log") }
         else { & $DumperExe @arguments *> (Join-Path $termDir "Dumper.log") }
         if ($LASTEXITCODE -ne 0) { $issues.Add("$term dump returned exit code $LASTEXITCODE; see Dumper.log") }
         $assetList = Join-Path $termDir "AssetList.txt"
-        if (-not (Test-Path $assetList) -or -not (Get-Content $assetList -ErrorAction SilentlyContinue)) { $issues.Add("$term matched no assets; archive may be encrypted or engine selection may need adjustment.") }
+        if ($term -eq "ArchiveCatalog") {
+            if (Test-Path $assetList) { $report.archiveCatalogCount = @(Get-Content $assetList | Where-Object { $_.Trim() }).Count }
+            if ($report.archiveCatalogCount -eq 0) { $issues.Add("No Dungeons assets visible in archive catalog. Check archive readability, -AesKey and engine configuration; inspector exit code zero does not prove archives mounted.") }
+        } elseif (-not (Test-Path $assetList) -or -not (Get-Content $assetList -ErrorAction SilentlyContinue)) { $issues.Add("$term matched no assets; archive may be encrypted or engine selection may need adjustment.") }
     }
 } catch { $issues.Add($_.Exception.Message) }
 $report.issues = @($issues.ToArray())
