@@ -64,6 +64,318 @@ I50: /Script/UMG.WidgetBlueprintLibrary Default__WidgetBlueprintLibrary outer=-4
 
 == FUNCTIONS ==
 ### ExecuteUbergraph_WidgetAdder bytecode=24
-Kismet serialization failed: NullReferenceException: Object reference not set to an instance of an object.
+[
+  {
+    "Inst": "ComputedJump",
+    "OffsetExpression": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "WidgetAdder_C",
+      "Variable Name": "ExecuteUbergraph_WidgetAdder.EntryPoint"
+    },
+    "StatementIndex": 0
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 10
+  },
+  {
+    "Inst": "SetArray",
+    "LeftSideExpression": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "WidgetAdder_C",
+      "Variable Name": "ExecuteUbergraph_WidgetAdder.CallFunc_GetAllWidgetsOfClass_FoundWidgets"
+    },
+    "Values": [],
+    "StatementIndex": 11
+  },
+  {
+    "Inst": "Context",
+    "Context": {
+      "Inst": "ObjectConst",
+      "Object": "/Script/UMG.Default__WidgetBlueprintLibrary"
+    },
+    "SkipOffsetForNull": 30,
+    "RValuePropertyOuter": "#Pointer Error#",
+    "RValuePropertyName": "^^^^^",
+    "Expression": {
+      "Inst": "FinalFunction",
+      "Function": "GetAllWidgetsOfClass",
+      "Parameters": [
+        {
+          "Inst": "Self"
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "WidgetAdder_C",
+          "Variable Name": "ExecuteUbergraph_WidgetAdder.CallFunc_GetAllWidgetsOfClass_FoundWidgets"
+        },
+        {
+          "Inst": "ObjectConst",
+          "Object": "/Game/Mods/CameraCoords/CameraCoordsOverlay.CameraCoordsOverlay_C"
+        },
+        {
+          "Inst": "True"
+        }
+      ]
+    },
+    "StatementIndex": 22
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 74
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "WidgetAdder_C",
+      "Variable Name": "ExecuteUbergraph_WidgetAdder.CallFunc_Array_Length_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "ObjectConst",
+        "Object": "/Script/Engine.Default__KismetArrayLibrary"
+      },
+      "SkipOffsetForNull": 19,
+      "RValuePropertyOuter": "WidgetAdder_C",
+      "RValuePropertyName": "ExecuteUbergraph_WidgetAdder.CallFunc_Array_Length_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "Array_Length",
+        "Parameters": [
+          {
+            "Inst": "LocalVariable",
+            "Variable Outer": "WidgetAdder_C",
+            "Variable Name": "ExecuteUbergraph_WidgetAdder.CallFunc_GetAllWidgetsOfClass_FoundWidgets"
+          }
+        ]
+      }
+    },
+    "StatementIndex": 75
+  },
+  {
+    "Inst": "LetBool",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "WidgetAdder_C",
+      "Variable Name": "ExecuteUbergraph_WidgetAdder.CallFunc_EqualEqual_IntInt_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "EqualEqual_IntInt",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "WidgetAdder_C",
+          "Variable Name": "ExecuteUbergraph_WidgetAdder.CallFunc_Array_Length_ReturnValue"
+        },
+        {
+          "Inst": "IntConst",
+          "Value": 0
+        }
+      ]
+    },
+    "StatementIndex": 134
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 168
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 169
+  },
+  {
+    "Inst": "JumpIfNot",
+    "Offset": 347,
+    "Condition": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "WidgetAdder_C",
+      "Variable Name": "ExecuteUbergraph_WidgetAdder.CallFunc_EqualEqual_IntInt_ReturnValue"
+    },
+    "StatementIndex": 170
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 184
+  },
+  {
+    "Inst": "LetObj",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "WidgetAdder_C",
+      "Variable Name": "ExecuteUbergraph_WidgetAdder.CallFunc_GetPlayerController_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "ObjectConst",
+        "Object": "/Script/Engine.Default__GameplayStatics"
+      },
+      "SkipOffsetForNull": 16,
+      "RValuePropertyOuter": "WidgetAdder_C",
+      "RValuePropertyName": "ExecuteUbergraph_WidgetAdder.CallFunc_GetPlayerController_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "GetPlayerController",
+        "Parameters": [
+          {
+            "Inst": "Self"
+          },
+          {
+            "Inst": "IntConst",
+            "Value": 0
+          }
+        ]
+      }
+    },
+    "StatementIndex": 185
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 233
+  },
+  {
+    "Inst": "LetObj",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "WidgetAdder_C",
+      "Variable Name": "ExecuteUbergraph_WidgetAdder.CallFunc_Create_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "ObjectConst",
+        "Object": "/Script/UMG.Default__WidgetBlueprintLibrary"
+      },
+      "SkipOffsetForNull": 29,
+      "RValuePropertyOuter": "WidgetAdder_C",
+      "RValuePropertyName": "ExecuteUbergraph_WidgetAdder.CallFunc_Create_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "Create",
+        "Parameters": [
+          {
+            "Inst": "Self"
+          },
+          {
+            "Inst": "ObjectConst",
+            "Object": "/Game/Mods/CameraCoords/CameraCoordsOverlay.CameraCoordsOverlay_C"
+          },
+          {
+            "Inst": "LocalVariable",
+            "Variable Outer": "WidgetAdder_C",
+            "Variable Name": "ExecuteUbergraph_WidgetAdder.CallFunc_GetPlayerController_ReturnValue"
+          }
+        ]
+      }
+    },
+    "StatementIndex": 234
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 295
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 296
+  },
+  {
+    "Inst": "Context",
+    "Context": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "WidgetAdder_C",
+      "Variable Name": "ExecuteUbergraph_WidgetAdder.CallFunc_Create_ReturnValue"
+    },
+    "SkipOffsetForNull": 15,
+    "RValuePropertyOuter": "#Pointer Error#",
+    "RValuePropertyName": "^^^^^",
+    "Expression": {
+      "Inst": "FinalFunction",
+      "Function": "AddToViewport",
+      "Parameters": [
+        {
+          "Inst": "IntConst",
+          "Value": 0
+        }
+      ]
+    },
+    "StatementIndex": 297
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 334
+  },
+  {
+    "Inst": "Jump",
+    "Offset": 347,
+    "StatementIndex": 335
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 340
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 341
+  },
+  {
+    "Inst": "Jump",
+    "Offset": 10,
+    "StatementIndex": 342
+  },
+  {
+    "Inst": "Return",
+    "Expression": {
+      "Inst": "Nothing"
+    },
+    "StatementIndex": 347
+  },
+  {
+    "Inst": "EndOfScript",
+    "StatementIndex": 349
+  }
+]
 ### ReceiveBeginPlay bytecode=7
-Kismet serialization failed: NullReferenceException: Object reference not set to an instance of an object.
+[
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 0
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 1
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 2
+  },
+  {
+    "Inst": "LocalFinalFunction",
+    "Function": "ExecuteUbergraph_WidgetAdder",
+    "Parameters": [
+      {
+        "Inst": "IntConst",
+        "Value": 340
+      }
+    ],
+    "StatementIndex": 3
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 18
+  },
+  {
+    "Inst": "Return",
+    "Expression": {
+      "Inst": "Nothing"
+    },
+    "StatementIndex": 19
+  },
+  {
+    "Inst": "EndOfScript",
+    "StatementIndex": 21
+  }
+]

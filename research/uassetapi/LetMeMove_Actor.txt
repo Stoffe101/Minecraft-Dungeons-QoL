@@ -81,6 +81,1732 @@ I67: /Script/CoreUObject.StructProperty RotationRate outer=-25
 
 == FUNCTIONS ==
 ### ExecuteUbergraph_BP_WASD_Movement bytecode=76
-Kismet serialization failed: NullReferenceException: Object reference not set to an instance of an object.
+[
+  {
+    "Inst": "ComputedJump",
+    "OffsetExpression": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.EntryPoint"
+    },
+    "StatementIndex": 0
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 10
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 11
+  },
+  {
+    "Inst": "LetObj",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "ObjectConst",
+        "Object": "/Script/Engine.Default__GameplayStatics"
+      },
+      "SkipOffsetForNull": 16,
+      "RValuePropertyOuter": "BP_WASD_Movement_C",
+      "RValuePropertyName": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "GetPlayerController",
+        "Parameters": [
+          {
+            "Inst": "Self"
+          },
+          {
+            "Inst": "IntConst",
+            "Value": 0
+          }
+        ]
+      }
+    },
+    "StatementIndex": 12
+  },
+  {
+    "Inst": "LetBool",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue"
+      },
+      "SkipOffsetForNull": 37,
+      "RValuePropertyOuter": "BP_WASD_Movement_C",
+      "RValuePropertyName": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "IsInputKeyDown",
+        "Parameters": [
+          {
+            "Inst": "StructConst",
+            "Struct": "/Script/InputCore.Key",
+            "Properties": {
+              "Missing property name0": [
+                {
+                  "Inst": "NameConst",
+                  "Value": "W"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "StatementIndex": 60
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_SelectFloat_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "SelectFloat",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "FloatConst",
+          "Value": 1.0
+        },
+        {
+          "Inst": "FloatConst",
+          "Value": 0.0
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue"
+        }
+      ]
+    },
+    "StatementIndex": 129
+  },
+  {
+    "Inst": "LetBool",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue1"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue"
+      },
+      "SkipOffsetForNull": 37,
+      "RValuePropertyOuter": "BP_WASD_Movement_C",
+      "RValuePropertyName": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue1",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "IsInputKeyDown",
+        "Parameters": [
+          {
+            "Inst": "StructConst",
+            "Struct": "/Script/InputCore.Key",
+            "Properties": {
+              "Missing property name0": [
+                {
+                  "Inst": "NameConst",
+                  "Value": "S"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "StatementIndex": 176
+  },
+  {
+    "Inst": "LetBool",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue2"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue"
+      },
+      "SkipOffsetForNull": 37,
+      "RValuePropertyOuter": "BP_WASD_Movement_C",
+      "RValuePropertyName": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue2",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "IsInputKeyDown",
+        "Parameters": [
+          {
+            "Inst": "StructConst",
+            "Struct": "/Script/InputCore.Key",
+            "Properties": {
+              "Missing property name0": [
+                {
+                  "Inst": "NameConst",
+                  "Value": "D"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "StatementIndex": 245
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_SelectFloat_ReturnValue1"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "SelectFloat",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "FloatConst",
+          "Value": 1.0
+        },
+        {
+          "Inst": "FloatConst",
+          "Value": 0.0
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue1"
+        }
+      ]
+    },
+    "StatementIndex": 314
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_SelectFloat_ReturnValue2"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "SelectFloat",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "FloatConst",
+          "Value": 1.0
+        },
+        {
+          "Inst": "FloatConst",
+          "Value": 0.0
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue2"
+        }
+      ]
+    },
+    "StatementIndex": 361
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Subtract_FloatFloat_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "Subtract_FloatFloat",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_SelectFloat_ReturnValue"
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_SelectFloat_ReturnValue1"
+        }
+      ]
+    },
+    "StatementIndex": 408
+  },
+  {
+    "Inst": "LetBool",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue3"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue"
+      },
+      "SkipOffsetForNull": 37,
+      "RValuePropertyOuter": "BP_WASD_Movement_C",
+      "RValuePropertyName": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue3",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "IsInputKeyDown",
+        "Parameters": [
+          {
+            "Inst": "StructConst",
+            "Struct": "/Script/InputCore.Key",
+            "Properties": {
+              "Missing property name0": [
+                {
+                  "Inst": "NameConst",
+                  "Value": "A"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "StatementIndex": 454
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_SelectFloat_ReturnValue3"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "SelectFloat",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "FloatConst",
+          "Value": 1.0
+        },
+        {
+          "Inst": "FloatConst",
+          "Value": 0.0
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue3"
+        }
+      ]
+    },
+    "StatementIndex": 523
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetCameraRotation_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "Context",
+        "Context": {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue"
+        },
+        "SkipOffsetForNull": 9,
+        "RValuePropertyOuter": "/Script/Engine",
+        "RValuePropertyName": "PlayerController.PlayerCameraManager",
+        "Expression": {
+          "Inst": "InstanceVariable",
+          "Variable Outer": "/Script/Engine",
+          "Variable Name": "PlayerController.PlayerCameraManager"
+        }
+      },
+      "SkipOffsetForNull": 10,
+      "RValuePropertyOuter": "BP_WASD_Movement_C",
+      "RValuePropertyName": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetCameraRotation_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "GetCameraRotation",
+        "Parameters": []
+      }
+    },
+    "StatementIndex": 570
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Subtract_FloatFloat_ReturnValue1"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "Subtract_FloatFloat",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_SelectFloat_ReturnValue2"
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_SelectFloat_ReturnValue3"
+        }
+      ]
+    },
+    "StatementIndex": 642
+  },
+  {
+    "Inst": "CallMath",
+    "Function": "BreakRotator",
+    "ContextClass": "/Script/Engine.KismetMathLibrary",
+    "Parameters": [
+      {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetCameraRotation_ReturnValue"
+      },
+      {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_BreakRotator_Roll"
+      },
+      {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_BreakRotator_Pitch"
+      },
+      {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_BreakRotator_Yaw"
+      }
+    ],
+    "StatementIndex": 688
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_MakeRotator_ReturnValue1"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "MakeRotator",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "FloatConst",
+          "Value": 0.0
+        },
+        {
+          "Inst": "FloatConst",
+          "Value": 0.0
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_BreakRotator_Yaw"
+        }
+      ]
+    },
+    "StatementIndex": 734
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetForwardVector_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "GetForwardVector",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_MakeRotator_ReturnValue1"
+        }
+      ]
+    },
+    "StatementIndex": 781
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Conv_VectorToRotator_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "Conv_VectorToRotator",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetForwardVector_ReturnValue"
+        }
+      ]
+    },
+    "StatementIndex": 818
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Multiply_VectorFloat_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "Multiply_VectorFloat",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetForwardVector_ReturnValue"
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Subtract_FloatFloat_ReturnValue"
+        }
+      ]
+    },
+    "StatementIndex": 855
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetRightVector_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "GetRightVector",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Conv_VectorToRotator_ReturnValue"
+        }
+      ]
+    },
+    "StatementIndex": 901
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Multiply_VectorFloat_ReturnValue1"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "Multiply_VectorFloat",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetRightVector_ReturnValue"
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Subtract_FloatFloat_ReturnValue1"
+        }
+      ]
+    },
+    "StatementIndex": 938
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Add_VectorVector_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "Add_VectorVector",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Multiply_VectorFloat_ReturnValue"
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Multiply_VectorFloat_ReturnValue1"
+        }
+      ]
+    },
+    "StatementIndex": 984
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "",
+      "Variable Name": ""
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "Normal",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Add_VectorVector_ReturnValue"
+        },
+        {
+          "Inst": "FloatConst",
+          "Value": 0.0001
+        }
+      ]
+    },
+    "StatementIndex": 1030
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_VSize_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "VSize",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "",
+          "Variable Name": ""
+        }
+      ]
+    },
+    "StatementIndex": 1072
+  },
+  {
+    "Inst": "LetBool",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Greater_FloatFloat_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "Greater_FloatFloat",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_VSize_ReturnValue"
+        },
+        {
+          "Inst": "FloatConst",
+          "Value": 0.001
+        }
+      ]
+    },
+    "StatementIndex": 1109
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 1143
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 1144
+  },
+  {
+    "Inst": "JumpIfNot",
+    "Offset": 2746,
+    "Condition": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Greater_FloatFloat_ReturnValue"
+    },
+    "StatementIndex": 1145
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 1159
+  },
+  {
+    "Inst": "LetObj",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "ObjectConst",
+        "Object": "/Script/Engine.Default__GameplayStatics"
+      },
+      "SkipOffsetForNull": 16,
+      "RValuePropertyOuter": "BP_WASD_Movement_C",
+      "RValuePropertyName": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "GetPlayerController",
+        "Parameters": [
+          {
+            "Inst": "Self"
+          },
+          {
+            "Inst": "IntConst",
+            "Value": 0
+          }
+        ]
+      }
+    },
+    "StatementIndex": 1160
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 1208
+  },
+  {
+    "Inst": "Context",
+    "Context": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue"
+    },
+    "SkipOffsetForNull": 14,
+    "RValuePropertyOuter": "#Pointer Error#",
+    "RValuePropertyName": "^^^^^",
+    "Expression": {
+      "Inst": "VirtualFunction",
+      "Function": "StopMovement",
+      "Parameters": []
+    },
+    "StatementIndex": 1209
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 1245
+  },
+  {
+    "Inst": "LetObj",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "ObjectConst",
+        "Object": "/Script/Engine.Default__GameplayStatics"
+      },
+      "SkipOffsetForNull": 16,
+      "RValuePropertyOuter": "BP_WASD_Movement_C",
+      "RValuePropertyName": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "GetPlayerController",
+        "Parameters": [
+          {
+            "Inst": "Self"
+          },
+          {
+            "Inst": "IntConst",
+            "Value": 0
+          }
+        ]
+      }
+    },
+    "StatementIndex": 1246
+  },
+  {
+    "Inst": "LetObj",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_K2_GetPawn_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue"
+      },
+      "SkipOffsetForNull": 10,
+      "RValuePropertyOuter": "BP_WASD_Movement_C",
+      "RValuePropertyName": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_K2_GetPawn_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "K2_GetPawn",
+        "Parameters": []
+      }
+    },
+    "StatementIndex": 1294
+  },
+  {
+    "Inst": "LetBool",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue"
+      },
+      "SkipOffsetForNull": 37,
+      "RValuePropertyOuter": "BP_WASD_Movement_C",
+      "RValuePropertyName": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "IsInputKeyDown",
+        "Parameters": [
+          {
+            "Inst": "StructConst",
+            "Struct": "/Script/InputCore.Key",
+            "Properties": {
+              "Missing property name0": [
+                {
+                  "Inst": "NameConst",
+                  "Value": "W"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "StatementIndex": 1336
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_SelectFloat_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "SelectFloat",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "FloatConst",
+          "Value": 1.0
+        },
+        {
+          "Inst": "FloatConst",
+          "Value": 0.0
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue"
+        }
+      ]
+    },
+    "StatementIndex": 1405
+  },
+  {
+    "Inst": "LetBool",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue1"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue"
+      },
+      "SkipOffsetForNull": 37,
+      "RValuePropertyOuter": "BP_WASD_Movement_C",
+      "RValuePropertyName": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue1",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "IsInputKeyDown",
+        "Parameters": [
+          {
+            "Inst": "StructConst",
+            "Struct": "/Script/InputCore.Key",
+            "Properties": {
+              "Missing property name0": [
+                {
+                  "Inst": "NameConst",
+                  "Value": "S"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "StatementIndex": 1452
+  },
+  {
+    "Inst": "LetBool",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue2"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue"
+      },
+      "SkipOffsetForNull": 37,
+      "RValuePropertyOuter": "BP_WASD_Movement_C",
+      "RValuePropertyName": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue2",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "IsInputKeyDown",
+        "Parameters": [
+          {
+            "Inst": "StructConst",
+            "Struct": "/Script/InputCore.Key",
+            "Properties": {
+              "Missing property name0": [
+                {
+                  "Inst": "NameConst",
+                  "Value": "D"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "StatementIndex": 1521
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_SelectFloat_ReturnValue1"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "SelectFloat",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "FloatConst",
+          "Value": 1.0
+        },
+        {
+          "Inst": "FloatConst",
+          "Value": 0.0
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue1"
+        }
+      ]
+    },
+    "StatementIndex": 1590
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_SelectFloat_ReturnValue2"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "SelectFloat",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "FloatConst",
+          "Value": 1.0
+        },
+        {
+          "Inst": "FloatConst",
+          "Value": 0.0
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue2"
+        }
+      ]
+    },
+    "StatementIndex": 1637
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Subtract_FloatFloat_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "Subtract_FloatFloat",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_SelectFloat_ReturnValue"
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_SelectFloat_ReturnValue1"
+        }
+      ]
+    },
+    "StatementIndex": 1684
+  },
+  {
+    "Inst": "LetBool",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue3"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue"
+      },
+      "SkipOffsetForNull": 37,
+      "RValuePropertyOuter": "BP_WASD_Movement_C",
+      "RValuePropertyName": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue3",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "IsInputKeyDown",
+        "Parameters": [
+          {
+            "Inst": "StructConst",
+            "Struct": "/Script/InputCore.Key",
+            "Properties": {
+              "Missing property name0": [
+                {
+                  "Inst": "NameConst",
+                  "Value": "A"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "StatementIndex": 1730
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_SelectFloat_ReturnValue3"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "SelectFloat",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "FloatConst",
+          "Value": 1.0
+        },
+        {
+          "Inst": "FloatConst",
+          "Value": 0.0
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_IsInputKeyDown_ReturnValue3"
+        }
+      ]
+    },
+    "StatementIndex": 1799
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetCameraRotation_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "Context",
+        "Context": {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue"
+        },
+        "SkipOffsetForNull": 9,
+        "RValuePropertyOuter": "/Script/Engine",
+        "RValuePropertyName": "PlayerController.PlayerCameraManager",
+        "Expression": {
+          "Inst": "InstanceVariable",
+          "Variable Outer": "/Script/Engine",
+          "Variable Name": "PlayerController.PlayerCameraManager"
+        }
+      },
+      "SkipOffsetForNull": 10,
+      "RValuePropertyOuter": "BP_WASD_Movement_C",
+      "RValuePropertyName": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetCameraRotation_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "GetCameraRotation",
+        "Parameters": []
+      }
+    },
+    "StatementIndex": 1846
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Subtract_FloatFloat_ReturnValue1"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "Subtract_FloatFloat",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_SelectFloat_ReturnValue2"
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_SelectFloat_ReturnValue3"
+        }
+      ]
+    },
+    "StatementIndex": 1918
+  },
+  {
+    "Inst": "CallMath",
+    "Function": "BreakRotator",
+    "ContextClass": "/Script/Engine.KismetMathLibrary",
+    "Parameters": [
+      {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetCameraRotation_ReturnValue"
+      },
+      {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_BreakRotator_Roll"
+      },
+      {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_BreakRotator_Pitch"
+      },
+      {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_BreakRotator_Yaw"
+      }
+    ],
+    "StatementIndex": 1964
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_MakeRotator_ReturnValue1"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "MakeRotator",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "FloatConst",
+          "Value": 0.0
+        },
+        {
+          "Inst": "FloatConst",
+          "Value": 0.0
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_BreakRotator_Yaw"
+        }
+      ]
+    },
+    "StatementIndex": 2010
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetForwardVector_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "GetForwardVector",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_MakeRotator_ReturnValue1"
+        }
+      ]
+    },
+    "StatementIndex": 2057
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Conv_VectorToRotator_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "Conv_VectorToRotator",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetForwardVector_ReturnValue"
+        }
+      ]
+    },
+    "StatementIndex": 2094
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Multiply_VectorFloat_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "Multiply_VectorFloat",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetForwardVector_ReturnValue"
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Subtract_FloatFloat_ReturnValue"
+        }
+      ]
+    },
+    "StatementIndex": 2131
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetRightVector_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "GetRightVector",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Conv_VectorToRotator_ReturnValue"
+        }
+      ]
+    },
+    "StatementIndex": 2177
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Multiply_VectorFloat_ReturnValue1"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "Multiply_VectorFloat",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetRightVector_ReturnValue"
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Subtract_FloatFloat_ReturnValue1"
+        }
+      ]
+    },
+    "StatementIndex": 2214
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Add_VectorVector_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "Add_VectorVector",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Multiply_VectorFloat_ReturnValue"
+        },
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Multiply_VectorFloat_ReturnValue1"
+        }
+      ]
+    },
+    "StatementIndex": 2260
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "",
+      "Variable Name": ""
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "Normal",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_Add_VectorVector_ReturnValue"
+        },
+        {
+          "Inst": "FloatConst",
+          "Value": 0.0001
+        }
+      ]
+    },
+    "StatementIndex": 2306
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 2348
+  },
+  {
+    "Inst": "Context",
+    "Context": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_K2_GetPawn_ReturnValue"
+    },
+    "SkipOffsetForNull": 29,
+    "RValuePropertyOuter": "#Pointer Error#",
+    "RValuePropertyName": "^^^^^",
+    "Expression": {
+      "Inst": "VirtualFunction",
+      "Function": "AddMovementInput",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "",
+          "Variable Name": ""
+        },
+        {
+          "Inst": "FloatConst",
+          "Value": 1.0
+        },
+        {
+          "Inst": "False"
+        }
+      ]
+    },
+    "StatementIndex": 2349
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 2400
+  },
+  {
+    "Inst": "LetObj",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "ObjectConst",
+        "Object": "/Script/Engine.Default__GameplayStatics"
+      },
+      "SkipOffsetForNull": 16,
+      "RValuePropertyOuter": "BP_WASD_Movement_C",
+      "RValuePropertyName": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "GetPlayerController",
+        "Parameters": [
+          {
+            "Inst": "Self"
+          },
+          {
+            "Inst": "IntConst",
+            "Value": 0
+          }
+        ]
+      }
+    },
+    "StatementIndex": 2401
+  },
+  {
+    "Inst": "LetObj",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_K2_GetPawn_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_GetPlayerController_ReturnValue"
+      },
+      "SkipOffsetForNull": 10,
+      "RValuePropertyOuter": "BP_WASD_Movement_C",
+      "RValuePropertyName": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_K2_GetPawn_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "K2_GetPawn",
+        "Parameters": []
+      }
+    },
+    "StatementIndex": 2449
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 2491
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.K2Node_DynamicCast_AsCharacter"
+    },
+    "Expression": {
+      "Inst": "DynamicCast",
+      "Class": "/Script/Engine.Character",
+      "Expression": {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_K2_GetPawn_ReturnValue"
+      }
+    },
+    "StatementIndex": 2492
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.K2Node_DynamicCast_bSuccess"
+    },
+    "Expression": {
+      "Inst": "PrimitiveCast",
+      "CastType": "ObjectToBool",
+      "Expression": {
+        "Inst": "LocalVariable",
+        "Variable Outer": "BP_WASD_Movement_C",
+        "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.K2Node_DynamicCast_AsCharacter"
+      }
+    },
+    "StatementIndex": 2528
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 2557
+  },
+  {
+    "Inst": "JumpIfNot",
+    "Offset": 2746,
+    "Condition": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.K2Node_DynamicCast_bSuccess"
+    },
+    "StatementIndex": 2558
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 2572
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_MakeRotator_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "CallMath",
+      "Function": "MakeRotator",
+      "ContextClass": "/Script/Engine.KismetMathLibrary",
+      "Parameters": [
+        {
+          "Inst": "FloatConst",
+          "Value": 0.0
+        },
+        {
+          "Inst": "FloatConst",
+          "Value": 0.0
+        },
+        {
+          "Inst": "FloatConst",
+          "Value": 360.0
+        }
+      ]
+    },
+    "StatementIndex": 2573
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 2616
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "Context",
+        "Context": {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.K2Node_DynamicCast_AsCharacter"
+        },
+        "SkipOffsetForNull": 9,
+        "RValuePropertyOuter": "/Script/Engine",
+        "RValuePropertyName": "Character.CharacterMovement",
+        "Expression": {
+          "Inst": "InstanceVariable",
+          "Variable Outer": "/Script/Engine",
+          "Variable Name": "Character.CharacterMovement"
+        }
+      },
+      "SkipOffsetForNull": 9,
+      "RValuePropertyOuter": "/Script/Engine",
+      "RValuePropertyName": "CharacterMovementComponent.RotationRate",
+      "Expression": {
+        "Inst": "InstanceVariable",
+        "Variable Outer": "/Script/Engine",
+        "Variable Name": "CharacterMovementComponent.RotationRate"
+      }
+    },
+    "Expression": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.CallFunc_MakeRotator_ReturnValue"
+    },
+    "StatementIndex": 2617
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 2688
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 2689
+  },
+  {
+    "Inst": "LetBool",
+    "Variable": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "Context",
+        "Context": {
+          "Inst": "LocalVariable",
+          "Variable Outer": "BP_WASD_Movement_C",
+          "Variable Name": "ExecuteUbergraph_BP_WASD_Movement.K2Node_DynamicCast_AsCharacter"
+        },
+        "SkipOffsetForNull": 9,
+        "RValuePropertyOuter": "/Script/Engine",
+        "RValuePropertyName": "Character.CharacterMovement",
+        "Expression": {
+          "Inst": "InstanceVariable",
+          "Variable Outer": "/Script/Engine",
+          "Variable Name": "Character.CharacterMovement"
+        }
+      },
+      "SkipOffsetForNull": 9,
+      "RValuePropertyOuter": "/Script/Engine",
+      "RValuePropertyName": "CharacterMovementComponent.bOrientRotationToMovement",
+      "Expression": {
+        "Inst": "InstanceVariable",
+        "Variable Outer": "/Script/Engine",
+        "Variable Name": "CharacterMovementComponent.bOrientRotationToMovement"
+      }
+    },
+    "Expression": {
+      "Inst": "True"
+    },
+    "StatementIndex": 2690
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 2745
+  },
+  {
+    "Inst": "Return",
+    "Expression": {
+      "Inst": "Nothing"
+    },
+    "StatementIndex": 2746
+  },
+  {
+    "Inst": "EndOfScript",
+    "StatementIndex": 2748
+  }
+]
 ### ReceiveTick bytecode=10
-Kismet serialization failed: NullReferenceException: Object reference not set to an instance of an object.
+[
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 0
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 1
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 2
+  },
+  {
+    "Inst": "LetValueOnPersistentFrame",
+    "Property Outer": "BP_WASD_Movement_C",
+    "Property Name": "ExecuteUbergraph_BP_WASD_Movement.K2Node_Event_DeltaSeconds",
+    "Expression": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "BP_WASD_Movement_C",
+      "Variable Name": "ReceiveTick.DeltaSeconds"
+    },
+    "StatementIndex": 3
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 21
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 22
+  },
+  {
+    "Inst": "LocalFinalFunction",
+    "Function": "ExecuteUbergraph_BP_WASD_Movement",
+    "Parameters": [
+      {
+        "Inst": "IntConst",
+        "Value": 10
+      }
+    ],
+    "StatementIndex": 23
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 38
+  },
+  {
+    "Inst": "Return",
+    "Expression": {
+      "Inst": "Nothing"
+    },
+    "StatementIndex": 39
+  },
+  {
+    "Inst": "EndOfScript",
+    "StatementIndex": 41
+  }
+]

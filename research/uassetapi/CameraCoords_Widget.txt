@@ -75,8 +75,673 @@ I61: /Script/UMG.WidgetTree WidgetTree outer=-59
 
 == FUNCTIONS ==
 ### ExecuteUbergraph_CameraCoordsOverlay bytecode=30
-Kismet serialization failed: NullReferenceException: Object reference not set to an instance of an object.
+[
+  {
+    "Inst": "ComputedJump",
+    "OffsetExpression": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "CameraCoordsOverlay_C",
+      "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.EntryPoint"
+    },
+    "StatementIndex": 0
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 10
+  },
+  {
+    "Inst": "LetObj",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "CameraCoordsOverlay_C",
+      "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Create_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "ObjectConst",
+        "Object": "/Script/UMG.Default__WidgetBlueprintLibrary"
+      },
+      "SkipOffsetForNull": 21,
+      "RValuePropertyOuter": "CameraCoordsOverlay_C",
+      "RValuePropertyName": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Create_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "Create",
+        "Parameters": [
+          {
+            "Inst": "Self"
+          },
+          {
+            "Inst": "ObjectConst",
+            "Object": "CameraCoordsOverlay_C"
+          },
+          {
+            "Inst": "NoObject"
+          }
+        ]
+      }
+    },
+    "StatementIndex": 11
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 64
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 65
+  },
+  {
+    "Inst": "Context",
+    "Context": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "CameraCoordsOverlay_C",
+      "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Create_ReturnValue"
+    },
+    "SkipOffsetForNull": 15,
+    "RValuePropertyOuter": "#Pointer Error#",
+    "RValuePropertyName": "^^^^^",
+    "Expression": {
+      "Inst": "FinalFunction",
+      "Function": "AddToViewport",
+      "Parameters": [
+        {
+          "Inst": "IntConst",
+          "Value": 0
+        }
+      ]
+    },
+    "StatementIndex": 66
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 103
+  },
+  {
+    "Inst": "Jump",
+    "Offset": 868,
+    "StatementIndex": 104
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 109
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 110
+  },
+  {
+    "Inst": "LetObj",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "CameraCoordsOverlay_C",
+      "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_GetPlayerCameraManager_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "ObjectConst",
+        "Object": "/Script/Engine.Default__GameplayStatics"
+      },
+      "SkipOffsetForNull": 16,
+      "RValuePropertyOuter": "CameraCoordsOverlay_C",
+      "RValuePropertyName": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_GetPlayerCameraManager_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "GetPlayerCameraManager",
+        "Parameters": [
+          {
+            "Inst": "Self"
+          },
+          {
+            "Inst": "IntConst",
+            "Value": 0
+          }
+        ]
+      }
+    },
+    "StatementIndex": 111
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "CameraCoordsOverlay_C",
+      "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_GetCameraLocation_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "LocalVariable",
+        "Variable Outer": "CameraCoordsOverlay_C",
+        "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_GetPlayerCameraManager_ReturnValue"
+      },
+      "SkipOffsetForNull": 10,
+      "RValuePropertyOuter": "CameraCoordsOverlay_C",
+      "RValuePropertyName": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_GetCameraLocation_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "GetCameraLocation",
+        "Parameters": []
+      }
+    },
+    "StatementIndex": 159
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "CameraCoordsOverlay_C",
+      "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Conv_VectorToString_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "ObjectConst",
+        "Object": "/Script/Engine.Default__KismetStringLibrary"
+      },
+      "SkipOffsetForNull": 19,
+      "RValuePropertyOuter": "CameraCoordsOverlay_C",
+      "RValuePropertyName": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Conv_VectorToString_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "Conv_VectorToString",
+        "Parameters": [
+          {
+            "Inst": "LocalVariable",
+            "Variable Outer": "CameraCoordsOverlay_C",
+            "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_GetCameraLocation_ReturnValue"
+          }
+        ]
+      }
+    },
+    "StatementIndex": 209
+  },
+  {
+    "Inst": "LetBool",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "CameraCoordsOverlay_C",
+      "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Split_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "ObjectConst",
+        "Object": "/Script/Engine.Default__KismetStringLibrary"
+      },
+      "SkipOffsetForNull": 44,
+      "RValuePropertyOuter": "CameraCoordsOverlay_C",
+      "RValuePropertyName": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Split_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "Split",
+        "Parameters": [
+          {
+            "Inst": "LocalVariable",
+            "Variable Outer": "CameraCoordsOverlay_C",
+            "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Conv_VectorToString_ReturnValue"
+          },
+          {
+            "Inst": "StringConst",
+            "Value": " "
+          },
+          {
+            "Inst": "LocalVariable",
+            "Variable Outer": "CameraCoordsOverlay_C",
+            "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Split_LeftS"
+          },
+          {
+            "Inst": "LocalVariable",
+            "Variable Outer": "CameraCoordsOverlay_C",
+            "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Split_RightS"
+          },
+          {
+            "Inst": "ByteConst",
+            "Value": 1
+          },
+          {
+            "Inst": "ByteConst",
+            "Value": 0
+          }
+        ]
+      }
+    },
+    "StatementIndex": 268
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "CameraCoordsOverlay_C",
+      "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Concat_StrStr_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "ObjectConst",
+        "Object": "/Script/Engine.Default__KismetStringLibrary"
+      },
+      "SkipOffsetForNull": 23,
+      "RValuePropertyOuter": "CameraCoordsOverlay_C",
+      "RValuePropertyName": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Concat_StrStr_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "Concat_StrStr",
+        "Parameters": [
+          {
+            "Inst": "LocalVariable",
+            "Variable Outer": "CameraCoordsOverlay_C",
+            "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Split_LeftS"
+          },
+          {
+            "Inst": "StringConst",
+            "Value": "\r\n"
+          }
+        ]
+      }
+    },
+    "StatementIndex": 344
+  },
+  {
+    "Inst": "LetBool",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "CameraCoordsOverlay_C",
+      "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Split_ReturnValue1"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "ObjectConst",
+        "Object": "/Script/Engine.Default__KismetStringLibrary"
+      },
+      "SkipOffsetForNull": 44,
+      "RValuePropertyOuter": "CameraCoordsOverlay_C",
+      "RValuePropertyName": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Split_ReturnValue1",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "Split",
+        "Parameters": [
+          {
+            "Inst": "LocalVariable",
+            "Variable Outer": "CameraCoordsOverlay_C",
+            "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Split_RightS"
+          },
+          {
+            "Inst": "StringConst",
+            "Value": " "
+          },
+          {
+            "Inst": "LocalVariable",
+            "Variable Outer": "CameraCoordsOverlay_C",
+            "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Split_LeftS1"
+          },
+          {
+            "Inst": "LocalVariable",
+            "Variable Outer": "CameraCoordsOverlay_C",
+            "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Split_RightS1"
+          },
+          {
+            "Inst": "ByteConst",
+            "Value": 1
+          },
+          {
+            "Inst": "ByteConst",
+            "Value": 0
+          }
+        ]
+      }
+    },
+    "StatementIndex": 407
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "CameraCoordsOverlay_C",
+      "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Concat_StrStr_ReturnValue1"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "ObjectConst",
+        "Object": "/Script/Engine.Default__KismetStringLibrary"
+      },
+      "SkipOffsetForNull": 28,
+      "RValuePropertyOuter": "CameraCoordsOverlay_C",
+      "RValuePropertyName": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Concat_StrStr_ReturnValue1",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "Concat_StrStr",
+        "Parameters": [
+          {
+            "Inst": "LocalVariable",
+            "Variable Outer": "CameraCoordsOverlay_C",
+            "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Concat_StrStr_ReturnValue"
+          },
+          {
+            "Inst": "LocalVariable",
+            "Variable Outer": "CameraCoordsOverlay_C",
+            "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Split_LeftS1"
+          }
+        ]
+      }
+    },
+    "StatementIndex": 483
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "CameraCoordsOverlay_C",
+      "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Concat_StrStr_ReturnValue2"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "ObjectConst",
+        "Object": "/Script/Engine.Default__KismetStringLibrary"
+      },
+      "SkipOffsetForNull": 23,
+      "RValuePropertyOuter": "CameraCoordsOverlay_C",
+      "RValuePropertyName": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Concat_StrStr_ReturnValue2",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "Concat_StrStr",
+        "Parameters": [
+          {
+            "Inst": "LocalVariable",
+            "Variable Outer": "CameraCoordsOverlay_C",
+            "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Concat_StrStr_ReturnValue1"
+          },
+          {
+            "Inst": "StringConst",
+            "Value": "\r\n"
+          }
+        ]
+      }
+    },
+    "StatementIndex": 551
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "CameraCoordsOverlay_C",
+      "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Concat_StrStr_ReturnValue3"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "ObjectConst",
+        "Object": "/Script/Engine.Default__KismetStringLibrary"
+      },
+      "SkipOffsetForNull": 28,
+      "RValuePropertyOuter": "CameraCoordsOverlay_C",
+      "RValuePropertyName": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Concat_StrStr_ReturnValue3",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "Concat_StrStr",
+        "Parameters": [
+          {
+            "Inst": "LocalVariable",
+            "Variable Outer": "CameraCoordsOverlay_C",
+            "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Concat_StrStr_ReturnValue2"
+          },
+          {
+            "Inst": "LocalVariable",
+            "Variable Outer": "CameraCoordsOverlay_C",
+            "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Split_RightS1"
+          }
+        ]
+      }
+    },
+    "StatementIndex": 614
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "CameraCoordsOverlay_C",
+      "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Replace_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "ObjectConst",
+        "Object": "/Script/Engine.Default__KismetStringLibrary"
+      },
+      "SkipOffsetForNull": 28,
+      "RValuePropertyOuter": "CameraCoordsOverlay_C",
+      "RValuePropertyName": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Replace_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "Replace",
+        "Parameters": [
+          {
+            "Inst": "LocalVariable",
+            "Variable Outer": "CameraCoordsOverlay_C",
+            "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Concat_StrStr_ReturnValue3"
+          },
+          {
+            "Inst": "StringConst",
+            "Value": "="
+          },
+          {
+            "Inst": "StringConst",
+            "Value": ": "
+          },
+          {
+            "Inst": "ByteConst",
+            "Value": 1
+          }
+        ]
+      }
+    },
+    "StatementIndex": 682
+  },
+  {
+    "Inst": "Let",
+    "Variable": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "CameraCoordsOverlay_C",
+      "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Conv_StringToText_ReturnValue"
+    },
+    "Expression": {
+      "Inst": "Context",
+      "Context": {
+        "Inst": "ObjectConst",
+        "Object": "/Script/Engine.Default__KismetTextLibrary"
+      },
+      "SkipOffsetForNull": 19,
+      "RValuePropertyOuter": "CameraCoordsOverlay_C",
+      "RValuePropertyName": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Conv_StringToText_ReturnValue",
+      "Expression": {
+        "Inst": "FinalFunction",
+        "Function": "Conv_StringToText",
+        "Parameters": [
+          {
+            "Inst": "LocalVariable",
+            "Variable Outer": "CameraCoordsOverlay_C",
+            "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Replace_ReturnValue"
+          }
+        ]
+      }
+    },
+    "StatementIndex": 750
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 809
+  },
+  {
+    "Inst": "Context",
+    "Context": {
+      "Inst": "InstanceVariable",
+      "Variable Outer": "CameraCoordsOverlay_C",
+      "Variable Name": "OverlayText"
+    },
+    "SkipOffsetForNull": 23,
+    "RValuePropertyOuter": "#Pointer Error#",
+    "RValuePropertyName": "^^^^^",
+    "Expression": {
+      "Inst": "VirtualFunction",
+      "Function": "SetText",
+      "Parameters": [
+        {
+          "Inst": "LocalVariable",
+          "Variable Outer": "CameraCoordsOverlay_C",
+          "Variable Name": "ExecuteUbergraph_CameraCoordsOverlay.CallFunc_Conv_StringToText_ReturnValue"
+        }
+      ]
+    },
+    "StatementIndex": 810
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 855
+  },
+  {
+    "Inst": "Jump",
+    "Offset": 868,
+    "StatementIndex": 856
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 861
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 862
+  },
+  {
+    "Inst": "Jump",
+    "Offset": 10,
+    "StatementIndex": 863
+  },
+  {
+    "Inst": "Return",
+    "Expression": {
+      "Inst": "Nothing"
+    },
+    "StatementIndex": 868
+  },
+  {
+    "Inst": "EndOfScript",
+    "StatementIndex": 870
+  }
+]
 ### Destruct bytecode=7
-Kismet serialization failed: NullReferenceException: Object reference not set to an instance of an object.
+[
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 0
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 1
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 2
+  },
+  {
+    "Inst": "LocalFinalFunction",
+    "Function": "ExecuteUbergraph_CameraCoordsOverlay",
+    "Parameters": [
+      {
+        "Inst": "IntConst",
+        "Value": 861
+      }
+    ],
+    "StatementIndex": 3
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 18
+  },
+  {
+    "Inst": "Return",
+    "Expression": {
+      "Inst": "Nothing"
+    },
+    "StatementIndex": 19
+  },
+  {
+    "Inst": "EndOfScript",
+    "StatementIndex": 21
+  }
+]
 ### Tick bytecode=11
-Kismet serialization failed: NullReferenceException: Object reference not set to an instance of an object.
+[
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 0
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 1
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 2
+  },
+  {
+    "Inst": "LetValueOnPersistentFrame",
+    "Property Outer": "CameraCoordsOverlay_C",
+    "Property Name": "ExecuteUbergraph_CameraCoordsOverlay.K2Node_Event_MyGeometry",
+    "Expression": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "CameraCoordsOverlay_C",
+      "Variable Name": "Tick.MyGeometry"
+    },
+    "StatementIndex": 3
+  },
+  {
+    "Inst": "LetValueOnPersistentFrame",
+    "Property Outer": "CameraCoordsOverlay_C",
+    "Property Name": "ExecuteUbergraph_CameraCoordsOverlay.K2Node_Event_InDeltaTime",
+    "Expression": {
+      "Inst": "LocalVariable",
+      "Variable Outer": "CameraCoordsOverlay_C",
+      "Variable Name": "Tick.InDeltaTime"
+    },
+    "StatementIndex": 21
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 39
+  },
+  {
+    "Inst": "Tracepoint",
+    "StatementIndex": 40
+  },
+  {
+    "Inst": "LocalFinalFunction",
+    "Function": "ExecuteUbergraph_CameraCoordsOverlay",
+    "Parameters": [
+      {
+        "Inst": "IntConst",
+        "Value": 109
+      }
+    ],
+    "StatementIndex": 41
+  },
+  {
+    "Inst": "WireTracepoint",
+    "StatementIndex": 56
+  },
+  {
+    "Inst": "Return",
+    "Expression": {
+      "Inst": "Nothing"
+    },
+    "StatementIndex": 57
+  },
+  {
+    "Inst": "EndOfScript",
+    "StatementIndex": 59
+  }
+]
