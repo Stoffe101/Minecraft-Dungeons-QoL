@@ -1,0 +1,71 @@
+name: Research Cooked Blueprint API
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "ci-trigger/cooked-blueprint-api.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download and unpack current LetMeMove
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force .research/cooked | Out-Null
+          Invoke-WebRequest -Uri "https://github.com/StainlessStasis/LetMeMove/releases/download/1.1.0/LetMeMove.zip" -OutFile ".research/cooked/LetMeMove.zip"
+          Expand-Archive ".research/cooked/LetMeMove.zip" ".research/cooked/zip" -Force
+          git clone --depth 1 https://github.com/Dokucraft/Dungeons-Mod-Kit.git .tools/Dungeons-Mod-Kit
+          $pak = Get-ChildItem ".research/cooked/zip" -Recurse -Filter "*.pak" | Select-Object -First 1
+          if (-not $pak) { throw "LetMeMove release did not contain a pak." }
+          New-Item -ItemType Directory -Force ".research/cooked/unpacked" | Out-Null
+          python ".tools/Dungeons-Mod-Kit/Tools/py/u4pak.py" unpack -C ".research/cooked/unpacked" $pak.FullName
+
+      - name: Inspect cooked actor and maps
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force research/cooked-blueprint-api | Out-Null
+          $actor = Get-ChildItem ".research/cooked/unpacked" -Recurse -Filter "BP_WASD_Movement.uasset" | Select-Object -First 1
+          if (-not $actor) { throw "Cooked actor asset not found." }
+
+          $output = & dotnet run --project tools/UAssetProbe/UAssetProbe.csproj -- $actor.FullName 2>&1
+          $code = $LASTEXITCODE
+
+          @(
+            "# Current cooked LetMeMove Blueprint inspection"
+            ""
+            "Release: 1.1.0"
+            "Actor: $($actor.FullName)"
+            "Probe exit code: $code"
+            ""
+            $output
+          ) | Set-Content "research/cooked-blueprint-api/REPORT.txt"
+
+      - name: Save report
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/cooked-blueprint-api/REPORT.txt
+          if (-not (git diff --cached --quiet)) {
+            git commit -m "research: inspect current cooked Blueprint API"
+            git pull --rebase origin main
+            git push
+          }
