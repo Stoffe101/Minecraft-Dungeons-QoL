@@ -125,6 +125,7 @@ Label("END");Add(new EX_Return {ReturnExpression=new EX_Nothing()});Add(new EX_E
 uint offset=0;var offsets=new List<uint>();foreach(var e in code){offsets.Add(offset);offset+=(uint)Size(e);}
 foreach(var (e,target) in jumps){var n=offsets[labels[target]];if(e is EX_Jump j)j.CodeOffset=n;else ((EX_JumpIfNot)e).CodeOffset=n;}
 uber.ScriptBytecode=code.ToArray();uber.ScriptBytecodeRaw=null;uber.ScriptBytecodeSize=(int)offset;
+DiagnosticGraphValidator.ConfigureInventoryTick(asset);
 CookedDependencyGraph.Repair(asset);Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(args[1]))!);asset.Write(args[1]);
 var reopened=new UAsset(args[1],EngineVersion.VER_UE4_22);var fn=reopened.Exports.OfType<FunctionExport>().Single(x=>x.ObjectName.ToString().StartsWith("ExecuteUbergraph_"));
 InventoryProbeValidator.Validate(reopened,fn.ScriptBytecode);

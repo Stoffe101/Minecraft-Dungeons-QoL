@@ -1,5 +1,7 @@
 using UAssetAPI;
 using UAssetAPI.ExportTypes;
+using UAssetAPI.PropertyTypes.Objects;
+using UAssetAPI.PropertyTypes.Structs;
 using UAssetAPI.UnrealTypes;
 using UAssetAPI.Kismet;
 using UAssetAPI.Kismet.Bytecode;
@@ -7,6 +9,44 @@ using UAssetAPI.Kismet.Bytecode.Expressions;
 
 public static class DiagnosticGraphValidator
 {
+    public static StructPropertyData InventoryTickDefaults(UAsset asset)
+    {
+        var owner = asset.Exports.OfType<ClassExport>().Single();
+        var cdo = (NormalExport)owner.ClassDefaultObject.ToExport(asset);
+        return cdo.Data.OfType<StructPropertyData>().Single(x => x.Name.ToString() == "PrimaryActorTick");
+    }
+    public static void ConfigureInventoryTick(UAsset asset)
+    {
+        var tick = InventoryTickDefaults(asset);
+        foreach (var name in new[] { "bCanEverTick", "bStartWithTickEnabled", "bTickEvenWhenPaused" })
+        {
+            var fields = tick.Value.Where(x => x.Name.ToString() == name).ToArray();
+            if (fields.Length > 1 || fields.Length == 1 && fields[0] is not BoolPropertyData)
+                throw new InvalidDataException("Invalid inventory actor tick flag: " + name);
+            if (fields.Length == 0) tick.Value.Add(new BoolPropertyData(new FName(asset, name)) { Value = true });
+            else ((BoolPropertyData)fields[0]).Value = true;
+        }
+        var intervals = tick.Value.Where(x => x.Name.ToString() == "TickInterval").ToArray();
+        if (intervals.Length > 1 || intervals.Length == 1 && intervals[0] is not FloatPropertyData)
+            throw new InvalidDataException("Invalid inventory actor tick interval.");
+        if (intervals.Length == 0) tick.Value.Add(new FloatPropertyData(new FName(asset, "TickInterval")) { Value = 0f });
+        else ((FloatPropertyData)intervals[0]).Value = 0f;
+    }
+    public static void ValidateInventoryTick(UAsset asset)
+    {
+        var tick = InventoryTickDefaults(asset);
+        if (tick.StructType.ToString() != "ActorTickFunction")
+            throw new InvalidDataException("Wrong inventory actor tick struct.");
+        foreach (var name in new[] { "bCanEverTick", "bStartWithTickEnabled", "bTickEvenWhenPaused" })
+        {
+            var fields = tick.Value.Where(x => x.Name.ToString() == name).ToArray();
+            if (fields.Length != 1 || fields[0] is not BoolPropertyData { Value: true })
+                throw new InvalidDataException("Inventory actor tick flag must be enabled: " + name);
+        }
+        var intervals = tick.Value.Where(x => x.Name.ToString() == "TickInterval").ToArray();
+        if (intervals.Length != 1 || intervals[0] is not FloatPropertyData { Value: 0f })
+            throw new InvalidDataException("Inventory actor tick interval must be zero.");
+    }
     // Keep the reviewed cooked actor's event entry contract: ReceiveTick calls offset 10.
     public static EX_ComputedJump TickDispatch(UAsset asset)
     {
@@ -44,6 +84,7 @@ public static class DiagnosticGraphValidator
         KismetSerializer.asset = asset;
         CookedDependencyGraph.Validate(asset);
         ValidateTickEntry(asset, code);
+        ValidateInventoryTick(asset);
         int Size(KismetExpression expr)
         {
             using var stream = new MemoryStream();

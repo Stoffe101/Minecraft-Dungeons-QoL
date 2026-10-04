@@ -42,6 +42,15 @@ public static class InventoryProbeTests
         Reject(()=>targetEntry.Value=0,()=>targetEntry.Value=10,"ReceiveTick must call the graph body at offset 10");
         var originalTarget=call.StackNode;
         Reject(()=>call.StackNode=UAssetAPI.UnrealTypes.FPackageIndex.FromExport(asset.Exports.IndexOf(tick)),()=>call.StackNode=originalTarget,"ReceiveTick must call the graph body at offset 10");
-        InventoryProbeValidator.Validate(asset,code);Console.WriteLine("[PASS] inventory-read probe remains valid after 10 rejection tests");return 0;
+        var tickDefaults=DiagnosticGraphValidator.InventoryTickDefaults(asset);
+        foreach(var flagName in new[]{"bCanEverTick","bStartWithTickEnabled","bTickEvenWhenPaused"}) {
+            var flag=tickDefaults.Value.OfType<UAssetAPI.PropertyTypes.Objects.BoolPropertyData>().Single(x=>x.Name.ToString()==flagName);
+            Reject(()=>flag.Value=false,()=>flag.Value=true,"Inventory actor tick flag must be enabled: "+flagName);
+        }
+        var pauseFlag=tickDefaults.Value.Single(x=>x.Name.ToString()=="bTickEvenWhenPaused");var pauseIndex=tickDefaults.Value.IndexOf(pauseFlag);
+        Reject(()=>tickDefaults.Value.Remove(pauseFlag),()=>tickDefaults.Value.Insert(pauseIndex,pauseFlag),"Inventory actor tick flag must be enabled: bTickEvenWhenPaused");
+        var interval=tickDefaults.Value.OfType<UAssetAPI.PropertyTypes.Objects.FloatPropertyData>().Single(x=>x.Name.ToString()=="TickInterval");
+        Reject(()=>interval.Value=0.1f,()=>interval.Value=0f,"Inventory actor tick interval must be zero");
+        InventoryProbeValidator.Validate(asset,code);Console.WriteLine("[PASS] inventory-read probe remains valid after 15 rejection tests");return 0;
     }
 }

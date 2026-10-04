@@ -756,6 +756,7 @@ uber.ScriptBytecode = code.ToArray();
 uber.ScriptBytecodeRaw = Array.Empty<byte>();
 uber.ScriptBytecodeSize = (int)total;
 
+DiagnosticGraphValidator.ConfigureInventoryTick(asset);
 CookedDependencyGraph.Repair(asset);
 asset.Write(output);
 

@@ -1,4 +1,4 @@
-> Runtime status: the archetype-repaired loading probe reached camp on the user’s Store build without crashing. Feature code remains unverified. The first visible inventory-read probe reached camp but showed no text and F6/F7 had no visible effect. Its tick entry layout has now been repaired; an in-game retry remains required. Earlier PR #7/#8 diagnostics remain withdrawn.
+> Runtime status: the archetype-repaired loading probe reached camp on the user’s Store build without crashing. Feature code remains unverified. The inventory probe still shows no text or visible F6/F7 effect after the entry layout repair. A second defect is now repaired: offline inventory pauses the game, but the manager did not tick during pauses. A retail retry remains required. Earlier PR #7/#8 diagnostics remain withdrawn.
 
 # Current State
 
@@ -87,3 +87,12 @@ The user reports camp/inventory opens without a crash, but no QoL text or visibl
 The reviewed LetMeMove actor starts ExecuteUbergraph with a 10-byte ComputedJump reading its EntryPoint parameter. ReceiveTick calls that graph with EntryPoint=10. Our executable replacement graphs had removed this dispatcher and placed the first controller lookup at offset 0 while preserving ReceiveTick. Both generators now restore the dispatcher, placing the first body statement at offset 10. The validator checks the parameter owner, dispatcher size, Tick target and argument; three new negative tests cover corrupt event wiring (10 probe tests, plus 19 original tests).
 
 This repairs an independently observed cooked event entry mismatch. It is a candidate explanation for the silent probe, not a verified runtime fix. Native widget construction, HUD availability/open gating and manager ownership may still prevent feedback. F6/F7 browse the probe's own cursor and do not move the vanilla inventory selection. Keep the empty-event load probe separate from the executable inventory probe.
+
+
+## Offline inventory pause repair (2026-10-04)
+
+The user's second silent-probe report includes a full inventory screenshot with no overlay and Explorer showing Blueprint-Loader.pak plus one MinecraftDungeonsQoL-inventory-probe.pak under XboxGames/Minecraft Dungeons/Content/Dungeons/Content/Paks/~mods. This supports correct visible installation layout, not binary hash or event execution. No activation option exists.
+
+The supplied BP_PlayerController.UIToggleInventory graph calls SetGamePaused(Self,true) after showing inventory when the session is offline and currently unpaused. The actual PR #11 packaged manager's PrimaryActorTick defaults only serialized bCanEverTick=true, inheriting the native paused-tick default. Its inventory-open-gated code therefore cannot reliably run while the offline UI is open.
+
+Both executable generators now serialize bCanEverTick=true, bStartWithTickEnabled=true, bTickEvenWhenPaused=true and TickInterval=0 in their own class default object's existing ActorTickFunction struct. Neither generator unpauses the game nor changes the player's controller or game actors. Validation requires the emitted flags and zero interval; five new negative probe tests cover disabled flags, omitted pause ticking and positive interval (15 probe plus 19 diagnostic tests). An in-game retry must verify initial text without any hotkey, F6/F7 responses while paused and inventory-close hiding. This fixes an observed lifecycle omission, but rendering/input/native reads still require retail confirmation. All unimplemented production features remain open.

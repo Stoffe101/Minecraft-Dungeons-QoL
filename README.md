@@ -1,4 +1,4 @@
-> Runtime status: the archetype-repaired loading probe reached camp on the user’s Store build without crashing. Feature code remains unverified. The first visible inventory probe reached camp but showed no text. Its event entry layout is repaired and validated offline; the replacement probe needs an in-game retry. Earlier PR #7/#8 diagnostics remain withdrawn.
+> Runtime status: the archetype-repaired loading probe reached camp on the user’s Store build without crashing. Feature code remains unverified. Both visible inventory probes reached camp but showed no text. Offline inventory pauses the world; the manager now explicitly ticks during pauses. The replacement probe is validated offline and needs an in-game retry. Earlier PR #7/#8 diagnostics remain withdrawn.
 
 # Minecraft Dungeons QoL
 
