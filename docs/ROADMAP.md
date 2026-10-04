@@ -12,10 +12,12 @@
 
 ## Phase 1 — Runtime Inventory Research [NEXT]
 
-- [ ] Enumerate current inventory-related assets/classes
+- [x] Inspect public save-format item/profile identity fields
+- [x] Document provisional `uniqueSaveId + inventoryIndex + sanity fingerprint` fallback
+- [ ] Enumerate current runtime inventory-related assets/classes
 - [ ] Identify inventory widget
 - [ ] Identify selected item reference
-- [ ] Identify stable item ID/GUID
+- [ ] Identify stable runtime item ID/GUID or verify the fallback fields at runtime
 - [ ] Identify native salvage function
 - [ ] Identify native equip/unequip function
 - [ ] Identify vanilla salvage button/event chain
