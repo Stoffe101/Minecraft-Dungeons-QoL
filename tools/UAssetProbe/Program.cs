@@ -39,6 +39,8 @@ foreach (var version in versions)
             Console.WriteLine($"I{i + 1}: {import.ClassPackage}.{import.ClassName} {import.ObjectName} outer={import.OuterIndex.Index}");
         }
 
+        KismetSerializer.asset = asset;
+
         Console.WriteLine();
         Console.WriteLine("== FUNCTIONS ==");
         foreach (var fn in asset.Exports.OfType<FunctionExport>())
