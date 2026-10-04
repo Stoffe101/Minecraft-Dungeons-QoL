@@ -1,0 +1,94 @@
+name: Research Current Cooked Dungeons Template
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "ci-trigger/cooked-template.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download current MIT LetMeMove release
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force .research/current-release | Out-Null
+          Invoke-WebRequest -Uri "https://github.com/StainlessStasis/LetMeMove/releases/download/1.1.0/LetMeMove.zip" -OutFile ".research/current-release/LetMeMove.zip"
+          Expand-Archive ".research/current-release/LetMeMove.zip" ".research/current-release/extracted" -Force
+
+      - name: Checkout u4pak
+        shell: pwsh
+        run: |
+          git clone --depth 1 https://github.com/Dokucraft/Dungeons-Mod-Kit.git .tools/Dungeons-Mod-Kit
+
+      - name: Inspect release and unpack pak
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force research/current-cooked-template | Out-Null
+
+          $files = Get-ChildItem ".research/current-release/extracted" -Recurse -File
+          $report = @(
+            "# Current LetMeMove 1.1.0 release inspection"
+            ""
+            "Source: https://github.com/StainlessStasis/LetMeMove/releases/tag/1.1.0"
+            ""
+            "## ZIP contents"
+            ""
+          )
+
+          foreach ($file in $files) {
+            $relative = $file.FullName.Substring((Resolve-Path ".research/current-release/extracted").Path.Length).TrimStart('\')
+            $report += "- $relative ($($file.Length) bytes)"
+          }
+
+          $pak = $files | Where-Object { $_.Extension -eq ".pak" } | Select-Object -First 1
+          if ($pak) {
+            $report += ""
+            $report += "## Pak listing"
+            $report += ""
+            $listing = & python ".tools/Dungeons-Mod-Kit/Tools/py/u4pak.py" list $pak.FullName 2>&1
+            $report += ($listing | ForEach-Object { "    $_" })
+
+            New-Item -ItemType Directory -Force ".research/current-release/unpacked" | Out-Null
+            & python ".tools/Dungeons-Mod-Kit/Tools/py/u4pak.py" unpack -C ".research/current-release/unpacked" $pak.FullName
+            if ($LASTEXITCODE -ne 0) {
+              throw "u4pak unpack failed."
+            }
+
+            $report += ""
+            $report += "## Unpacked files"
+            $report += ""
+            foreach ($file in Get-ChildItem ".research/current-release/unpacked" -Recurse -File) {
+              $relative = $file.FullName.Substring((Resolve-Path ".research/current-release/unpacked").Path.Length).TrimStart('\')
+              $report += "- $relative ($($file.Length) bytes)"
+            }
+          } else {
+            $report += ""
+            $report += "No .pak was found in the release ZIP."
+          }
+
+          $report | Set-Content "research/current-cooked-template/REPORT.md"
+
+      - name: Save report
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/current-cooked-template/REPORT.md
+          if (-not (git diff --cached --quiet)) {
+            git commit -m "research: inspect current cooked Dungeons mod release"
+            git pull --rebase origin main
+            git push
+          }
