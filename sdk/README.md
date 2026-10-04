@@ -1,52 +1,73 @@
 # UE4.22 Dungeons Editor SDK Overlay
 
-This directory contains **editor-only reflection stubs** used to expose the Minecraft Dungeons runtime inventory APIs inside the Dungeons Mod Kit's Unreal Engine 4.22 project.
+This directory contains the **canonical editor-only reflection mirror** used to expose the Minecraft Dungeons runtime inventory APIs inside the Dungeons Mod Kit's Unreal Engine 4.22 project.
 
-They are not replacement implementations of Minecraft Dungeons gameplay code.
+These files are not replacement gameplay implementations. Minecraft Dungeons supplies the real `/Script/Dungeons` classes/functions at runtime.
+
+## Canonical source
+
+```text
+sdk/modkit/Source/Dungeons/
+  MCDQoLInventoryStubs.h
+  MCDQoLInventoryStubs.cpp
+```
+
+`scripts/Sync-GameApi.ps1` copies those files into the pinned Dungeons Mod Kit project.
 
 ## Why this exists
 
-A Blueprint can only create nodes for native classes/functions the editor knows about.
+Blueprint nodes can only reference native types/functions the editor knows about.
 
-Minecraft Dungeons itself contains classes such as:
+Minecraft Dungeons contains classes such as:
 
 - `UItemStashComponent`
 - `UInventoryItemSlot`
 
-but the public Dungeons Mod Kit does not expose all of those declarations in its small source tree.
+but the public Mod Kit exposes only a small subset of Dungeons source declarations. The mirror provides the verified reflection surface required by this mod.
 
-The overlay declares the verified class/function signatures and provides harmless dummy C++ bodies so the **editor module can link**.
+The editor C++ bodies are intentionally harmless. Their purpose is to let Unreal Header Tool and UE4.22 build reflection metadata while authoring/cooking.
 
-When the cooked Blueprint runs inside Minecraft Dungeons, the imported `/Script/Dungeons` class/function names resolve against the game's real runtime module.
+## Reflected API
 
-## Current exposed API
+The current mirror includes the non-destructive inventory API plus the exact reflected salvage result structures needed by the native salvage function.
 
-The first safe/non-destructive slice exposes:
+Highlights:
 
-- `UItemStashComponent::GetInventorySlots`
-- `UItemStashComponent::GetEquipmentSlots`
-- `UItemStashComponent::GetChangeIndex`
-- `UItemStashComponent::InventorySize`
-- `UItemStashComponent::AvailableEnchantmentPoints`
-- `UItemStashComponent::EnterInventoryUI`
-- `UItemStashComponent::ExitInventoryUI`
-- `UInventoryItemSlot::GetChangeIndex`
-- `UInventoryItemSlot::CanSwapWith`
-- `UInventoryItemSlot::Swap`
-- `UInventoryItemSlot::IsLocked`
-- slot UI/change helpers
+- `GetInventorySlots()`
+- `GetEquipmentSlots()`
+- `GetChangeIndex()`
+- `CanSwapWith(...)`
+- `Swap(...)`
+- `IsLocked()`
+- `SalvageItemInSlot(...)`
+- `SalvageItemUndo(...)`
+- salvage currency/enchantment-point result data
 
-Native salvage is intentionally **not exposed in this first stub pass** because its return structs contain additional native types. We will add the exact reflected struct declarations before enabling destructive behavior.
+The first playable build still **must not invoke salvage** until inventory enumeration/selection/protection has been verified in-game.
 
-## Apply
+## Sync the mirror
 
 ```powershell
-./scripts/Apply-ModKit-SDK.ps1
+./scripts/Sync-GameApi.ps1
 ```
+
+## Rebuild the editor module
+
+Adding/changing reflected C++ declarations requires rebuilding the Mod Kit's Dungeons editor module:
+
+```powershell
+./scripts/Build-ModKit-Editor.ps1
+```
+
+UE4.22 supports Visual Studio 2017 or 2019. Install the C++ workload and a compatible Windows SDK.
+
+## Build the mod
+
+`scripts/Build.ps1` syncs the mirror, rebuilds the editor module, syncs project assets, cooks them, and packages the final pak.
 
 ## Licensing
 
-The class/function declarations are adapted from:
+The Dungeons declarations are adapted from:
 
 https://github.com/Minecraforever/MCD-PE
 
