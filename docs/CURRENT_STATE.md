@@ -143,3 +143,9 @@ Next feature increment: build lock/favorite indicators and multi-selection with 
 ## Favorites/salvage source collection (2026-10-04)
 
 Favorites must block both ordinary and batch salvage until unfavorited. The native inspector salvage path is documented, but original cooked inventory UI packages are missing from the supplied metadata ZIP. The explicit `-CollectInventoryPatchSources` mode collects only seven required packages for private patch development; ordinary research collection stays metadata-only. See [the implementation notes and collection command](FAVORITES_SALVAGE_IMPLEMENTATION.md). Favorites, Select All and destructive batch execution are not yet enabled.
+
+## Private inventory feature patch (2026-10-05)
+
+Received the original inventory UI sources and verified all fourteen hashes. Added a local original-widget patch generator: normal highlighted item, F5 session favorites guarded in vanilla salvage, F8 multi-selection, F9 Select All excluding favorites/equipment, F10 review, Escape clear/cancel. The source also implements an explicitly enabled native batch mode with exact slot/item revalidation and the vanilla undo notification. Default/private test mode disables batch deletion. The HUD itself drives the controls through its owning local player, avoiding host GameMode/loader gating.
+
+User confirms keyboard/mouse and hosted read-probe success; joining-player support is required and remains untested. New patch runtime is unverified. Favorites are inspector-lifetime references, not persistent across restart/travel/rejoin; full persistent locks and loadouts are unfinished. Original-derived game packages remain private, outside GitHub releases/CI. See FAVORITES_SALVAGE_IMPLEMENTATION.md for architecture, validation and local build command.
