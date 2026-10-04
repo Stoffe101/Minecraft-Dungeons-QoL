@@ -1,1 +1,1 @@
-2026-10-04 dump Kismet instruction tree
+2026-10-04 inspect permitted Camera Coordinates UMG templates
