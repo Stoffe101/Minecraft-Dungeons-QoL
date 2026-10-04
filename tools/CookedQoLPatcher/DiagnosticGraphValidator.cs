@@ -1,4 +1,5 @@
 using UAssetAPI;
+using UAssetAPI.ExportTypes;
 using UAssetAPI.UnrealTypes;
 using UAssetAPI.Kismet;
 using UAssetAPI.Kismet.Bytecode;
@@ -6,10 +7,43 @@ using UAssetAPI.Kismet.Bytecode.Expressions;
 
 public static class DiagnosticGraphValidator
 {
+    // Keep the reviewed cooked actor's event entry contract: ReceiveTick calls offset 10.
+    public static EX_ComputedJump TickDispatch(UAsset asset)
+    {
+        var uber = asset.Exports.OfType<FunctionExport>().Single(x => x.ObjectName.ToString().StartsWith("ExecuteUbergraph_"));
+        var entry = asset.Exports.OfType<PropertyExport>().Single(x => x.ObjectName.ToString() == "EntryPoint"
+            && x.OuterIndex.ToExport(asset) == uber);
+        return new EX_ComputedJump { CodeOffsetExpression = new EX_LocalVariable {
+            Variable = new KismetPropertyPointer(FPackageIndex.FromExport(asset.Exports.IndexOf(entry))) } };
+    }
+    public static void ValidateTickEntry(UAsset asset, IReadOnlyList<KismetExpression> code)
+    {
+        var uber = asset.Exports.OfType<FunctionExport>().Single(x => x.ObjectName.ToString().StartsWith("ExecuteUbergraph_"));
+        if (code.Count < 2 || code[0] is not EX_ComputedJump dispatch
+            || dispatch.CodeOffsetExpression is not EX_LocalVariable entry
+            || !entry.Variable.Old.IsExport()
+            || entry.Variable.Old.ToExport(asset).ObjectName.ToString() != "EntryPoint"
+            || entry.Variable.Old.ToExport(asset).OuterIndex.ToExport(asset) != uber)
+            throw new InvalidDataException("Missing tick entry dispatcher.");
+        using var stream = new MemoryStream();
+        using var writer = new AssetBinaryWriter(stream, asset);
+        if (ExpressionSerializer.WriteExpression(code[0], writer) != 10)
+            throw new InvalidDataException("Tick entry body must start at offset 10.");
+        var tick = asset.Exports.OfType<FunctionExport>().Single(x => x.ObjectName.ToString() == "ReceiveTick");
+        var calls = new List<EX_LocalFinalFunction>();
+        foreach (var root in tick.ScriptBytecode) {
+            uint offset = 0;
+            root.Visit(asset, ref offset, (e, _) => { if (e is EX_LocalFinalFunction f) calls.Add(f); });
+        }
+        if (calls.Count != 1 || calls[0].StackNode.ToExport(asset) != uber
+            || calls[0].Parameters.Length != 1 || calls[0].Parameters[0] is not EX_IntConst n || n.Value != 10)
+            throw new InvalidDataException("ReceiveTick must call the graph body at offset 10.");
+    }
     public static int Validate(UAsset asset, IReadOnlyList<KismetExpression> code, bool requireEquipmentGuards = true)
     {
         KismetSerializer.asset = asset;
         CookedDependencyGraph.Validate(asset);
+        ValidateTickEntry(asset, code);
         int Size(KismetExpression expr)
         {
             using var stream = new MemoryStream();

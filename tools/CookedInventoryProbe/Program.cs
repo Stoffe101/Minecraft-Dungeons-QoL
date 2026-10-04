@@ -64,7 +64,7 @@ KismetExpression Length(KismetExpression p)=>Static(arrayDefault,Fn(arrayClass,"
 KismetExpression Vec(float x,float y)=>new EX_StructConst {Struct=vector2,StructSize=8,Value=new KismetExpression[]{new EX_FloatConst{Value=x},new EX_FloatConst{Value=y}}};
 KismetExpression Press(string name)=>C(L(pc),F(Fn(Class("/Script/Engine","PlayerController"),"WasInputKeyJustPressed"),new EX_StructConst {Struct=key,StructSize=32,Value=new KismetExpression[]{new EX_NameConst{Value=new FName(asset,name)}}}));
 KismetExpression Build(KismetExpression prefix,KismetExpression number,string suffix)=>Static(stringDefault,Fn(stringClass,"BuildString_Int"),prefix,S(""),number,S(suffix));
-var code=new List<KismetExpression>();var labels=new Dictionary<string,int>();var jumps=new List<(KismetExpression,string)>();
+var code=new List<KismetExpression> { DiagnosticGraphValidator.TickDispatch(asset) };var labels=new Dictionary<string,int>();var jumps=new List<(KismetExpression,string)>();
 void Add(KismetExpression e)=>code.Add(e);void Label(string name)=>labels[name]=code.Count;
 void Branch(KismetExpression e,string target){var b=new EX_JumpIfNot {BooleanExpression=e};Add(b);jumps.Add((b,target));}
 void Jump(string target){var b=new EX_Jump();Add(b);jumps.Add((b,target));}

@@ -1,4 +1,4 @@
-> Runtime status: the archetype-repaired loading probe reached camp on the user’s Store build without crashing. Feature code remains unverified. The next test is the separate visible inventory-read probe; earlier PR #7/#8 diagnostics remain withdrawn.
+> Runtime status: the archetype-repaired loading probe reached camp on the user’s Store build without crashing. Feature code remains unverified. The first visible inventory-read probe reached camp but showed no text and F6/F7 had no visible effect. Its tick entry layout has now been repaired; an in-game retry remains required. Earlier PR #7/#8 diagnostics remain withdrawn.
 
 # Current State
 
@@ -79,3 +79,11 @@ On 2026-10-04 the user confirmed PR #9's `MinecraftDungeonsQoL-load-probe` selec
 `CookedInventoryProbe` is the next runtime gate. It reuses the repaired manager schema, resolves the observed controller/SharedUI/InventoryHUD path and only reads native inventory slots/item name/power while inventory is open. F6/F7 browse indices. It constructs its own native TextBlock in HUD WholeCanvas, anchors it above the action bar, avoids hit testing, hides it when inventory closes, caches unchanged text, and recreates its own widget on canvas replacement. A first-manager check prevents simultaneous loader instances from producing multiple overlays. None of those new runtime behaviors are confirmed yet.
 
 The probe contains no item mutations, lock/select/preview hotkeys, fingerprint/refund reads, or sidecar load/save calls. The full diagnostic still exists as a separate unverified artifact. Never install multiple QoL variants together. Seven new negative tests complement the existing 19 tests; bytecode/metadata validation does not replace rendering/native execution tests.
+
+## Silent inventory probe: event entry repair (2026-10-04)
+
+The user reports camp/inventory opens without a crash, but no QoL text or visible F6/F7 response. The screenshot confirms no visible probe text; it cannot establish which runtime gate failed.
+
+The reviewed LetMeMove actor starts ExecuteUbergraph with a 10-byte ComputedJump reading its EntryPoint parameter. ReceiveTick calls that graph with EntryPoint=10. Our executable replacement graphs had removed this dispatcher and placed the first controller lookup at offset 0 while preserving ReceiveTick. Both generators now restore the dispatcher, placing the first body statement at offset 10. The validator checks the parameter owner, dispatcher size, Tick target and argument; three new negative tests cover corrupt event wiring (10 probe tests, plus 19 original tests).
+
+This repairs an independently observed cooked event entry mismatch. It is a candidate explanation for the silent probe, not a verified runtime fix. Native widget construction, HUD availability/open gating and manager ownership may still prevent feedback. F6/F7 browse the probe's own cursor and do not move the vanilla inventory selection. Keep the empty-event load probe separate from the executable inventory probe.

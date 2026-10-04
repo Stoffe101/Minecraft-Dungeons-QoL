@@ -471,7 +471,7 @@ KismetExpression SaveSidecar() => Static(gameplayDefault, saveToSlotFn,
 
 // ---------- assembler ----------
 
-var code = new List<KismetExpression>();
+var code = new List<KismetExpression> { DiagnosticGraphValidator.TickDispatch(asset) };
 var labels = new Dictionary<string,int>(StringComparer.Ordinal);
 var jumps = new List<(KismetExpression Jump,string Target)>();
 
