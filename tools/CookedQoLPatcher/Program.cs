@@ -44,16 +44,16 @@ FPackageIndex EnsureClass(string packageName, string className)
     return asset.AddImport(new Import("/Script/CoreUObject", "Class", pkg, className, false, asset));
 }
 
-FPackageIndex EnsureGeneratedClass(string packagePath, string className)
+FPackageIndex EnsureGeneratedClass(string packagePath, string className, bool widget = false)
 {
     var pkg = EnsurePackage(packagePath);
     for (var i = 0; i < asset.Imports.Count; i++)
     {
         var imp = asset.Imports[i];
-        if (imp.OuterIndex?.Index == pkg.Index && imp.ClassName.ToString() == "BlueprintGeneratedClass" && imp.ObjectName.ToString() == className)
+        if (imp.OuterIndex?.Index == pkg.Index && imp.ClassName.ToString() == (widget ? "WidgetBlueprintGeneratedClass" : "BlueprintGeneratedClass") && imp.ObjectName.ToString() == className)
             return FPackageIndex.FromImport(i);
     }
-    return asset.AddImport(new Import("/Script/Engine", "BlueprintGeneratedClass", pkg, className, false, asset));
+    return asset.AddImport(new Import(widget ? "/Script/UMG" : "/Script/Engine", widget ? "WidgetBlueprintGeneratedClass" : "BlueprintGeneratedClass", pkg, className, false, asset));
 }
 
 FPackageIndex EnsureDefault(string packageName, string className)
@@ -138,9 +138,25 @@ var itemStashClass = EnsureClass("/Script/Dungeons", "ItemStashComponent");
 var itemSlotClass = EnsureClass("/Script/Dungeons", "InventoryItemSlot");
 var inventoryItemClass = EnsureClass("/Script/Dungeons", "InventoryItem");
 var slotItemMember = EnsureMember(itemSlotClass, "ObjectProperty", "Item");
+// Contracts recovered from the user's actual UE4.22 UI/controller metadata.
+var controllerBpClass = EnsureGeneratedClass("/Game/Actors/Characters/Player/BP_PlayerController", "BP_PlayerController_C");
+var sharedUiClass = EnsureGeneratedClass("/Game/Actors/Characters/Player/BP_PlayerControllerSharedUI", "BP_PlayerControllerSharedUI_C");
+var inventoryHudClass = EnsureGeneratedClass("/Game/UI/Inventory/UMG_InventoryHUD", "UMG_InventoryHUD_C", true);
+var inventorySlotWidgetClass = EnsureGeneratedClass("/Game/UI/Inventory/UMG_InventorySlotBase", "UMG_InventorySlotBase_C", true);
+var sharedUiMember = EnsureMember(controllerBpClass, "ObjectProperty", "SharedUI");
+var inventoryHudMember = EnsureMember(sharedUiClass, "ObjectProperty", "InventoryHUD");
+var inventoryOpenMember = EnsureMember(inventoryHudClass, "BoolProperty", "IsInventoryOpen");
+var equipWidgetsMember = EnsureMember(inventoryHudClass, "ArrayProperty", "EquipSlots");
+var widgetNativeSlotMember = EnsureMember(inventorySlotWidgetClass, "ObjectProperty", "InventoryItemSlot");
+var getStashFn = EnsureFunction(EnsureClass("/Script/Dungeons", "BasePlayerController"), "GetItemStashComponent");
+var getInventorySlotsFn = EnsureFunction(itemStashClass, "GetInventorySlots");
+var getSalvageInfoFn = EnsureFunction(itemStashClass, "GetSalvageInfo");
+var salvageInfoStruct = EnsureScriptStruct("/Script/Dungeons", "ItemSalvageInfo");
+var enchantmentPointsMember = EnsureMember(salvageInfoStruct, "IntProperty", "enchantmentPoints");
+
 
 // Retarget an existing object local to stash.
-stashLocal.ObjectName = new FName(asset, "CallFunc_GetComponentByClass_ReturnValue");
+stashLocal.ObjectName = new FName(asset, "CallFunc_GetItemStashComponent_ReturnValue");
 if (stashLocal.Property is not UObjectProperty stashProp)
     throw new InvalidDataException("Expected UObjectProperty donor for stash local.");
 stashProp.PropertyClass = itemStashClass;
@@ -261,7 +277,19 @@ var inventorySlots = AddObjectArray("InventorySlots", functionOuter, itemSlotCla
 var currentSlot = AddProperty(objectDonor, "MCDQoL_CurrentSlot", functionOuter, objectPropertyClass, NewObject(itemSlotClass, EPropertyFlags.CPF_None));
 var currentItem = AddProperty(objectDonor, "MCDQoL_CurrentItem", functionOuter, objectPropertyClass, NewObject(inventoryItemClass, EPropertyFlags.CPF_None));
 var currentKey = AddProperty(intDonor, "MCDQoL_CurrentKey", functionOuter, namePropertyClass, NewName());
-var salvageSuccess = AddProperty(boolDonor, "MCDQoL_SalvageSuccess", functionOuter, boolPropertyClass, NewBool(EPropertyFlags.CPF_None));
+var controllerBpLocal = AddProperty(objectDonor, "MCDQoL_Controller", functionOuter, objectPropertyClass, NewObject(controllerBpClass, EPropertyFlags.CPF_None));
+var sharedUiLocal = AddProperty(objectDonor, "MCDQoL_SharedUI", functionOuter, objectPropertyClass, NewObject(sharedUiClass, EPropertyFlags.CPF_None));
+var inventoryHudLocal = AddProperty(objectDonor, "MCDQoL_InventoryHUD", functionOuter, objectPropertyClass, NewObject(inventoryHudClass, EPropertyFlags.CPF_None));
+var equipWidgetsLocal = AddObjectArray("MCDQoL_EquipWidgets", functionOuter, inventorySlotWidgetClass, EPropertyFlags.CPF_None);
+var equipIndexLocal = AddProperty(intDonor, "MCDQoL_EquipIndex", functionOuter, intPropertyClass, NewInt(EPropertyFlags.CPF_None));
+var equipWidgetLocal = AddProperty(objectDonor, "MCDQoL_EquipWidget", functionOuter, objectPropertyClass, NewObject(inventorySlotWidgetClass, EPropertyFlags.CPF_None));
+var equipNativeSlotLocal = AddProperty(objectDonor, "MCDQoL_EquipNativeSlot", functionOuter, objectPropertyClass, NewObject(itemSlotClass, EPropertyFlags.CPF_None));
+var salvageInfoLocal = AddProperty(objectDonor, "MCDQoL_SalvageInfo", functionOuter,
+    EnsureClass("/Script/CoreUObject", "StructProperty"), new UStructProperty {
+        Struct = salvageInfoStruct, ArrayDim = objectDonor.Property.ArrayDim, ElementSize = 0,
+        PropertyFlags = EPropertyFlags.CPF_None, RepNotifyFunc = new FName(asset, "None"),
+        BlueprintReplicationCondition = ELifetimeCondition.COND_None, Next = new FPackageIndex(0)
+    });
 
 // Register reflected fields with their owning structs/classes.
 generatedClass.Children = generatedClass.Children
@@ -280,7 +308,8 @@ uber.Children = uber.Children
         FPackageIndex.FromExport(asset.Exports.IndexOf(currentSlot)),
         FPackageIndex.FromExport(asset.Exports.IndexOf(currentItem)),
         FPackageIndex.FromExport(asset.Exports.IndexOf(currentKey)),
-        FPackageIndex.FromExport(asset.Exports.IndexOf(salvageSuccess)), Exp(inventorySlots)
+        Exp(inventorySlots), Exp(controllerBpLocal), Exp(sharedUiLocal), Exp(inventoryHudLocal),
+        Exp(equipWidgetsLocal), Exp(equipIndexLocal), Exp(equipWidgetLocal), Exp(equipNativeSlotLocal), Exp(salvageInfoLocal)
     }).ToArray();
 
 // External SaveGame Records field.
@@ -303,6 +332,7 @@ var getPawnFn = EnsureFunction(EnsureClass("/Script/Engine", "Controller"), "K2_
 var mathClass = EnsureClass("/Script/Engine", "KismetMathLibrary");
 var addIntFn = EnsureFunction(mathClass, "Add_IntInt");
 var subIntFn = EnsureFunction(mathClass, "Subtract_IntInt");
+var equalIntFn = EnsureFunction(mathClass, "EqualEqual_IntInt");
 var greaterEqFn = EnsureFunction(mathClass, "GreaterEqual_IntInt");
 var lessFn = EnsureFunction(mathClass, "Less_IntInt");
 var equalObjectFn = EnsureFunction(mathClass, "EqualEqual_ObjectObject");
@@ -420,7 +450,7 @@ KismetExpression Fingerprint()
     var withEnchant = Static(stringDefault, buildStringIntFn,
         withPower,
         Str("|E"),
-        Ctx(item, Virtual("GetTotalInvestedEnchantmentPoints")),
+        new EX_StructMemberContext { StructMemberExpression = Ptr(enchantmentPointsMember), StructExpression = Local(salvageInfoLocal) },
         Str(""));
     return Static(stringDefault, convStringToNameFn, withEnchant);
 }
@@ -464,6 +494,35 @@ void SetObj(PropertyExport p, KismetExpression value) => Add(new EX_LetObj { Var
 void SetLocalObj(PropertyExport p, KismetExpression value) => Add(new EX_LetObj { VariableExpression = Local(p), AssignmentExpression = value });
 void SetLocalName(PropertyExport p, KismetExpression value) => Add(new EX_Let { Value = Ptr(Exp(p)), Variable = Local(p), Expression = value });
 
+void ReadFingerprint()
+{
+    // GetTotalInvestedEnchantmentPoints is not an InventoryItem instance call.
+    // The vanilla inspector obtains the same refund field through GetSalvageInfo(Item).
+    Add(new EX_Let { Value = Ptr(Exp(salvageInfoLocal)), Variable = Local(salvageInfoLocal),
+        Expression = Ctx(Local(stashLocal), Final(getSalvageInfoFn, Local(currentItem)), Ptr(Exp(salvageInfoLocal))) });
+    SetLocalName(currentKey, Fingerprint());
+}
+void RejectEquipped(string reject, string prefix)
+{
+    // The HUD initializes this array with exactly armor/melee/ranged and three artifacts.
+    // Missing UI/native slots are unresolved equipment state: fail closed.
+    JumpIfNot(Math(equalIntFn, ArrayLength(Local(equipWidgetsLocal)), Int(6)), reject);
+    Add(new EX_Let { Value = Ptr(Exp(equipIndexLocal)), Variable = Local(equipIndexLocal), Expression = Int(0) });
+    Label(prefix + "_LOOP");
+    JumpIfNot(Math(lessFn, Local(equipIndexLocal), ArrayLength(Local(equipWidgetsLocal))), prefix + "_DONE");
+    SetLocalObj(equipWidgetLocal, new EX_ArrayGetByRef { ArrayVariable = Local(equipWidgetsLocal), ArrayIndex = Local(equipIndexLocal) });
+    JumpIfNot(IsValid(Local(equipWidgetLocal)), reject);
+    SetLocalObj(equipNativeSlotLocal, Ctx(Local(equipWidgetLocal), ImportedVar(widgetNativeSlotMember), Ptr(widgetNativeSlotMember)));
+    JumpIfNot(IsValid(Local(equipNativeSlotLocal)), reject);
+    JumpIfNot(Math(equalObjectFn, Local(currentItem), SlotItem(Local(equipNativeSlotLocal))), prefix + "_NEXT");
+    Jump(reject);
+    Label(prefix + "_NEXT");
+    Add(new EX_Let { Value = Ptr(Exp(equipIndexLocal)), Variable = Local(equipIndexLocal),
+        Expression = Math(addIntFn, Local(equipIndexLocal), Int(1)) });
+    Jump(prefix + "_LOOP");
+    Label(prefix + "_DONE");
+}
+
 void ClearSelection()
 {
     Add(Static(arrayDefault, arrayClearFn, Inst(selectedSlots)));
@@ -480,9 +539,20 @@ void SaveAndReport(string message)
 // Resolve local player + stash; never keep a selection across pawn/hero changes.
 SetLocalObj(playerControllerLocal, Static(gameplayDefault, getPlayerControllerFn, Self(), Int(0)));
 JumpIfNot(IsValid(Local(playerControllerLocal)), "INVALID_CONTEXT");
+SetLocalObj(controllerBpLocal, new EX_DynamicCast { ClassPtr = controllerBpClass, Target = Local(playerControllerLocal) });
+JumpIfNot(IsValid(Local(controllerBpLocal)), "INVALID_CONTEXT");
+SetLocalObj(sharedUiLocal, Ctx(Local(controllerBpLocal), ImportedVar(sharedUiMember), Ptr(sharedUiMember)));
+JumpIfNot(IsValid(Local(sharedUiLocal)), "INVALID_CONTEXT");
+SetLocalObj(inventoryHudLocal, new EX_DynamicCast { ClassPtr = inventoryHudClass,
+    Target = Ctx(Local(sharedUiLocal), ImportedVar(inventoryHudMember), Ptr(inventoryHudMember)) });
+JumpIfNot(IsValid(Local(inventoryHudLocal)), "INVALID_CONTEXT");
+JumpIfNot(Ctx(Local(inventoryHudLocal), ImportedVar(inventoryOpenMember), Ptr(inventoryOpenMember)), "INVALID_CONTEXT");
+Add(new EX_Let { Value = Ptr(Exp(equipWidgetsLocal)), Variable = Local(equipWidgetsLocal),
+    Expression = Ctx(Local(inventoryHudLocal), ImportedVar(equipWidgetsMember), Ptr(equipWidgetsMember)) });
+
 SetLocalObj(pawnLocal, Ctx(Local(playerControllerLocal), Final(getPawnFn), Ptr(Exp(pawnLocal))));
 JumpIfNot(IsValid(Local(pawnLocal)), "INVALID_CONTEXT");
-SetLocalObj(stashLocal, Ctx(Local(pawnLocal), Virtual("GetComponentByClass", Obj(itemStashClass)), Ptr(Exp(stashLocal))));
+SetLocalObj(stashLocal, Ctx(Local(controllerBpLocal), Final(getStashFn), Ptr(Exp(stashLocal))));
 
 JumpIfNot(IsValid(Local(stashLocal)), "INVALID_CONTEXT");
 JumpIfNot(Math(equalObjectFn, Inst(selectionOwner), Local(stashLocal)), "CHANGE_OWNER");
@@ -493,7 +563,7 @@ SetObj(selectionOwner, Local(stashLocal));
 SetInt(cursor, Int(0));
 Label("OWNER_READY");
 Add(new EX_Let { Value = Ptr(Exp(inventorySlots)), Variable = Local(inventorySlots),
-    Expression = Ctx(Local(stashLocal), Virtual("GetInventorySlots"), Ptr(Exp(inventorySlots))) });
+    Expression = Ctx(Local(stashLocal), Final(getInventorySlotsFn), Ptr(Exp(inventorySlots))) });
 // F5 cancels both confirmation and preview; it also clears the selected snapshots.
 JumpIfNot(KeyPressed("F5"), "AFTER_CANCEL");
 ClearSelection();
@@ -531,7 +601,8 @@ JumpIfNot(Ctx(Local(currentSlot), Virtual("IsLocked")), "BATCH_UNLOCKED");
 Jump("BATCH_NEXT");
 Label("BATCH_UNLOCKED");
 JumpIfNot(IsValid(Local(currentItem)), "BATCH_NEXT");
-SetLocalName(currentKey, Fingerprint());
+RejectEquipped("BATCH_NEXT", "BATCH_EQUIP");
+ReadFingerprint();
 JumpIfNot(ArrayContains(Records(), Local(currentKey)), "BATCH_CAN_SALVAGE");
 Jump("BATCH_NEXT");
 
@@ -586,7 +657,7 @@ SetLocalObj(currentItem, SlotItem(Local(currentSlot)));
 JumpIfNot(KeyPressed("F8"), "SELECT");
 SetBool(confirmArmed, False());
 JumpIfNot(IsValid(Local(currentItem)), "LOCK_EMPTY");
-SetLocalName(currentKey, Fingerprint());
+ReadFingerprint();
 JumpIfNot(ArrayContains(Records(), Local(currentKey)), "LOCK_ADD");
 Add(Static(arrayDefault, arrayRemoveFn, Records(), Local(currentKey)));
 SaveAndReport("MCD QoL | fingerprint protection removed (all matching items)");
@@ -606,7 +677,8 @@ JumpIfNot(IsValid(Local(currentItem)), "SELECT_EMPTY");
 JumpIfNot(Ctx(Local(currentSlot), Virtual("IsLocked")), "SELECT_SLOT_UNLOCKED");
 Jump("SELECT_BLOCKED");
 Label("SELECT_SLOT_UNLOCKED");
-SetLocalName(currentKey, Fingerprint());
+RejectEquipped("SELECT_BLOCKED", "SELECT_EQUIP");
+ReadFingerprint();
 JumpIfNot(ArrayContains(Records(), Local(currentKey)), "SELECT_NOT_LOCKED");
 Add(Print(Str("MCD QoL | locked item cannot be selected")));
 Jump("CONFIRM");
@@ -625,13 +697,13 @@ Add(Static(arrayDefault, arrayAddFn, Inst(selectedItems), Local(currentItem)));
 Add(Print(Str("MCD QoL | item added to salvage batch")));
 Jump("CONFIRM");
 Label("SELECT_BLOCKED");
-Add(Print(Str("MCD QoL | game reports this item cannot be salvaged")));
+Add(Print(Str("MCD QoL | equipped, unresolved equipment state, or game blocks salvage")));
 Jump("CONFIRM");
 Label("SELECT_EMPTY");
 Add(Print(Str("MCD QoL | empty slot, nothing to select")));
 
 Label("CONFIRM");
-// F10 requires two presses. The second starts one-native-salvage-per-tick processing.
+// F10 requires two presses. The second starts one-candidate-per-tick preview.
 JumpIfNot(KeyPressed("F10"), "END");
 JumpIfNot(Math(greaterEqFn, ArrayLength(Inst(selectedSlots)), Int(1)), "NO_SELECTION");
 JumpIfNot(Inst(confirmArmed), "ARM_BATCH");
@@ -714,7 +786,7 @@ foreach (var root in outUber.ScriptBytecode)
 foreach (var key in new[] { "F5", "F6", "F7", "F8", "F9", "F10" })
     if (!keys.Contains(key)) throw new InvalidDataException($"Missing input hotkey after re-open: {key}");
 
-foreach (var call in new[] { "GetComponentByClass", "GetInventorySlots", "IsLocked", "CanSalvage" })
+foreach (var call in new[] { "IsLocked", "CanSalvage" })
     if (!virtualCalls.Contains(call)) throw new InvalidDataException($"Missing native runtime call after re-open: {call}");
 
 var validatedSize = DiagnosticGraphValidator.Validate(reopened, outUber.ScriptBytecode);

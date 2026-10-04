@@ -206,3 +206,7 @@ The next targeted upload successfully ran all groups but contained only lists/lo
 `LegacyEvidenceExporter` uses the already-working archive reader and UAssetAPI's legacy PropertyExport/FunctionExport support. It outputs indexed imports/exports, property flags/type references, class/function children and Kismet JSON. Opaque buffers, normal asset bodies and raw companions are excluded from evidence. Temporary raw companions are deleted on normal completion/failure. Native ABI is still not certified by successful serialization.
 
 Actual fixture results: LetMeMove UE4.22 actor exports 34 legacy properties and 2 functions with no metadata errors; the generated diagnostic pak exports its manager (50 properties, 2 functions) and sidecar (35 properties, 2 functions). This resolves a specific parser compatibility failure; the user's actual targeted metadata is still required.
+
+## Successful installed-game metadata (2026-10-04)
+
+The legacy export recovered all 31 targeted assets with zero reported errors: 5,298 properties and 824 functions. See [GAME_API_CONTRACTS.md](GAME_API_CONTRACTS.md) for observed native call shapes, widget import kinds, controller-to-HUD resolution, six-slot equipment traversal and the separate salvage undo-return/success-output contract. Persistent hero/item identifiers and native equip are still not established by this export. Repeating the same export is unnecessary.

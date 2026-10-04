@@ -1,6 +1,6 @@
 # Current State
 
-Last updated: 2026-10-04 (Windows CI and installed-game evidence tooling)
+Last updated: 2026-10-04 (successful game metadata and inventory/equipment guards)
 
 ## Actual implementation
 
@@ -18,7 +18,7 @@ The repository has Windows Mod Kit/bootstrap/install tooling, editor reflection 
 | F9 | Select/deselect paired inventory slot/item snapshots |
 | F10 twice | Preview eligible candidates, one per tick; **no items salvaged** |
 
-The graph checks local controller/pawn/stash validity, clears selection on stash replacement, validates snapshot bounds/current membership/object identity, checks native slot locking and stops on invalid sidecar data. It has structural write/re-open checks and negative validator tests.
+The graph checks local controller/pawn/stash validity, clears selection on stash replacement, validates snapshot bounds/current membership/object identity, checks native slot locking, gates input/reads on the real inventory-open field, rejects equipped items through the six HUD gear widgets, and stops on invalid sidecar data. It has structural write/re-open checks and negative validator tests.
 
 These are **generated behaviors, not user-tested runtime guarantees**. `PrintString` visibility in the retail build, reflected item methods, wildcard array behavior and sidecar saving still need in-game verification.
 
@@ -28,9 +28,9 @@ These are **generated behaviors, not user-tested runtime guarantees**. `PrintStr
 - No native salvage call in the diagnostic graph.
 - Fingerprints use localized display name + power + invested enchantment points in one global sidecar. They are not physical item IDs or hero-scoped records. Matching items share protection; stat/localization changes can lose the match.
 - No vanilla salvage interception.
-- No actual inventory/review widget, controller support, input gating to an open inventory, singleton guard or runtime-tested co-op support.
+- No actual inventory/review widget, controller support, modal/focus guards, singleton guard or runtime-tested co-op support. The generated open-inventory gate is not yet runtime-tested.
 - Native `IsLocked()` is not an explicit user lock and does not replace verified equipped/loadout exclusion.
-- API findings from upstream restoration are not independently verified Store/Xbox reflection signatures.
+- Some selected native call shapes and UI fields are now observed in Store/Xbox game assets; persistent identity, native equip and unreferenced reflection remain unverified.
 
 ## Validation and next work
 
@@ -38,7 +38,7 @@ See `REPO_AUDIT.md` for findings/fixes and `RESEARCH_LOG.md` for actual checks. 
 
 The audited changes were merged through [PR #1](https://github.com/Stoffe101/Minecraft-Dungeons-QoL/pull/1) after both Windows workflows passed: [Project Validation](https://github.com/Stoffe101/Minecraft-Dungeons-QoL/actions/runs/37205700653) and [Cooked QoL Diagnostic Build](https://github.com/Stoffe101/Minecraft-Dungeons-QoL/actions/runs/37205700636). That proves the Windows tooling/build path, not game execution.
 
-`Collect-GameEvidence.ps1` gathers read-only asset lists/Blueprint metadata and optional executable version/hash evidence from the active installation. It pins its dumper/runtime downloads, refuses invalid/ambiguous installations and preserves failure diagnostics. See `GAME_EVIDENCE.md`. User-supplied collection logs have been analyzed; no installed-game Blueprint metadata was successfully exported yet.
+`Collect-GameEvidence.ps1` gathers read-only asset lists/Blueprint metadata and optional executable version/hash evidence from the active installation. It pins its dumper/runtime downloads, refuses invalid/ambiguous installations and preserves failure diagnostics. See `GAME_EVIDENCE.md`. The latest user-supplied legacy export successfully recovered all 31 targeted assets. See `GAME_API_CONTRACTS.md` for the observed calls/fields and remaining gaps.
 
 User confirmed the active Paks path as `C:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks`. Their first collection attempt encountered access denied reading `Binaries/Win64/Dungeons.exe`. Executable hashes are now optional: denied metadata is recorded as warnings while archive inspection continues.
 
@@ -46,6 +46,12 @@ The AES-configured retry successfully exposed 131,164 Dungeons paths (45,035 `.u
 
 The next blocker is runtime/reflection evidence from the actual Dungeons 1 executable, followed by stable hero/item identity, equipment guards and a proper review UI. Native salvage remains the intended production backend, gated behind that work. Standard UE4.22 Mod Kit Blueprint authoring remains the preferred route for the finished UI; KismetKompiler and UE4SS are optional research tools.
 
-The targeted retry at `dcc5f5b` completed all groups but exported zero metadata files: UeBlueprintDumper 1.2.0 assumes `UStruct.ChildProperties` (new FProperty layout), which is null for legacy UE4.22 UProperty exports. The project now has `LegacyEvidenceExporter`: CUE4Parse mounts/reads packages, while pinned UAssetAPI 1.1.0 reads legacy imports/properties/functions/Kismet. Local actual UE4.22 actor and diagnostic-pak tests passed (34 properties/2 functions and 50 properties/2 functions respectively). `Collect-LegacyGameEvidence.ps1` builds and runs this route using an existing SDK or an automatic local checksum-pinned SDK. Real game metadata export and runtime feature completion remain pending.
+The targeted retry at `dcc5f5b` completed all groups but exported zero metadata files: UeBlueprintDumper 1.2.0 assumes `UStruct.ChildProperties` (new FProperty layout), which is null for legacy UE4.22 UProperty exports. The project now has `LegacyEvidenceExporter`: CUE4Parse mounts/reads packages, while pinned UAssetAPI 1.1.0 reads legacy imports/properties/functions/Kismet. Local actual UE4.22 actor and diagnostic-pak tests passed (34 properties/2 functions and 50 properties/2 functions respectively). `Collect-LegacyGameEvidence.ps1` builds and runs this route using an existing SDK or an automatic local checksum-pinned SDK. The subsequent legacy export succeeded; runtime feature completion remains pending.
 
-The full legacy collector passed Windows PowerShell 5.1 CI against the real UE4.22 fixture (34 properties, 2 functions, Kismet present, unchanged input hash, metadata-only ZIP); both project validation and cooked diagnostic build passed on PR #6. The next required input is `.research/game-evidence-legacy.zip` from the user’s installation using the command in `GAME_EVIDENCE.md`.
+The full legacy collector passed Windows PowerShell 5.1 CI against the real UE4.22 fixture (34 properties, 2 functions, Kismet present, unchanged input hash, metadata-only ZIP); both project validation and cooked diagnostic build passed on PR #6. That export has now been supplied and analyzed successfully; no repeat collection is needed.
+
+## Applied installed-game evidence
+
+The successful export contains 5,298 properties and 824 Blueprint functions. The generated manager now resolves controller SharedUI/InventoryHUD with the correct widget-class import kind and clears selection when inventory closes or cannot be resolved. It uses controller GetItemStashComponent, an imported GetInventorySlots call, and read-only GetSalvageInfo for fingerprint refund points. Selection/preview explicitly exclude all six equipped item objects and fail closed on incomplete equipment UI. Structural checks verify input/read control flow behind the open flag; negative tests cover bypasses and missing equipment guards. Runtime behavior still needs actual-game validation.
+
+PR #7 head `11c64ed` passed both Windows workflows, including all 13 negative graph tests and full pak packaging. The downloaded CI pak re-read without errors. The next practical gate is an in-game diagnostic test with Blueprint Loader: verify inventory-only hotkeys, six-slot exclusion, closing-inventory cancellation and visible feedback. No further duplicate metadata export is needed. This is still a diagnostic build; physical-item locks, loadouts, vanilla interception and native bulk salvage remain unfinished.

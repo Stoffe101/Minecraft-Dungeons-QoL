@@ -1,3 +1,5 @@
+> The 2026-10-04 legacy upload succeeded for all 31 targets and has been analyzed. There is no need to rerun that same export. Current contracts and remaining runtime/identity gaps are in [GAME_API_CONTRACTS.md](GAME_API_CONTRACTS.md).
+
 # Inspect the installed Dungeons 1 build
 
 The next runtime work needs evidence from the **actual copy being launched**. Public Steam restoration sources and old SDK dumps do not establish current Store/Xbox reflection signatures. This inspection step does not install the mod, inject code or read hero saves.

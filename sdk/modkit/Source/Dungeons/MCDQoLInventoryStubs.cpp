@@ -4,6 +4,11 @@
 
 #include "MCDQoLInventoryStubs.h"
 
+bool UInventoryItem::CanSalvage() const { return false; }
+FText UInventoryItem::GetDisplayNameText() const { return FText::GetEmpty(); }
+int32 UInventoryItem::GetDisplayItemPowerInt() const { return 0; }
+FItemSalvageInfo UItemStashComponent::GetSalvageInfo(UInventoryItem* Item) const { return FItemSalvageInfo(); }
+
 int32 UInventoryItemSlot::GetChangeIndex() const { return 0; }
 bool UInventoryItemSlot::AcceptsItem(const UInventoryItem* OtherItem) const { return OtherItem != nullptr; }
 bool UInventoryItemSlot::CanSwapWith(const UInventoryItemSlot* Other) const { return Other != nullptr && Other != this; }
