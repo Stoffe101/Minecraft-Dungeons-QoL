@@ -94,8 +94,11 @@ Do not modify the hero save structure.
 ```text
 SaveVersion: 1
 Profiles:
-  <hero/profile key>:
-    LockedItemIds: [...]
+  <uniqueSaveId or verified runtime hero key>:
+    LockedItems:
+      - NativeId? / InventoryIndex?
+        TypeSanity
+        FingerprintVersion
     Loadouts:
       - Name
         MeleeItemId
@@ -110,11 +113,16 @@ Settings:
 
 Preferred order:
 
-1. native stable item GUID / unique ID
-2. stable native item-instance identifier
-3. fallback fingerprint only if no stable ID exists
+1. native stable item GUID / unique ID exposed at runtime
+2. another stable native item-instance identifier
+3. verified runtime `inventoryIndex` scoped by hero `uniqueSaveId`
+4. fingerprint fallback
 
-A fallback fingerprint would need to account for type, rarity, power, enchantments, gilded data, and other mutation-prone fields. It is a last resort because upgrades/rerolls may change those values.
+Open-source save-format code confirms that hero profiles contain `uniqueSaveId` and items contain `inventoryIndex`. This is promising but not sufficient by itself: storage transfers can change the index, and the highest deleted index can later be reused.
+
+If `inventoryIndex` becomes the fallback key, store sanity data such as item type and reconcile stale entries. Any ambiguous identity must fail closed.
+
+See `INVENTORY_IDENTITY.md`.
 
 ## Mass salvage transaction
 
@@ -128,7 +136,7 @@ Phase-1 design:
 6. Freeze the selected identities.
 7. For each identity:
    - resolve current item
-   - revalidate protection
+   - revalidate identity and protection
    - invoke native salvage
    - record success/failure
 8. Show summary.
