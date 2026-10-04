@@ -17,16 +17,30 @@ try {
     $mock = Join-Path $fixture "mock dumper.ps1"
     @'
 param([Parameter(ValueFromRemainingArguments=$true)][string[]]$Values)
-if ($Values.Count -ne 6 -or $Values[0] -ne '--list' -or $Values[1] -ne '--dump' -or $Values[3] -ne 'UE4_22') { throw "Incorrect dumper argument layout: $Values" }
-Set-Content (Join-Path $Values[5] 'AssetList.txt') "Dungeons/Content/$($Values[4])/fixture.uasset"
-Set-Content (Join-Path $Values[5] 'Class_fixture.txt') 'Synthetic metadata only'
+if ($Values[0] -ne '--list') { throw 'Missing list flag' }
+$dump = $Values[1] -eq '--dump'
+$skip = 1
+if ($dump) { $skip++ }
+if ($Values[$skip] -eq '--key') {
+    if ($Values[$skip+1] -ne ('0x' + ('a' * 64))) { throw 'Key argument corrupted' }
+    $skip += 2
+}
+$positional = @($Values[$skip..($Values.Count-1)])
+if ($positional.Count -ne 4 -or $positional[1] -ne 'UE4_22' -or (-not $dump -and $positional[2] -ne 'Dungeons/')) { throw "Incorrect dumper argument layout: $Values" }
+Set-Content (Join-Path $positional[3] 'AssetList.txt') "Dungeons/Content/$($positional[2])/fixture.uasset"
+if ($dump) { Set-Content (Join-Path $positional[3] 'Class_fixture.txt') 'Synthetic metadata only' }
 exit 0
 '@ | Set-Content $mock
     $out = Join-Path $fixture "evidence output"
     & (Join-Path $PSScriptRoot "Collect-GameEvidence.ps1") -PaksPath $paks -DumperExe $mock -OutputDirectory $out
     if ($LASTEXITCODE -ne 0) { throw "Evidence collection failed" }
     $report = Get-Content (Join-Path $out "REPORT.json") -Raw | ConvertFrom-Json
-    if ($report.issues.Count -ne 0 -or $report.pakFiles.Count -ne 1) { throw "Invalid evidence manifest" }
+    if ($report.issues.Count -ne 0 -or $report.pakFiles.Count -ne 1 -or $report.archiveCatalogCount -ne 1 -or $report.aesKeyProvided) { throw "Invalid evidence manifest" }
+    $keyOut = Join-Path $fixture 'key evidence'
+    & (Join-Path $PSScriptRoot 'Collect-GameEvidence.ps1') -PaksPath $paks -DumperExe $mock -AesKey ('0x' + ('a' * 64)) -OutputDirectory $keyOut
+    $keyReport = Get-Content (Join-Path $keyOut 'REPORT.json') -Raw | ConvertFrom-Json
+    if ($LASTEXITCODE -ne 0 -or -not $keyReport.aesKeyProvided -or $keyReport.archiveCatalogCount -ne 1) { throw 'AES argument forwarding failed' }
+    if ((Get-Content (Join-Path $keyOut 'REPORT.json') -Raw).Contains('a' * 64)) { throw 'Key leaked into report' }
     if ((Get-FileHash (Join-Path $paks "base.pak")).Hash -ne $hashBefore) { throw "Collector mutated input archive" }
     $unzip = Join-Path $fixture "check"
     Expand-Archive "$out.zip" $unzip
@@ -60,20 +74,20 @@ exit 0
     & (Join-Path $PSScriptRoot "Collect-GameEvidence.ps1") -PaksPath $paks -DumperExe $failedMock -OutputDirectory $failedOut
     if ($LASTEXITCODE -ne 1) { throw "Failed dumper did not fail collection" }
     $failedReport = Get-Content (Join-Path $failedOut 'REPORT.json') -Raw | ConvertFrom-Json
-    if ($failedReport.issues.Count -ne 12 -or -not (Test-Path "$failedOut.zip")) { throw "Failed dumper diagnostics were lost" }
+    if ($failedReport.issues.Count -ne 14 -or -not (Test-Path "$failedOut.zip") -or $failedReport.archiveCatalogCount -ne 0) { throw "Failed dumper diagnostics were lost" }
     if ($TestBootstrap) {
         $bootstrapOut = Join-Path $fixture 'real tool evidence'
         & (Join-Path $PSScriptRoot "Collect-GameEvidence.ps1") -PaksPath $paks -OutputDirectory $bootstrapOut
         $bootstrapReport = Get-Content (Join-Path $bootstrapOut 'REPORT.json') -Raw | ConvertFrom-Json
         # The synthetic archive is intentionally invalid, but the reviewed tool must start.
         if ($LASTEXITCODE -ne 1 -or $bootstrapReport.issues.Count -lt 6) { throw "Invalid archive unexpectedly succeeded" }
-        if (@(Get-ChildItem $bootstrapOut -Recurse -Filter Dumper.log).Count -ne 6) { throw "Real dumper bootstrap failed before the six invocations: $($bootstrapReport.issues -join '; ')" }
+        if (@(Get-ChildItem $bootstrapOut -Recurse -Filter Dumper.log).Count -ne 7) { throw "Real dumper bootstrap failed before the seven invocations: $($bootstrapReport.issues -join '; ')" }
         foreach ($log in Get-ChildItem $bootstrapOut -Recurse -Filter Dumper.log) {
             if ((Get-Content $log.FullName -Raw) -notmatch 'UeBlueprintDumper') { throw "Real dumper did not start: $($log.FullName)" }
         }
         Write-Host '[PASS] Pinned Windows tool/runtime downloads, checksum verification and real dumper rejection of invalid archives'
     }
-    Write-Host "[PASS] Explicit/missing paths, six dumps, metadata ZIP, read-only input, output guards, executable access denial and failure diagnostics"
+    Write-Host "[PASS] Paths, archive catalog, six dumps, AES argument forwarding, metadata ZIP, read-only input, output guards, executable denial and failure diagnostics"
 } finally {
     $env:MCD_PAKS_PATH = $oldEnv
     Remove-Item $fixture -Recurse -Force
