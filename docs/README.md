@@ -15,6 +15,7 @@ This folder is the canonical project record.
 - **THIRD_PARTY.md** — dependencies, references, and licensing constraints.
 - **RESEARCH_LOG.md** — dated research/implementation log.
 - **DECISIONS.md** — architectural decisions and rationale.
+- **INVENTORY_IDENTITY.md** — item/hero identity research and the safe fallback strategy for persistent locks.
 
 ## Documentation rule
 
