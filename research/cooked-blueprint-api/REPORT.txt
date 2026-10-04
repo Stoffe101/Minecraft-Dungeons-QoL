@@ -1,0 +1,80 @@
+# Current cooked LetMeMove Blueprint inspection
+
+Release: 1.1.0
+Actor: D:\a\Minecraft-Dungeons-QoL\Minecraft-Dungeons-QoL\.research\cooked\unpacked\Dungeons\Content\Mods\LetMeMove\BP_WASD_Movement.uasset
+Probe exit code: 0
+
+=== VER_UE4_20 ===
+SUCCESS
+ObjectVersion=VER_UE4_FIX_WIDE_STRING_CRC (517)
+Names=124
+Imports=60
+Exports=41
+
+== IMPORTS ==
+I1: /Script/Engine.Actor Default__Actor outer=-50
+I2: /Script/Engine.BlueprintGeneratedClass Default__BlueprintGeneratedClass outer=-50
+I3: /Script/CoreUObject.BoolProperty Default__BoolProperty outer=-49
+I4: /Script/CoreUObject.BoolProperty bOrientRotationToMovement outer=-15
+I5: /Script/CoreUObject.Class BoolProperty outer=-49
+I6: /Script/CoreUObject.Class FloatProperty outer=-49
+I7: /Script/CoreUObject.Class Function outer=-49
+I8: /Script/CoreUObject.Class IntProperty outer=-49
+I9: /Script/CoreUObject.Class Object outer=-49
+I10: /Script/CoreUObject.Class ObjectProperty outer=-49
+I11: /Script/CoreUObject.Class StructProperty outer=-49
+I12: /Script/CoreUObject.Class Actor outer=-50
+I13: /Script/CoreUObject.Class BlueprintGeneratedClass outer=-50
+I14: /Script/CoreUObject.Class Character outer=-50
+I15: /Script/CoreUObject.Class CharacterMovementComponent outer=-50
+I16: /Script/CoreUObject.Class Controller outer=-50
+I17: /Script/CoreUObject.Class GameplayStatics outer=-50
+I18: /Script/CoreUObject.Class KismetMathLibrary outer=-50
+I19: /Script/CoreUObject.Class Pawn outer=-50
+I20: /Script/CoreUObject.Class PlayerCameraManager outer=-50
+I21: /Script/CoreUObject.Class PlayerController outer=-50
+I22: /Script/CoreUObject.Class SceneComponent outer=-50
+I23: /Script/CoreUObject.Class SCS_Node outer=-50
+I24: /Script/CoreUObject.Class SimpleConstructionScript outer=-50
+I25: /Script/CoreUObject.FloatProperty Default__FloatProperty outer=-49
+I26: /Script/CoreUObject.Function Default__Function outer=-49
+I27: /Script/CoreUObject.Function ReceiveTick outer=-12
+I28: /Script/CoreUObject.Function K2_GetPawn outer=-16
+I29: /Script/CoreUObject.Function GetPlayerController outer=-17
+I30: /Script/CoreUObject.Function Add_VectorVector outer=-18
+I31: /Script/CoreUObject.Function BreakRotator outer=-18
+I32: /Script/CoreUObject.Function Conv_VectorToRotator outer=-18
+I33: /Script/CoreUObject.Function GetForwardVector outer=-18
+I34: /Script/CoreUObject.Function GetRightVector outer=-18
+I35: /Script/CoreUObject.Function Greater_FloatFloat outer=-18
+I36: /Script/CoreUObject.Function MakeRotator outer=-18
+I37: /Script/CoreUObject.Function Multiply_VectorFloat outer=-18
+I38: /Script/CoreUObject.Function Normal outer=-18
+I39: /Script/CoreUObject.Function SelectFloat outer=-18
+I40: /Script/CoreUObject.Function Subtract_FloatFloat outer=-18
+I41: /Script/CoreUObject.Function VSize outer=-18
+I42: /Script/CoreUObject.Function GetCameraRotation outer=-20
+I43: /Script/CoreUObject.Function IsInputKeyDown outer=-21
+I44: /Script/Engine.GameplayStatics Default__GameplayStatics outer=-50
+I45: /Script/CoreUObject.IntProperty Default__IntProperty outer=-49
+I46: /Script/CoreUObject.ObjectProperty Default__ObjectProperty outer=-49
+I47: /Script/CoreUObject.ObjectProperty CharacterMovement outer=-14
+I48: /Script/CoreUObject.ObjectProperty PlayerCameraManager outer=-21
+I49: /Script/CoreUObject.Package /Script/CoreUObject outer=0
+I50: /Script/CoreUObject.Package /Script/Engine outer=0
+I51: /Script/CoreUObject.Package /Script/InputCore outer=0
+I52: /Script/Engine.SceneComponent Default__SceneComponent outer=-50
+I53: /Script/CoreUObject.ScriptStruct Rotator outer=-49
+I54: /Script/CoreUObject.ScriptStruct Vector outer=-49
+I55: /Script/CoreUObject.ScriptStruct PointerToUberGraphFrame outer=-50
+I56: /Script/CoreUObject.ScriptStruct Key outer=-51
+I57: /Script/Engine.SCS_Node Default__SCS_Node outer=-50
+I58: /Script/Engine.SimpleConstructionScript Default__SimpleConstructionScript outer=-50
+I59: /Script/CoreUObject.StructProperty Default__StructProperty outer=-49
+I60: /Script/CoreUObject.StructProperty RotationRate outer=-15
+
+== FUNCTIONS ==
+### ExecuteUbergraph_BP_WASD_Movement bytecode=60
+Kismet serialization failed: NullReferenceException: Object reference not set to an instance of an object.
+### ReceiveTick bytecode=4
+Kismet serialization failed: NullReferenceException: Object reference not set to an instance of an object.
