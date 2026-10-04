@@ -79,7 +79,92 @@ I65: /Script/CoreUObject.ScriptStruct PointerToUberGraphFrame outer=-60
 I66: /Script/CoreUObject.ScriptStruct Key outer=-61
 I67: /Script/CoreUObject.StructProperty RotationRate outer=-25
 
-== FUNCTIONS ==
+== EXPORTS ==
+E1: PropertyExport name=UberGraphFrame outer=2 class=-20 super=0
+E2: ClassExport name=BP_WASD_Movement_C outer=0 class=-23 super=-21
+E3: NormalExport name=Default__BP_WASD_Movement_C outer=0 class=2 super=0
+E4: NormalExport name=BP_WASD_Movement outer=0 class=-22 super=0
+E5: PropertyExport name=DefaultSceneRoot outer=2 class=-19 super=0
+E6: PropertyExport name=EntryPoint outer=7 class=-16 super=0
+E7: FunctionExport name=ExecuteUbergraph_BP_WASD_Movement outer=2 class=-15 super=0
+E8: PropertyExport name=CallFunc_Greater_FloatFloat_ReturnValue outer=7 class=-13 super=0
+E9: PropertyExport name=CallFunc_IsInputKeyDown_ReturnValue outer=7 class=-13 super=0
+E10: PropertyExport name=CallFunc_IsInputKeyDown_ReturnValue1 outer=7 class=-13 super=0
+E11: PropertyExport name=CallFunc_IsInputKeyDown_ReturnValue2 outer=7 class=-13 super=0
+E12: PropertyExport name=CallFunc_IsInputKeyDown_ReturnValue3 outer=7 class=-13 super=0
+E13: PropertyExport name=K2Node_DynamicCast_bSuccess outer=7 class=-13 super=0
+E14: NormalExport name=EventGraph outer=4 class=-27 super=0
+E15: NormalExport name=UserConstructionScript outer=4 class=-27 super=0
+E16: PropertyExport name=CallFunc_BreakRotator_Pitch outer=7 class=-14 super=0
+E17: PropertyExport name=CallFunc_BreakRotator_Roll outer=7 class=-14 super=0
+E18: PropertyExport name=CallFunc_BreakRotator_Yaw outer=7 class=-14 super=0
+E19: PropertyExport name=CallFunc_SelectFloat_ReturnValue outer=7 class=-14 super=0
+E20: PropertyExport name=CallFunc_SelectFloat_ReturnValue1 outer=7 class=-14 super=0
+E21: PropertyExport name=CallFunc_SelectFloat_ReturnValue2 outer=7 class=-14 super=0
+E22: PropertyExport name=CallFunc_SelectFloat_ReturnValue3 outer=7 class=-14 super=0
+E23: PropertyExport name=CallFunc_Subtract_FloatFloat_ReturnValue outer=7 class=-14 super=0
+E24: PropertyExport name=CallFunc_Subtract_FloatFloat_ReturnValue1 outer=7 class=-14 super=0
+E25: PropertyExport name=CallFunc_VSize_ReturnValue outer=7 class=-14 super=0
+E26: PropertyExport name=K2Node_Event_DeltaSeconds outer=7 class=-14 super=0
+E27: FunctionExport name=ReceiveTick outer=2 class=-15 super=-37
+E28: PropertyExport name=DeltaSeconds outer=27 class=-14 super=0
+E29: NormalExport name=K2Node_CallFunction_10 outer=14 class=-4 super=0
+E30: NormalExport name=K2Node_CallFunction_11 outer=14 class=-4 super=0
+E31: NormalExport name=K2Node_CallFunction_12 outer=14 class=-4 super=0
+E32: NormalExport name=K2Node_CallFunction_13 outer=14 class=-4 super=0
+E33: NormalExport name=K2Node_CallFunction_14 outer=14 class=-4 super=0
+E34: NormalExport name=K2Node_CallFunction_15 outer=14 class=-4 super=0
+E35: NormalExport name=K2Node_CallFunction_16 outer=14 class=-4 super=0
+E36: NormalExport name=K2Node_CallFunction_17 outer=14 class=-4 super=0
+E37: NormalExport name=K2Node_CallFunction_18 outer=14 class=-4 super=0
+E38: NormalExport name=K2Node_CallFunction_19 outer=14 class=-4 super=0
+E39: NormalExport name=K2Node_CallFunction_2 outer=14 class=-4 super=0
+E40: NormalExport name=K2Node_CallFunction_20 outer=14 class=-4 super=0
+E41: NormalExport name=K2Node_CallFunction_21 outer=14 class=-4 super=0
+E42: NormalExport name=K2Node_CallFunction_22 outer=14 class=-4 super=0
+E43: NormalExport name=K2Node_CallFunction_23 outer=14 class=-4 super=0
+E44: NormalExport name=K2Node_CallFunction_25 outer=14 class=-4 super=0
+E45: NormalExport name=K2Node_CallFunction_28 outer=14 class=-4 super=0
+E46: NormalExport name=K2Node_CallFunction_3 outer=14 class=-4 super=0
+E47: NormalExport name=K2Node_CallFunction_31 outer=14 class=-4 super=0
+E48: NormalExport name=K2Node_CallFunction_36 outer=14 class=-4 super=0
+E49: NormalExport name=K2Node_CallFunction_4 outer=14 class=-4 super=0
+E50: NormalExport name=K2Node_CallFunction_5 outer=14 class=-4 super=0
+E51: NormalExport name=K2Node_CallFunction_6 outer=14 class=-4 super=0
+E52: NormalExport name=K2Node_CallFunction_7 outer=14 class=-4 super=0
+E53: NormalExport name=K2Node_CallFunction_8 outer=14 class=-4 super=0
+E54: NormalExport name=K2Node_CallFunction_9 outer=14 class=-4 super=0
+E55: NormalExport name=K2Node_CommutativeAssociativeBinaryOperator_0 outer=14 class=-5 super=0
+E56: NormalExport name=K2Node_DynamicCast_0 outer=14 class=-6 super=0
+E57: NormalExport name=K2Node_Event_2 outer=14 class=-7 super=0
+E58: NormalExport name=K2Node_FunctionEntry_0 outer=15 class=-8 super=0
+E59: NormalExport name=K2Node_IfThenElse_0 outer=14 class=-9 super=0
+E60: NormalExport name=K2Node_Knot_1 outer=14 class=-10 super=0
+E61: NormalExport name=K2Node_Knot_2 outer=14 class=-10 super=0
+E62: NormalExport name=K2Node_VariableGet_0 outer=14 class=-11 super=0
+E63: NormalExport name=K2Node_VariableGet_3 outer=14 class=-11 super=0
+E64: NormalExport name=K2Node_VariableSet_0 outer=14 class=-12 super=0
+E65: NormalExport name=K2Node_VariableSet_1 outer=14 class=-12 super=0
+E66: MetaDataExport name=PackageMetaData outer=0 class=-17 super=0
+E67: PropertyExport name=CallFunc_GetPlayerController_ReturnValue outer=7 class=-19 super=0
+E68: PropertyExport name=CallFunc_K2_GetPawn_ReturnValue outer=7 class=-19 super=0
+E69: PropertyExport name=K2Node_DynamicCast_AsCharacter outer=7 class=-19 super=0
+E70: NormalExport name=DefaultSceneRoot_GEN_VARIABLE outer=2 class=-33 super=0
+E71: NormalExport name=SceneThumbnailInfo_0 outer=4 class=-36 super=0
+E72: NormalExport name=SCS_Node_0 outer=73 class=-34 super=0
+E73: NormalExport name=SimpleConstructionScript_0 outer=2 class=-35 super=0
+E74: PropertyExport name=CallFunc_Add_VectorVector_ReturnValue outer=7 class=-20 super=0
+E75: PropertyExport name=CallFunc_Conv_VectorToRotator_ReturnValue outer=7 class=-20 super=0
+E76: PropertyExport name=CallFunc_GetCameraRotation_ReturnValue outer=7 class=-20 super=0
+E77: PropertyExport name=CallFunc_GetForwardVector_ReturnValue outer=7 class=-20 super=0
+E78: PropertyExport name=CallFunc_GetRightVector_ReturnValue outer=7 class=-20 super=0
+E79: PropertyExport name=CallFunc_MakeRotator_ReturnValue outer=7 class=-20 super=0
+E80: PropertyExport name=CallFunc_MakeRotator_ReturnValue1 outer=7 class=-20 super=0
+E81: PropertyExport name=CallFunc_Multiply_VectorFloat_ReturnValue outer=7 class=-20 super=0
+E82: PropertyExport name=CallFunc_Multiply_VectorFloat_ReturnValue1 outer=7 class=-20 super=0
+E83: PropertyExport name=CallFunc_Normal_ReturnValue outer=7 class=-20 super=0
+
+== FUNCTIONS / KISMET JSON ==
 ### ExecuteUbergraph_BP_WASD_Movement bytecode=76
 [
   {

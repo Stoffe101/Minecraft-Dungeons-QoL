@@ -73,7 +73,58 @@ I59: /Script/UMGEditor.WidgetBlueprint Default__WidgetBlueprint outer=-54
 I60: /Script/UMG.WidgetBlueprintLibrary Default__WidgetBlueprintLibrary outer=-53
 I61: /Script/UMG.WidgetTree WidgetTree outer=-59
 
-== FUNCTIONS ==
+== EXPORTS ==
+E1: PropertyExport name=UberGraphFrame outer=2 class=-14 super=0
+E2: ClassExport name=CameraCoordsOverlay_C outer=0 class=-26 super=-25
+E3: NormalExport name=Default__CameraCoordsOverlay_C outer=0 class=2 super=0
+E4: PropertyExport name=OverlayText outer=2 class=-12 super=0
+E5: PropertyExport name=EntryPoint outer=6 class=-9 super=0
+E6: FunctionExport name=ExecuteUbergraph_CameraCoordsOverlay outer=2 class=-8 super=0
+E7: PropertyExport name=CallFunc_Split_ReturnValue outer=6 class=-6 super=0
+E8: PropertyExport name=CallFunc_Split_ReturnValue1 outer=6 class=-6 super=0
+E9: NormalExport name=CanvasPanel_0 outer=49 class=-22 super=0
+E10: NormalExport name=CanvasPanelSlot_5 outer=9 class=-23 super=0
+E11: NormalExport name=EventGraph outer=48 class=-16 super=0
+E12: PropertyExport name=K2Node_Event_InDeltaTime outer=6 class=-7 super=0
+E13: FunctionExport name=Destruct outer=2 class=-8 super=-42
+E14: PropertyExport name=MyGeometry outer=15 class=-14 super=0
+E15: FunctionExport name=Tick outer=2 class=-8 super=-43
+E16: PropertyExport name=InDeltaTime outer=15 class=-7 super=0
+E17: NormalExport name=K2Node_CallFunction_0 outer=11 class=-2 super=0
+E18: NormalExport name=K2Node_CallFunction_1 outer=11 class=-2 super=0
+E19: NormalExport name=K2Node_CallFunction_2 outer=11 class=-2 super=0
+E20: NormalExport name=K2Node_CallFunction_3 outer=11 class=-2 super=0
+E21: NormalExport name=K2Node_CallFunction_4 outer=11 class=-2 super=0
+E22: NormalExport name=K2Node_CallFunction_5 outer=11 class=-2 super=0
+E23: NormalExport name=K2Node_CallFunction_6 outer=11 class=-2 super=0
+E24: NormalExport name=K2Node_CallFunction_7 outer=11 class=-2 super=0
+E25: NormalExport name=K2Node_CallFunction_8 outer=11 class=-2 super=0
+E26: NormalExport name=K2Node_CommutativeAssociativeBinaryOperator_0 outer=11 class=-3 super=0
+E27: NormalExport name=K2Node_CreateWidget_0 outer=11 class=-29 super=0
+E28: NormalExport name=K2Node_Event_0 outer=11 class=-4 super=0
+E29: NormalExport name=K2Node_Event_2 outer=11 class=-4 super=0
+E30: NormalExport name=K2Node_VariableGet_0 outer=11 class=-5 super=0
+E31: MetaDataExport name=PackageMetaData outer=0 class=-10 super=0
+E32: PropertyExport name=CallFunc_Create_ReturnValue outer=6 class=-12 super=0
+E33: PropertyExport name=CallFunc_GetPlayerCameraManager_ReturnValue outer=6 class=-12 super=0
+E34: PropertyExport name=CallFunc_Concat_StrStr_ReturnValue outer=6 class=-13 super=0
+E35: PropertyExport name=CallFunc_Concat_StrStr_ReturnValue1 outer=6 class=-13 super=0
+E36: PropertyExport name=CallFunc_Concat_StrStr_ReturnValue2 outer=6 class=-13 super=0
+E37: PropertyExport name=CallFunc_Concat_StrStr_ReturnValue3 outer=6 class=-13 super=0
+E38: PropertyExport name=CallFunc_Conv_VectorToString_ReturnValue outer=6 class=-13 super=0
+E39: PropertyExport name=CallFunc_Replace_ReturnValue outer=6 class=-13 super=0
+E40: PropertyExport name=CallFunc_Split_LeftS outer=6 class=-13 super=0
+E41: PropertyExport name=CallFunc_Split_LeftS1 outer=6 class=-13 super=0
+E42: PropertyExport name=CallFunc_Split_RightS outer=6 class=-13 super=0
+E43: PropertyExport name=CallFunc_Split_RightS1 outer=6 class=-13 super=0
+E44: PropertyExport name=CallFunc_GetCameraLocation_ReturnValue outer=6 class=-14 super=0
+E45: PropertyExport name=K2Node_Event_MyGeometry outer=6 class=-14 super=0
+E46: NormalExport name=OverlayText outer=49 class=-24 super=0
+E47: PropertyExport name=CallFunc_Conv_StringToText_ReturnValue outer=6 class=-15 super=0
+E48: NormalExport name=CameraCoordsOverlay outer=0 class=-30 super=0
+E49: NormalExport name=WidgetTree outer=48 class=-28 super=0
+
+== FUNCTIONS / KISMET JSON ==
 ### ExecuteUbergraph_CameraCoordsOverlay bytecode=30
 [
   {

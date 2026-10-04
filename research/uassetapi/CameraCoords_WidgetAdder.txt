@@ -62,7 +62,39 @@ I48: /Script/CoreUObject.ScriptStruct PointerToUberGraphFrame outer=-44
 I49: /Script/UMG.WidgetBlueprintGeneratedClass CameraCoordsOverlay_C outer=-41
 I50: /Script/UMG.WidgetBlueprintLibrary Default__WidgetBlueprintLibrary outer=-45
 
-== FUNCTIONS ==
+== EXPORTS ==
+E1: PropertyExport name=UberGraphFrame outer=2 class=-15 super=0
+E2: ClassExport name=WidgetAdder_C outer=0 class=-18 super=-16
+E3: NormalExport name=Default__WidgetAdder_C outer=0 class=2 super=0
+E4: PropertyExport name=DefaultSceneRoot outer=2 class=-14 super=0
+E5: PropertyExport name=EntryPoint outer=6 class=-11 super=0
+E6: FunctionExport name=ExecuteUbergraph_WidgetAdder outer=2 class=-10 super=0
+E7: PropertyExport name=CallFunc_GetAllWidgetsOfClass_FoundWidgets outer=8 class=-14 super=0
+E8: PropertyExport name=CallFunc_GetAllWidgetsOfClass_FoundWidgets outer=6 class=-8 super=0
+E9: NormalExport name=WidgetAdder outer=0 class=-17 super=0
+E10: PropertyExport name=CallFunc_EqualEqual_IntInt_ReturnValue outer=6 class=-9 super=0
+E11: NormalExport name=EventGraph outer=9 class=-19 super=0
+E12: NormalExport name=UserConstructionScript outer=9 class=-19 super=0
+E13: FunctionExport name=ReceiveBeginPlay outer=2 class=-10 super=-31
+E14: PropertyExport name=CallFunc_Array_Length_ReturnValue outer=6 class=-11 super=0
+E15: NormalExport name=K2Node_CallArrayFunction_0 outer=11 class=-3 super=0
+E16: NormalExport name=K2Node_CallFunction_1 outer=11 class=-4 super=0
+E17: NormalExport name=K2Node_CallFunction_2 outer=11 class=-4 super=0
+E18: NormalExport name=K2Node_CallFunction_3 outer=11 class=-4 super=0
+E19: NormalExport name=K2Node_CallFunction_6 outer=11 class=-4 super=0
+E20: NormalExport name=K2Node_CreateWidget_0 outer=11 class=-29 super=0
+E21: NormalExport name=K2Node_Event_0 outer=11 class=-5 super=0
+E22: NormalExport name=K2Node_FunctionEntry_0 outer=12 class=-6 super=0
+E23: NormalExport name=K2Node_IfThenElse_0 outer=11 class=-7 super=0
+E24: MetaDataExport name=PackageMetaData outer=0 class=-12 super=0
+E25: PropertyExport name=CallFunc_Create_ReturnValue outer=6 class=-14 super=0
+E26: PropertyExport name=CallFunc_GetPlayerController_ReturnValue outer=6 class=-14 super=0
+E27: NormalExport name=DefaultSceneRoot_GEN_VARIABLE outer=2 class=-24 super=0
+E28: NormalExport name=SceneThumbnailInfo_0 outer=9 class=-30 super=0
+E29: NormalExport name=SCS_Node_0 outer=30 class=-25 super=0
+E30: NormalExport name=SimpleConstructionScript_0 outer=2 class=-26 super=0
+
+== FUNCTIONS / KISMET JSON ==
 ### ExecuteUbergraph_WidgetAdder bytecode=24
 [
   {

@@ -42,4 +42,27 @@ I28: /Script/CoreUObject.Package /Script/NavigationSystem outer=0
 I29: /Script/CoreUObject.Package /Script/UnrealEd outer=0
 I30: /Script/Engine.SceneComponent DefaultSceneRoot_GEN_VARIABLE outer=-1
 
-== FUNCTIONS ==
+== EXPORTS ==
+E1: ClassExport name=CameraCoords_C outer=0 class=-9 super=-14
+E2: NormalExport name=Default__CameraCoords_C outer=0 class=1 super=0
+E3: NormalExport name=Brush_0 outer=9 class=-10 super=0
+E4: NormalExport name=BrushComponent0 outer=3 class=-11 super=0
+E5: NormalExport name=CameraCoords_C_18 outer=9 class=1 super=0
+E6: NormalExport name=EventGraph outer=10 class=-12 super=0
+E7: NormalExport name=K2Node_Event_0 outer=6 class=-5 super=0
+E8: NormalExport name=K2Node_Event_1 outer=6 class=-5 super=0
+E9: LevelExport name=PersistentLevel outer=19 class=-13 super=0
+E10: NormalExport name=CameraCoords outer=9 class=-15 super=0
+E11: MetaDataExport name=PackageMetaData outer=0 class=-6 super=0
+E12: NormalExport name=Brush outer=9 class=-16 super=0
+E13: NormalExport name=Model_0 outer=9 class=-16 super=0
+E14: NormalExport name=NavigationSystemModuleConfig_0 outer=20 class=-21 super=0
+E15: NormalExport name=Polys_0 outer=9 class=-17 super=0
+E16: NormalExport name=Polys_1 outer=9 class=-17 super=0
+E17: NormalExport name=DefaultSceneRoot outer=18 class=-18 super=0
+E18: NormalExport name=MyActor_2 outer=9 class=-1 super=0
+E19: NormalExport name=CameraCoords outer=0 class=-19 super=0
+E20: NormalExport name=WorldSettings outer=9 class=-20 super=0
+E21: NormalExport name=WorldThumbnailInfo_0 outer=19 class=-22 super=0
+
+== FUNCTIONS / KISMET JSON ==
