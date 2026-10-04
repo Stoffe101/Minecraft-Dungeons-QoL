@@ -73,8 +73,4118 @@ I58: /Script/Engine.SimpleConstructionScript Default__SimpleConstructionScript o
 I59: /Script/CoreUObject.StructProperty Default__StructProperty outer=-49
 I60: /Script/CoreUObject.StructProperty RotationRate outer=-15
 
-== FUNCTIONS ==
+== FUNCTIONS / KISMET TREE ==
 ### ExecuteUbergraph_BP_WASD_Movement bytecode=60
-Kismet serialization failed: NullReferenceException: Object reference not set to an instance of an object.
+  [0]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_ComputedJump
+      .CodeOffsetExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 5
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_ComputedJump
+  [1]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_LetObj
+      .VariableExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 26
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .AssignmentExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+          .ObjectExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_ObjectConst
+              .Tag
+                null
+              .RawValue
+                FPackageIndex: -44
+              .Token
+                EExprToken: EX_ObjectConst
+          .Offset
+            UInt32: 16
+          .PropertyType
+            Byte: 0
+          .RValuePointer
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 26
+              .New
+                null
+          .ContextExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_FinalFunction
+              .StackNode
+                FPackageIndex: -29
+              .Parameters
+                KismetExpression[]
+                  [0]
+                    UAssetAPI.Kismet.Bytecode.Expressions.EX_Self
+                      .Tag
+                        null
+                      .RawValue
+                        null
+                      .Token
+                        EExprToken: EX_Self
+                  [1]
+                    UAssetAPI.Kismet.Bytecode.Expressions.EX_IntConst
+                      .Tag
+                        null
+                      .RawValue
+                        Int32: 0
+                      .Token
+                        EExprToken: EX_IntConst
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_FinalFunction
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Context
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_LetObj
+  [2]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_LetBool
+      .VariableExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 8
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .AssignmentExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+          .ObjectExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 26
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+          .Offset
+            UInt32: 37
+          .PropertyType
+            Byte: 0
+          .RValuePointer
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 8
+              .New
+                null
+          .ContextExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_FinalFunction
+              .StackNode
+                FPackageIndex: -43
+              .Parameters
+                KismetExpression[]
+                  [0]
+                    UAssetAPI.Kismet.Bytecode.Expressions.EX_StructConst
+                      .Struct
+                        FPackageIndex: -56
+                      .StructSize
+                        Int32: 32
+                      .Tag
+                        null
+                      .RawValue
+                        KismetExpression[]
+                          [0]
+                            UAssetAPI.Kismet.Bytecode.Expressions.EX_NameConst
+                              .Tag
+                                null
+                              .RawValue
+                                FName: W
+                              .Token
+                                EExprToken: EX_NameConst
+                      .Token
+                        EExprToken: EX_StructConst
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_FinalFunction
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Context
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_LetBool
+  [3]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 16
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 16
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -39
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 1
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 0
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [2]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 8
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [4]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_LetBool
+      .VariableExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 9
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .AssignmentExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+          .ObjectExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 26
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+          .Offset
+            UInt32: 37
+          .PropertyType
+            Byte: 0
+          .RValuePointer
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 9
+              .New
+                null
+          .ContextExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_FinalFunction
+              .StackNode
+                FPackageIndex: -43
+              .Parameters
+                KismetExpression[]
+                  [0]
+                    UAssetAPI.Kismet.Bytecode.Expressions.EX_StructConst
+                      .Struct
+                        FPackageIndex: -56
+                      .StructSize
+                        Int32: 32
+                      .Tag
+                        null
+                      .RawValue
+                        KismetExpression[]
+                          [0]
+                            UAssetAPI.Kismet.Bytecode.Expressions.EX_NameConst
+                              .Tag
+                                null
+                              .RawValue
+                                FName: S
+                              .Token
+                                EExprToken: EX_NameConst
+                      .Token
+                        EExprToken: EX_StructConst
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_FinalFunction
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Context
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_LetBool
+  [5]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_LetBool
+      .VariableExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 10
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .AssignmentExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+          .ObjectExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 26
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+          .Offset
+            UInt32: 37
+          .PropertyType
+            Byte: 0
+          .RValuePointer
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 10
+              .New
+                null
+          .ContextExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_FinalFunction
+              .StackNode
+                FPackageIndex: -43
+              .Parameters
+                KismetExpression[]
+                  [0]
+                    UAssetAPI.Kismet.Bytecode.Expressions.EX_StructConst
+                      .Struct
+                        FPackageIndex: -56
+                      .StructSize
+                        Int32: 32
+                      .Tag
+                        null
+                      .RawValue
+                        KismetExpression[]
+                          [0]
+                            UAssetAPI.Kismet.Bytecode.Expressions.EX_NameConst
+                              .Tag
+                                null
+                              .RawValue
+                                FName: D
+                              .Token
+                                EExprToken: EX_NameConst
+                      .Token
+                        EExprToken: EX_StructConst
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_FinalFunction
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Context
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_LetBool
+  [6]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 17
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 17
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -39
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 1
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 0
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [2]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 9
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [7]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 18
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 18
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -39
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 1
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 0
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [2]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 10
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [8]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 20
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 20
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -40
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 16
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 17
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [9]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_LetBool
+      .VariableExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 11
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .AssignmentExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+          .ObjectExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 26
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+          .Offset
+            UInt32: 37
+          .PropertyType
+            Byte: 0
+          .RValuePointer
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 11
+              .New
+                null
+          .ContextExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_FinalFunction
+              .StackNode
+                FPackageIndex: -43
+              .Parameters
+                KismetExpression[]
+                  [0]
+                    UAssetAPI.Kismet.Bytecode.Expressions.EX_StructConst
+                      .Struct
+                        FPackageIndex: -56
+                      .StructSize
+                        Int32: 32
+                      .Tag
+                        null
+                      .RawValue
+                        KismetExpression[]
+                          [0]
+                            UAssetAPI.Kismet.Bytecode.Expressions.EX_NameConst
+                              .Tag
+                                null
+                              .RawValue
+                                FName: A
+                              .Token
+                                EExprToken: EX_NameConst
+                      .Token
+                        EExprToken: EX_StructConst
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_FinalFunction
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Context
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_LetBool
+  [10]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 19
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 19
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -39
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 1
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 0
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [2]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 11
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [11]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 34
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 34
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+          .ObjectExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+              .ObjectExpression
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 26
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+              .Offset
+                UInt32: 9
+              .PropertyType
+                Byte: 0
+              .RValuePointer
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: -48
+                  .New
+                    null
+              .ContextExpression
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_InstanceVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: -48
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_InstanceVariable
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_Context
+          .Offset
+            UInt32: 10
+          .PropertyType
+            Byte: 0
+          .RValuePointer
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 34
+              .New
+                null
+          .ContextExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_FinalFunction
+              .StackNode
+                FPackageIndex: -42
+              .Parameters
+                KismetExpression[]
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_FinalFunction
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Context
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [12]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 21
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 21
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -40
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 18
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 19
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [13]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+      .StackNode
+        FPackageIndex: -31
+      .Parameters
+        KismetExpression[]
+          [0]
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 34
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+          [1]
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 14
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+          [2]
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 13
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+          [3]
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 15
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_CallMath
+  [14]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 38
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 38
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -36
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 0
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 0
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [2]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 15
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [15]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 35
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 35
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -33
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 38
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [16]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 33
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 33
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -32
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 35
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [17]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 39
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 39
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -37
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 35
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 20
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [18]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 36
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 36
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -34
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 33
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [19]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 40
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 40
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -37
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 36
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 21
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [20]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 32
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 32
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -30
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 39
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 40
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [21]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 41
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 41
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -38
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 32
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 0.0001
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [22]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 22
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 22
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -41
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 41
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [23]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_LetBool
+      .VariableExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 7
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .AssignmentExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -35
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 22
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 0.001
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_LetBool
+  [24]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_JumpIfNot
+      .CodeOffset
+        UInt32: 2730
+      .BooleanExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 7
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_JumpIfNot
+  [25]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_LetObj
+      .VariableExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 26
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .AssignmentExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+          .ObjectExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_ObjectConst
+              .Tag
+                null
+              .RawValue
+                FPackageIndex: -44
+              .Token
+                EExprToken: EX_ObjectConst
+          .Offset
+            UInt32: 16
+          .PropertyType
+            Byte: 0
+          .RValuePointer
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 26
+              .New
+                null
+          .ContextExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_FinalFunction
+              .StackNode
+                FPackageIndex: -29
+              .Parameters
+                KismetExpression[]
+                  [0]
+                    UAssetAPI.Kismet.Bytecode.Expressions.EX_Self
+                      .Tag
+                        null
+                      .RawValue
+                        null
+                      .Token
+                        EExprToken: EX_Self
+                  [1]
+                    UAssetAPI.Kismet.Bytecode.Expressions.EX_IntConst
+                      .Tag
+                        null
+                      .RawValue
+                        Int32: 0
+                      .Token
+                        EExprToken: EX_IntConst
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_FinalFunction
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Context
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_LetObj
+  [26]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+      .ObjectExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 26
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Offset
+        UInt32: 14
+      .PropertyType
+        Byte: 0
+      .RValuePointer
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 0
+          .New
+            null
+      .ContextExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_VirtualFunction
+          .VirtualFunctionName
+            FName: StopMovement
+          .Parameters
+            KismetExpression[]
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_VirtualFunction
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Context
+  [27]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_LetObj
+      .VariableExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 26
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .AssignmentExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+          .ObjectExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_ObjectConst
+              .Tag
+                null
+              .RawValue
+                FPackageIndex: -44
+              .Token
+                EExprToken: EX_ObjectConst
+          .Offset
+            UInt32: 16
+          .PropertyType
+            Byte: 0
+          .RValuePointer
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 26
+              .New
+                null
+          .ContextExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_FinalFunction
+              .StackNode
+                FPackageIndex: -29
+              .Parameters
+                KismetExpression[]
+                  [0]
+                    UAssetAPI.Kismet.Bytecode.Expressions.EX_Self
+                      .Tag
+                        null
+                      .RawValue
+                        null
+                      .Token
+                        EExprToken: EX_Self
+                  [1]
+                    UAssetAPI.Kismet.Bytecode.Expressions.EX_IntConst
+                      .Tag
+                        null
+                      .RawValue
+                        Int32: 0
+                      .Token
+                        EExprToken: EX_IntConst
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_FinalFunction
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Context
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_LetObj
+  [28]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_LetObj
+      .VariableExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 27
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .AssignmentExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+          .ObjectExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 26
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+          .Offset
+            UInt32: 10
+          .PropertyType
+            Byte: 0
+          .RValuePointer
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 27
+              .New
+                null
+          .ContextExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_FinalFunction
+              .StackNode
+                FPackageIndex: -28
+              .Parameters
+                KismetExpression[]
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_FinalFunction
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Context
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_LetObj
+  [29]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_LetBool
+      .VariableExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 8
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .AssignmentExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+          .ObjectExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 26
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+          .Offset
+            UInt32: 37
+          .PropertyType
+            Byte: 0
+          .RValuePointer
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 8
+              .New
+                null
+          .ContextExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_FinalFunction
+              .StackNode
+                FPackageIndex: -43
+              .Parameters
+                KismetExpression[]
+                  [0]
+                    UAssetAPI.Kismet.Bytecode.Expressions.EX_StructConst
+                      .Struct
+                        FPackageIndex: -56
+                      .StructSize
+                        Int32: 32
+                      .Tag
+                        null
+                      .RawValue
+                        KismetExpression[]
+                          [0]
+                            UAssetAPI.Kismet.Bytecode.Expressions.EX_NameConst
+                              .Tag
+                                null
+                              .RawValue
+                                FName: W
+                              .Token
+                                EExprToken: EX_NameConst
+                      .Token
+                        EExprToken: EX_StructConst
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_FinalFunction
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Context
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_LetBool
+  [30]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 16
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 16
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -39
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 1
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 0
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [2]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 8
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [31]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_LetBool
+      .VariableExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 9
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .AssignmentExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+          .ObjectExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 26
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+          .Offset
+            UInt32: 37
+          .PropertyType
+            Byte: 0
+          .RValuePointer
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 9
+              .New
+                null
+          .ContextExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_FinalFunction
+              .StackNode
+                FPackageIndex: -43
+              .Parameters
+                KismetExpression[]
+                  [0]
+                    UAssetAPI.Kismet.Bytecode.Expressions.EX_StructConst
+                      .Struct
+                        FPackageIndex: -56
+                      .StructSize
+                        Int32: 32
+                      .Tag
+                        null
+                      .RawValue
+                        KismetExpression[]
+                          [0]
+                            UAssetAPI.Kismet.Bytecode.Expressions.EX_NameConst
+                              .Tag
+                                null
+                              .RawValue
+                                FName: S
+                              .Token
+                                EExprToken: EX_NameConst
+                      .Token
+                        EExprToken: EX_StructConst
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_FinalFunction
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Context
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_LetBool
+  [32]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_LetBool
+      .VariableExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 10
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .AssignmentExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+          .ObjectExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 26
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+          .Offset
+            UInt32: 37
+          .PropertyType
+            Byte: 0
+          .RValuePointer
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 10
+              .New
+                null
+          .ContextExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_FinalFunction
+              .StackNode
+                FPackageIndex: -43
+              .Parameters
+                KismetExpression[]
+                  [0]
+                    UAssetAPI.Kismet.Bytecode.Expressions.EX_StructConst
+                      .Struct
+                        FPackageIndex: -56
+                      .StructSize
+                        Int32: 32
+                      .Tag
+                        null
+                      .RawValue
+                        KismetExpression[]
+                          [0]
+                            UAssetAPI.Kismet.Bytecode.Expressions.EX_NameConst
+                              .Tag
+                                null
+                              .RawValue
+                                FName: D
+                              .Token
+                                EExprToken: EX_NameConst
+                      .Token
+                        EExprToken: EX_StructConst
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_FinalFunction
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Context
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_LetBool
+  [33]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 17
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 17
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -39
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 1
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 0
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [2]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 9
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [34]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 18
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 18
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -39
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 1
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 0
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [2]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 10
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [35]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 20
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 20
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -40
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 16
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 17
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [36]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_LetBool
+      .VariableExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 11
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .AssignmentExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+          .ObjectExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 26
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+          .Offset
+            UInt32: 37
+          .PropertyType
+            Byte: 0
+          .RValuePointer
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 11
+              .New
+                null
+          .ContextExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_FinalFunction
+              .StackNode
+                FPackageIndex: -43
+              .Parameters
+                KismetExpression[]
+                  [0]
+                    UAssetAPI.Kismet.Bytecode.Expressions.EX_StructConst
+                      .Struct
+                        FPackageIndex: -56
+                      .StructSize
+                        Int32: 32
+                      .Tag
+                        null
+                      .RawValue
+                        KismetExpression[]
+                          [0]
+                            UAssetAPI.Kismet.Bytecode.Expressions.EX_NameConst
+                              .Tag
+                                null
+                              .RawValue
+                                FName: A
+                              .Token
+                                EExprToken: EX_NameConst
+                      .Token
+                        EExprToken: EX_StructConst
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_FinalFunction
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Context
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_LetBool
+  [37]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 19
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 19
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -39
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 1
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 0
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [2]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 11
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [38]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 34
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 34
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+          .ObjectExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+              .ObjectExpression
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 26
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+              .Offset
+                UInt32: 9
+              .PropertyType
+                Byte: 0
+              .RValuePointer
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: -48
+                  .New
+                    null
+              .ContextExpression
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_InstanceVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: -48
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_InstanceVariable
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_Context
+          .Offset
+            UInt32: 10
+          .PropertyType
+            Byte: 0
+          .RValuePointer
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 34
+              .New
+                null
+          .ContextExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_FinalFunction
+              .StackNode
+                FPackageIndex: -42
+              .Parameters
+                KismetExpression[]
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_FinalFunction
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Context
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [39]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 21
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 21
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -40
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 18
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 19
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [40]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+      .StackNode
+        FPackageIndex: -31
+      .Parameters
+        KismetExpression[]
+          [0]
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 34
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+          [1]
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 14
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+          [2]
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 13
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+          [3]
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 15
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_CallMath
+  [41]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 38
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 38
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -36
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 0
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 0
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [2]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 15
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [42]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 35
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 35
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -33
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 38
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [43]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 33
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 33
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -32
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 35
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [44]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 39
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 39
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -37
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 35
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 20
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [45]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 36
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 36
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -34
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 33
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [46]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 40
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 40
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -37
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 36
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 21
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [47]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 32
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 32
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -30
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 39
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 40
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [48]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 41
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 41
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -38
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 32
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 0.0001
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [49]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+      .ObjectExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 27
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Offset
+        UInt32: 29
+      .PropertyType
+        Byte: 0
+      .RValuePointer
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 0
+          .New
+            null
+      .ContextExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_VirtualFunction
+          .VirtualFunctionName
+            FName: AddMovementInput
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 41
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 1
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [2]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_False
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_False
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_VirtualFunction
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Context
+  [50]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_LetObj
+      .VariableExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 26
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .AssignmentExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+          .ObjectExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_ObjectConst
+              .Tag
+                null
+              .RawValue
+                FPackageIndex: -44
+              .Token
+                EExprToken: EX_ObjectConst
+          .Offset
+            UInt32: 16
+          .PropertyType
+            Byte: 0
+          .RValuePointer
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 26
+              .New
+                null
+          .ContextExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_FinalFunction
+              .StackNode
+                FPackageIndex: -29
+              .Parameters
+                KismetExpression[]
+                  [0]
+                    UAssetAPI.Kismet.Bytecode.Expressions.EX_Self
+                      .Tag
+                        null
+                      .RawValue
+                        null
+                      .Token
+                        EExprToken: EX_Self
+                  [1]
+                    UAssetAPI.Kismet.Bytecode.Expressions.EX_IntConst
+                      .Tag
+                        null
+                      .RawValue
+                        Int32: 0
+                      .Token
+                        EExprToken: EX_IntConst
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_FinalFunction
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Context
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_LetObj
+  [51]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_LetObj
+      .VariableExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 27
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .AssignmentExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+          .ObjectExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 26
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+          .Offset
+            UInt32: 10
+          .PropertyType
+            Byte: 0
+          .RValuePointer
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 27
+              .New
+                null
+          .ContextExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_FinalFunction
+              .StackNode
+                FPackageIndex: -28
+              .Parameters
+                KismetExpression[]
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_FinalFunction
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Context
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_LetObj
+  [52]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 0
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 28
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_DynamicCast
+          .ClassPtr
+            FPackageIndex: -14
+          .Target
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 27
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_DynamicCast
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [53]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 0
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 12
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_PrimitiveCast
+          .ConversionType
+            ECastToken: ObjectToBool
+          .Target
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: 28
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_LocalVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_PrimitiveCast
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [54]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_JumpIfNot
+      .CodeOffset
+        UInt32: 2730
+      .BooleanExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 12
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_JumpIfNot
+  [55]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 37
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 37
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_CallMath
+          .StackNode
+            FPackageIndex: -36
+          .Parameters
+            KismetExpression[]
+              [0]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 0
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [1]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 0
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+              [2]
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_FloatConst
+                  .Value
+                    Single: 1000
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_FloatConst
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_CallMath
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [56]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Let
+      .Value
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: -60
+          .New
+            null
+      .Variable
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+          .ObjectExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+              .ObjectExpression
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 28
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+              .Offset
+                UInt32: 9
+              .PropertyType
+                Byte: 0
+              .RValuePointer
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: -47
+                  .New
+                    null
+              .ContextExpression
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_InstanceVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: -47
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_InstanceVariable
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_Context
+          .Offset
+            UInt32: 9
+          .PropertyType
+            Byte: 0
+          .RValuePointer
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: -60
+              .New
+                null
+          .ContextExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_InstanceVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: -60
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_InstanceVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Context
+      .Expression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 37
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Let
+  [57]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_LetBool
+      .VariableExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+          .ObjectExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_Context
+              .ObjectExpression
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: 28
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_LocalVariable
+              .Offset
+                UInt32: 9
+              .PropertyType
+                Byte: 0
+              .RValuePointer
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: -47
+                  .New
+                    null
+              .ContextExpression
+                UAssetAPI.Kismet.Bytecode.Expressions.EX_InstanceVariable
+                  .Variable
+                    UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                      .Old
+                        FPackageIndex: -47
+                      .New
+                        null
+                  .Tag
+                    null
+                  .RawValue
+                    null
+                  .Token
+                    EExprToken: EX_InstanceVariable
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_Context
+          .Offset
+            UInt32: 9
+          .PropertyType
+            Byte: 0
+          .RValuePointer
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: -4
+              .New
+                null
+          .ContextExpression
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_InstanceVariable
+              .Variable
+                UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+                  .Old
+                    FPackageIndex: -4
+                  .New
+                    null
+              .Tag
+                null
+              .RawValue
+                null
+              .Token
+                EExprToken: EX_InstanceVariable
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Context
+      .AssignmentExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_True
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_True
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_LetBool
+  [58]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Return
+      .ReturnExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Nothing
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Nothing
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Return
+  [59]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_EndOfScript
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_EndOfScript
 ### ReceiveTick bytecode=4
-Kismet serialization failed: NullReferenceException: Object reference not set to an instance of an object.
+  [0]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_LetValueOnPersistentFrame
+      .DestinationProperty
+        UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+          .Old
+            FPackageIndex: 23
+          .New
+            null
+      .AssignmentExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalVariable
+          .Variable
+            UAssetAPI.Kismet.Bytecode.KismetPropertyPointer
+              .Old
+                FPackageIndex: 25
+              .New
+                null
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_LocalVariable
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_LetValueOnPersistentFrame
+  [1]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_LocalFinalFunction
+      .StackNode
+        FPackageIndex: 6
+      .Parameters
+        KismetExpression[]
+          [0]
+            UAssetAPI.Kismet.Bytecode.Expressions.EX_IntConst
+              .Tag
+                null
+              .RawValue
+                Int32: 10
+              .Token
+                EExprToken: EX_IntConst
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_LocalFinalFunction
+  [2]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_Return
+      .ReturnExpression
+        UAssetAPI.Kismet.Bytecode.Expressions.EX_Nothing
+          .Tag
+            null
+          .RawValue
+            null
+          .Token
+            EExprToken: EX_Nothing
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_Return
+  [3]
+    UAssetAPI.Kismet.Bytecode.Expressions.EX_EndOfScript
+      .Tag
+        null
+      .RawValue
+        null
+      .Token
+        EExprToken: EX_EndOfScript
