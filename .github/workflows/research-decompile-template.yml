@@ -30,19 +30,50 @@ jobs:
         shell: pwsh
         run: |
           git clone https://github.com/StainlessStasis/LetMeMove.git .research/LetMeMove
+          git -C .research/LetMeMove checkout 49ac4067ab13d1aeebfad362a892a49d98c0b3dd
 
       - name: Build KismetKompiler
         shell: pwsh
         run: |
           dotnet build .tools/KismetKompiler/src/KismetKompiler/KismetKompiler.csproj -c Release
 
-      - name: Decompile Dungeons 1 actor template
+      - name: Probe UE version compatibility
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force research/decompiled | Out-Null
-          dotnet run --project .tools/KismetKompiler/src/KismetKompiler/KismetKompiler.csproj -c Release --no-build -- decompile -v 4.22 -i ".research/LetMeMove/Content/Mods/LetMeMove/BP_WASD_Movement.uasset" -o "research/decompiled/BP_WASD_Movement.kms" --no-verify -f
-          if (-not (Test-Path "research/decompiled/BP_WASD_Movement.kms")) {
-            throw "KismetKompiler did not produce the expected KMS file."
+          $asset = ".research/LetMeMove/Content/Mods/LetMeMove/BP_WASD_Movement.uasset"
+          $versions = @("4.15","4.16","4.17","4.18","4.19","4.20","4.21","4.22","4.23","4.24","4.25","4.26","4.27")
+          $report = @()
+          $success = $false
+
+          foreach ($version in $versions) {
+            $safeVersion = $version.Replace(".", "_")
+            $out = "research/decompiled/BP_WASD_Movement_UE${safeVersion}.kms"
+            Write-Host "Trying UE $version"
+            $log = & dotnet run --project .tools/KismetKompiler/src/KismetKompiler/KismetKompiler.csproj -c Release --no-build -- decompile -v $version -i $asset -o $out --no-verify -f 2>&1
+            $exitCode = $LASTEXITCODE
+            $report += "## UE $version"
+            $report += ""
+            $report += "Exit code: $exitCode"
+            $report += ""
+            if ($log) {
+              $report += ($log | Select-Object -Last 20 | ForEach-Object { "    $_" })
+            }
+            $report += ""
+
+            if ($exitCode -eq 0 -and (Test-Path $out)) {
+              Write-Host "SUCCESS with UE $version"
+              Copy-Item $out "research/decompiled/BP_WASD_Movement.kms" -Force
+              $report += "**SUCCESS**"
+              $report += ""
+              $success = $true
+              break
+            }
+          }
+
+          $report | Set-Content "research/decompiled/COMPATIBILITY_REPORT.md"
+          if (-not $success) {
+            Write-Warning "No tested UE version successfully parsed the template. Committing the report for the next research step."
           }
 
       - name: Save research result
@@ -50,8 +81,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add research/decompiled/BP_WASD_Movement.kms
+          git add research/decompiled
           if (-not (git diff --cached --quiet)) {
-            git commit -m "research: decompile Dungeons Blueprint template"
+            git commit -m "research: probe Dungeons Blueprint asset compatibility"
             git push
           }
