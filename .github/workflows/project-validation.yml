@@ -44,6 +44,10 @@ jobs:
         shell: powershell
         run: ./scripts/Test-GameEvidence.ps1 -TestBootstrap
 
+      - name: Verify real UE4.22 legacy evidence exporter
+        shell: powershell
+        run: ./scripts/Test-LegacyGameEvidence.ps1
+
       - name: Build cooked-asset inspection tool
         shell: pwsh
         run: dotnet build tools/UAssetProbe/UAssetProbe.csproj -c Release

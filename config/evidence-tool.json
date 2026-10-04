@@ -5,5 +5,8 @@
   "runtimeSha512": "9c55c58694676ee64b0eed2cd6d8cbf58b9aa8288420acc66841e15ca0099c75d4af0182d23a641c2342e5a151a325df4a12fa0bde2e47c0fb7e9a33e7b09896",
   "runtimePlatform": "Windows x64",
   "runtimeVersion": "8.0.31",
-  "upstreamCommit": "9726294772458eb6114946e967e204925f8b1b66"
+  "upstreamCommit": "9726294772458eb6114946e967e204925f8b1b66",
+  "sdkVersion": "8.0.425",
+  "sdkUrl": "https://dotnetcli.blob.core.windows.net/dotnet/Sdk/8.0.425/dotnet-sdk-8.0.425-win-x64.zip",
+  "sdkSha512": "f0b6f15bf6f1a0507205c0cb102ab99e1dee875c4682c8ed94665be1d580186a06b21455e83b3a01a0ff7f4cd887b67420f2e2fe09ed985534a4cea488ae1af9"
 }

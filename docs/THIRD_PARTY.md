@@ -148,3 +148,5 @@ The editor mirror also retains the complete Apache-2.0 license at `sdk/Apache-2.
 ## Installed-game evidence tooling
 
 [UeBlueprintDumper](https://github.com/CrystalFerrai/UeBlueprintDumper) (Apache-2.0) is downloaded from its official 1.2.0 release into ignored `.tools`, preserving the release contents/notices. The collector does not bundle it in mod paks. A local .NET runtime is downloaded from Microsoft's official distribution with its checksum from official release metadata. Versions/hashes are recorded in `config/evidence-tool.json`. No code/assets from the old unlicensed zMCDungeons-SDK were copied.
+
+`LegacyEvidenceExporter` uses CUE4Parse's archive-reader DLL from that same pinned distribution and UAssetAPI 1.1.0 (MIT) through NuGet. Its code is project-authored; it does not vendor the incompatible BlueprintDumper implementation. The original release/notices are preserved locally. A local SDK, if needed, is from Microsoft's official checksum-pinned distribution. CI's legacy regression downloads the MIT LetMeMove fixture with its existing checksum; no game assets are committed or put in mod releases by this collector.
