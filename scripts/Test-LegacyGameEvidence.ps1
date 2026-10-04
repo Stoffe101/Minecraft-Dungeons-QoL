@@ -26,6 +26,16 @@ try {
     Expand-Archive "$out.zip" $check
     if (@(Get-ChildItem $check -Recurse -File | Where-Object { $_.Extension -in @('.pak', '.uasset', '.uexp', '.ubulk') }).Count -ne 0) { throw 'Raw assets were included in the evidence ZIP.' }
     Write-Host '[PASS] Actual UE4.22 legacy pak: 34 properties, 2 functions, Kismet metadata, input hash preserved, metadata-only ZIP'
+    # A similarly cooked actor must never be picked up by the private UI-source allowlist.
+    $sources = Join-Path $fixture 'patch sources with spaces'
+    & (Join-Path $PSScriptRoot 'Collect-LegacyGameEvidence.ps1') -PaksPath $paks -AesKey ('0x' + ('0' * 64)) -OutputDirectory $sources -DotNetPath (Get-Command dotnet).Source -CollectInventoryPatchSources
+    if ($LASTEXITCODE -ne 1) { throw 'Missing required UI sources must fail collection.' }
+    $sourceReport = Get-Content (Join-Path $sources 'Metadata/EXPORT_REPORT.json') -Raw | ConvertFrom-Json
+    if (-not $sourceReport.inventoryPatchSources -or $sourceReport.candidateCount -ne 0 -or $sourceReport.sourceFiles.Count -ne 0) { throw 'Patch-source allowlist included an unrelated asset.' }
+    if (@($sourceReport.errors | Where-Object { $_ -like 'Required patch source missing:*' }).Count -ne 7) { throw 'Collector did not identify all seven missing packages.' }
+    if (@(Get-ChildItem $sources -Recurse -File | Where-Object { $_.Extension -in @('.pak', '.uasset', '.uexp', '.ubulk') }).Count -ne 0) { throw 'Unexpected cooked asset collected.' }
+    if ((Get-FileHash $pak).Hash -ne $before) { throw 'Patch-source collection modified the input pak.' }
+    Write-Host '[PASS] Patch-source collection rejects unrelated packages and reports missing required sources'
 } catch {
     foreach ($log in Get-ChildItem $fixture -Recurse -Filter '*.log') { Write-Host (Get-Content $log.FullName -Raw) }
     throw

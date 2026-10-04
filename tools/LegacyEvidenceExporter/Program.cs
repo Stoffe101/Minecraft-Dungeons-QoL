@@ -1,4 +1,5 @@
 using System.Runtime.Loader;
+using System.Security.Cryptography;
 using CUE4Parse.FileProvider;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.UE4.Versions;
@@ -20,14 +21,15 @@ internal static class Program
                 return DumpAsset(args[1], args[2], Path.GetFileName(args[1])) ? 0 : 1;
             }
             if (args.Length < 5 || args[0] != "--paks")
-                throw new ArgumentException("Usage: --asset <uasset> <output-json> OR --paks <paks> <aes-key> <output-directory> <inspector-libraries> [path-match]");
+                throw new ArgumentException("Usage: --asset <uasset> <output-json> OR --paks <paks> <aes-key> <output-directory> <inspector-libraries> [path-match | --inventory-patch-sources]");
             var libraries = Path.GetFullPath(args[4]);
             AssemblyLoadContext.Default.Resolving += (_, name) =>
             {
                 var path = Path.Combine(libraries, name.Name + ".dll");
                 return File.Exists(path) ? AssemblyLoadContext.Default.LoadFromAssemblyPath(path) : null;
             };
-            return DumpPaks(args[1], args[2], args[3], libraries, args.Length > 5 ? args[5] : null);
+            var patchSources = args.Length == 6 && args[5] == "--inventory-patch-sources";
+            return DumpPaks(args[1], args[2], args[3], libraries, patchSources ? null : args.Length > 5 ? args[5] : null, patchSources);
         }
         catch (Exception ex) { Console.Error.WriteLine(ex); return 1; }
     }
@@ -85,7 +87,18 @@ internal static class Program
         return errors.Count == 0;
     }
 
-    private static int DumpPaks(string paks, string key, string output, string libraries, string? fixtureMatch)
+    private static readonly string[] PatchPackages =
+    {
+        "Dungeons/Content/UI/Inventory/UMG_InventoryHUD.uasset",
+        "Dungeons/Content/UI/Inventory/UMG_InventorySlotBase.uasset",
+        "Dungeons/Content/UI/Inventory/Inspector2/UMG_InventoryItemInspector.uasset",
+        "Dungeons/Content/UI/Inventory/Inspector2/UMG_InventoryItemInspectInfo.uasset",
+        "Dungeons/Content/UI/Inventory/Salvage/UMG_SalvageButtonConfirm.uasset",
+        "Dungeons/Content/UI/Inventory/Salvage/UMG_SalvageButtonToggle.uasset",
+        "Dungeons/Content/UI/Inventory/Salvage/UMG_SalvageUndoButton.uasset"
+    };
+
+    private static int DumpPaks(string paks, string key, string output, string libraries, string? fixtureMatch, bool patchSources)
     {
         if (OperatingSystem.IsWindows())
         {
@@ -105,10 +118,16 @@ internal static class Program
             "Dungeons/Content/UI/Inventory/UMG_Item", "Dungeons/Content/UI/Inventory/Inspector2/UMG_InventoryItem",
             "Dungeons/Content/UI/Grid/", "Dungeons/Content/Actors/Characters/Player/BP_PlayerController"
         };
-        var candidates = provider.Files.Keys.Where(x => x.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase)
-            && matches.Any(m => x.Contains(m, StringComparison.OrdinalIgnoreCase))).OrderBy(x => x).ToArray();
+        var candidates = provider.Files.Keys.Where(x => patchSources
+            ? PatchPackages.Contains(x.Replace('\\', '/'), StringComparer.OrdinalIgnoreCase)
+            : x.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase)
+                && matches.Any(m => x.Contains(m, StringComparison.OrdinalIgnoreCase))).OrderBy(x => x).ToArray();
         var errors = new List<string>();
         var completed = new List<string>();
+        var sourceFiles = new List<object>();
+        if (patchSources)
+            foreach (var missing in PatchPackages.Where(x => !candidates.Select(p => p.Replace('\\', '/')).Contains(x, StringComparer.OrdinalIgnoreCase)))
+                errors.Add("Required patch source missing: " + missing);
         var temp = Path.Combine(Path.GetTempPath(), "MCDQoL-evidence-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(temp);
         Directory.CreateDirectory(output);
@@ -125,7 +144,30 @@ internal static class Program
                         File.WriteAllBytes(Path.Combine(local, Path.GetFileName(pair.Key.Replace('\\', '/'))), pair.Value);
                     var input = Path.Combine(local, Path.GetFileName(virtualPath));
                     var name = i.ToString("D3") + "_" + Path.GetFileNameWithoutExtension(virtualPath) + ".json";
-                    if (DumpAsset(input, Path.Combine(output, name), virtualPath)) completed.Add(virtualPath);
+                    if (DumpAsset(input, Path.Combine(output, name), virtualPath))
+                    {
+                        if (patchSources)
+                        {
+                            // Export only this exact allowlisted package and its bytecode companion.
+                            // Ignore any bulk data and never derive destination paths from archive entries.
+                            foreach (var extension in new[] { ".uasset", ".uexp" })
+                            {
+                                var source = Path.ChangeExtension(input, extension);
+                                if (!File.Exists(source))
+                                {
+                                    if (extension == ".uasset") throw new IOException("Missing package header.");
+                                    continue; // Some packages contain exports in the header.
+                                }
+                                var relative = Path.ChangeExtension(virtualPath.Replace('\\', '/'), extension);
+                                var destination = Path.Combine(output, "PatchSources", relative.Replace('/', Path.DirectorySeparatorChar));
+                                Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
+                                File.Copy(source, destination, false);
+                                sourceFiles.Add(new { path = "PatchSources/" + relative, bytes = new FileInfo(source).Length,
+                                    sha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(source))).ToLowerInvariant() });
+                            }
+                        }
+                        completed.Add(virtualPath);
+                    }
                     else errors.Add(virtualPath + ": incomplete export metadata; see asset JSON errors.");
                 }
                 catch (Exception ex) { errors.Add(virtualPath + ": " + ex); Console.Error.WriteLine(errors.Last()); }
@@ -135,7 +177,8 @@ internal static class Program
         finally { Directory.Delete(temp, true); }
         if (candidates.Length == 0) errors.Add("No targeted assets visible. Check archive access/key.");
         File.WriteAllText(Path.Combine(output, "EXPORT_REPORT.json"), JsonConvert.SerializeObject(new
-        { schemaVersion = 1, engine = "UE4_22", candidateCount = candidates.Length, completed, errors }, Formatting.Indented));
+        { schemaVersion = 1, engine = "UE4_22", candidateCount = candidates.Length, completed, errors,
+            inventoryPatchSources = patchSources, sourceFiles }, Formatting.Indented));
         return errors.Count == 0 ? 0 : 1;
     }
 }
