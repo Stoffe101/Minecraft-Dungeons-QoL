@@ -1,0 +1,23 @@
+# Local toolchain / cloned dependencies
+.tools/
+.research/
+
+# Build output
+build/
+dist/
+*.pak
+
+# Unreal generated folders
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+
+# IDE / OS
+.vs/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.user
+*.suo
