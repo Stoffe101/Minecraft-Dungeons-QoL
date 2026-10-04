@@ -35,3 +35,11 @@ Items referenced by a loadout are automatically protected from mass salvage.
 The first release requires explicit selection, review, and confirmation.
 
 Reason: prove identity/protection/destructive-action correctness before introducing automation.
+
+## D-008: Diagnostic builds contain no destructive inventory calls
+
+The baseline fingerprint identity and equipment guards are insufficient for the project's fail-closed policy. Generate a preview graph without `SalvageItemInSlot`, `RemoveItem`, `SalvageItemUndo` or `Swap`. Enforce that with asset validation and negative tests. Reintroduce native salvage only after exact ABI, identity, equipment/loadout guards and disposable-item tests are proven.
+
+## D-009: Isolate and pin reusable templates
+
+Use the MIT LetMeMove 1.1.0 cooked shell with a recorded SHA-256 and retained license. Relocate all manager/loader references into our namespace to coexist with the original mod. Pin the Mod Kit commit. Diagnostic CI uploads the exact-source artifact and cannot write a rebased manifest to main.

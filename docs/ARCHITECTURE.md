@@ -147,3 +147,11 @@ No custom multi-item undo is promised until we prove it can be made safe.
 ## Multiplayer
 
 The mod should only manage the local player's inventory. It must never attempt to mutate remote players' items. Multiplayer testing is required before a public release.
+
+## Implemented diagnostic architecture (2026-10-04)
+
+The service/widget layout above is the production target. The current cooked diagnostic keeps its logic in one manager actor, relocated from a permitted template to `/Game/Mods/MinecraftDungeonsQoL/BP_MCDQoL_Manager`. Relocated Lobby/Ingame maps instantiate it through Blueprint Loader. A regenerated `/Game/Mods/MinecraftDungeonsQoL/SG_MCDQoL` provides the prototype sidecar.
+
+The manager materializes native inventory slots in a reflected array local, keeps paired selected slot/item arrays and a selection-owner stash reference, and previews one candidate per tick after validation. It clears state on invalid/new stash and F5 cancellation. No native inventory mutation call is emitted.
+
+This architecture still needs singleton lifecycle, actual inventory-open input gating, hero/item identity, explicit equipment-map exclusion, item labels/review UI and controller input. The raw cooked graph is a diagnostic bridge to the editor-authored production services, not their completed implementation.

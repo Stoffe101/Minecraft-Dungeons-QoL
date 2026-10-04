@@ -247,11 +247,15 @@ var functionOuter = FPackageIndex.FromExport(asset.Exports.IndexOf(uber));
 var cursor = AddProperty(intDonor, "CursorIndex", classOuter, intPropertyClass, NewInt());
 var confirmArmed = AddProperty(boolDonor, "ConfirmArmed", classOuter, boolPropertyClass, NewBool());
 var salvageRunning = AddProperty(boolDonor, "SalvageRunning", classOuter, boolPropertyClass, NewBool());
+var selectionOwner = AddProperty(objectDonor, "SelectionOwner", classOuter, objectPropertyClass, NewObject(itemStashClass));
 var batchIndex = AddProperty(intDonor, "BatchIndex", classOuter, intPropertyClass, NewInt());
 
 var saveClass = EnsureGeneratedClass("/Game/Mods/MinecraftDungeonsQoL/SG_MCDQoL", "SG_MCDQoL_C");
 var saveState = AddProperty(objectDonor, "SaveState", classOuter, objectPropertyClass, NewObject(saveClass));
 var selectedSlots = AddObjectArray("SelectedSlots", classOuter, itemSlotClass, EPropertyFlags.CPF_BlueprintVisible);
+var selectedItems = AddObjectArray("SelectedItems", classOuter, inventoryItemClass, EPropertyFlags.CPF_BlueprintVisible);
+// ArrayGetByRef must read a reflected array variable, not a nested function temporary.
+var inventorySlots = AddObjectArray("InventorySlots", functionOuter, itemSlotClass, EPropertyFlags.CPF_None);
 
 // Function scratch locals.
 var currentSlot = AddProperty(objectDonor, "MCDQoL_CurrentSlot", functionOuter, objectPropertyClass, NewObject(itemSlotClass, EPropertyFlags.CPF_None));
@@ -267,7 +271,8 @@ generatedClass.Children = generatedClass.Children
         FPackageIndex.FromExport(asset.Exports.IndexOf(salvageRunning)),
         FPackageIndex.FromExport(asset.Exports.IndexOf(batchIndex)),
         FPackageIndex.FromExport(asset.Exports.IndexOf(saveState)),
-        FPackageIndex.FromExport(asset.Exports.IndexOf(selectedSlots))
+        FPackageIndex.FromExport(asset.Exports.IndexOf(selectedSlots)),
+        Exp(selectionOwner), Exp(selectedItems)
     }).ToArray();
 
 uber.Children = uber.Children
@@ -275,7 +280,7 @@ uber.Children = uber.Children
         FPackageIndex.FromExport(asset.Exports.IndexOf(currentSlot)),
         FPackageIndex.FromExport(asset.Exports.IndexOf(currentItem)),
         FPackageIndex.FromExport(asset.Exports.IndexOf(currentKey)),
-        FPackageIndex.FromExport(asset.Exports.IndexOf(salvageSuccess))
+        FPackageIndex.FromExport(asset.Exports.IndexOf(salvageSuccess)), Exp(inventorySlots)
     }).ToArray();
 
 // External SaveGame Records field.
@@ -300,6 +305,9 @@ var addIntFn = EnsureFunction(mathClass, "Add_IntInt");
 var subIntFn = EnsureFunction(mathClass, "Subtract_IntInt");
 var greaterEqFn = EnsureFunction(mathClass, "GreaterEqual_IntInt");
 var lessFn = EnsureFunction(mathClass, "Less_IntInt");
+var equalObjectFn = EnsureFunction(mathClass, "EqualEqual_ObjectObject");
+var arrayRemoveIndexFn = EnsureFunction(EnsureClass("/Script/Engine", "KismetArrayLibrary"), "Array_RemoveIndex");
+var arrayFindFn = EnsureFunction(EnsureClass("/Script/Engine", "KismetArrayLibrary"), "Array_Find");
 
 var systemClass = EnsureClass("/Script/Engine", "KismetSystemLibrary");
 var systemDefault = EnsureDefault("/Script/Engine", "KismetSystemLibrary");
@@ -385,7 +393,7 @@ KismetExpression Static(FPackageIndex defaultObject, FPackageIndex fn, params Ki
     Ctx(Obj(defaultObject), Final(fn, pars));
 
 KismetExpression IsValid(KismetExpression obj) => Static(systemDefault, isValidFn, obj);
-KismetExpression InventorySize() => Ctx(Local(stashLocal), Virtual("InventorySize"));
+KismetExpression InventorySize() => ArrayLength(Local(inventorySlots));
 KismetExpression KeyPressed(string key) => Ctx(Local(playerControllerLocal), Final(inputFn, Key(key)));
 KismetExpression ArrayLength(KismetExpression array) => Static(arrayDefault, arrayLengthFn, array);
 KismetExpression ArrayContains(KismetExpression array, KismetExpression value) => Static(arrayDefault, arrayContainsFn, array, value);
@@ -393,7 +401,7 @@ KismetExpression Records() => Ctx(Inst(saveState), ImportedVar(recordsMember), P
 
 KismetExpression CurrentSlotExpr() => new EX_ArrayGetByRef
 {
-    ArrayVariable = Ctx(Local(stashLocal), Virtual("GetInventorySlots")),
+    ArrayVariable = Local(inventorySlots),
     ArrayIndex = Inst(cursor)
 };
 
@@ -421,7 +429,7 @@ KismetExpression SlotText() => Static(stringDefault, buildStringIntFn,
     Str("MCD QoL | slot "),
     Str(""),
     Inst(cursor),
-    Str(" | F6/F7 browse | F8 lock | F9 select | F10 salvage")
+    Str(" | F5 clear | F6/F7 browse | F8 protect | F9 select | F10 PREVIEW")
 );
 
 KismetExpression Print(KismetExpression text) => Static(systemDefault, printStringFn,
@@ -456,29 +464,72 @@ void SetObj(PropertyExport p, KismetExpression value) => Add(new EX_LetObj { Var
 void SetLocalObj(PropertyExport p, KismetExpression value) => Add(new EX_LetObj { VariableExpression = Local(p), AssignmentExpression = value });
 void SetLocalName(PropertyExport p, KismetExpression value) => Add(new EX_Let { Value = Ptr(Exp(p)), Variable = Local(p), Expression = value });
 
-// Resolve local player + stash.
+void ClearSelection()
+{
+    Add(Static(arrayDefault, arrayClearFn, Inst(selectedSlots)));
+    Add(Static(arrayDefault, arrayClearFn, Inst(selectedItems)));
+    SetBool(salvageRunning, False());
+    SetBool(confirmArmed, False());
+}
+void SaveAndReport(string message)
+{
+    JumpIfNot(SaveSidecar(), "SAVE_FAILED");
+    Add(Print(Str(message)));
+}
+
+// Resolve local player + stash; never keep a selection across pawn/hero changes.
 SetLocalObj(playerControllerLocal, Static(gameplayDefault, getPlayerControllerFn, Self(), Int(0)));
+JumpIfNot(IsValid(Local(playerControllerLocal)), "INVALID_CONTEXT");
 SetLocalObj(pawnLocal, Ctx(Local(playerControllerLocal), Final(getPawnFn), Ptr(Exp(pawnLocal))));
+JumpIfNot(IsValid(Local(pawnLocal)), "INVALID_CONTEXT");
 SetLocalObj(stashLocal, Ctx(Local(pawnLocal), Virtual("GetComponentByClass", Obj(itemStashClass)), Ptr(Exp(stashLocal))));
+
+JumpIfNot(IsValid(Local(stashLocal)), "INVALID_CONTEXT");
+JumpIfNot(Math(equalObjectFn, Inst(selectionOwner), Local(stashLocal)), "CHANGE_OWNER");
+Jump("OWNER_READY");
+Label("CHANGE_OWNER");
+ClearSelection();
+SetObj(selectionOwner, Local(stashLocal));
+SetInt(cursor, Int(0));
+Label("OWNER_READY");
+Add(new EX_Let { Value = Ptr(Exp(inventorySlots)), Variable = Local(inventorySlots),
+    Expression = Ctx(Local(stashLocal), Virtual("GetInventorySlots"), Ptr(Exp(inventorySlots))) });
+// F5 cancels both confirmation and preview; it also clears the selected snapshots.
+JumpIfNot(KeyPressed("F5"), "AFTER_CANCEL");
+ClearSelection();
+Add(Print(Str("MCD QoL | selection cleared")));
+Jump("END");
+Label("AFTER_CANCEL");
 
 // Load/create our separate sidecar save once.
 JumpIfNot(IsValid(Inst(saveState)), "INIT_SAVE");
 Jump("AFTER_SAVE");
 Label("INIT_SAVE");
 JumpIfNot(Static(gameplayDefault, doesSaveExistFn, Str("MinecraftDungeonsQoL_v1"), Int(0)), "CREATE_SAVE");
-SetObj(saveState, Static(gameplayDefault, loadSaveFn, Str("MinecraftDungeonsQoL_v1"), Int(0)));
+SetObj(saveState, new EX_DynamicCast { ClassPtr = saveClass, Target = Static(gameplayDefault, loadSaveFn, Str("MinecraftDungeonsQoL_v1"), Int(0)) });
 Jump("AFTER_SAVE");
 Label("CREATE_SAVE");
 SetObj(saveState, Static(gameplayDefault, createSaveFn, Obj(saveClass)));
-Add(SaveSidecar());
+JumpIfNot(SaveSidecar(), "SAVE_FAILED");
 Label("AFTER_SAVE");
+JumpIfNot(IsValid(Inst(saveState)), "SAVE_FAILED");
 
-// Batch mode: one selected slot per tick, revalidated immediately before native salvage.
+// Diagnostic preview only. No destructive native function is emitted until the
+// hero identity, equipment exclusion, loadout protection and ABI gates are verified.
 JumpIfNot(Inst(salvageRunning), "NORMAL_MODE");
 JumpIfNot(Math(greaterEqFn, Inst(batchIndex), Int(0)), "FINISH_BATCH");
 
+JumpIfNot(Math(lessFn, Inst(batchIndex), ArrayLength(Inst(selectedSlots))), "INVALID_CONTEXT");
+JumpIfNot(Math(lessFn, Inst(batchIndex), ArrayLength(Inst(selectedItems))), "INVALID_CONTEXT");
 SetLocalObj(currentSlot, new EX_ArrayGetByRef { ArrayVariable = Inst(selectedSlots), ArrayIndex = Inst(batchIndex) });
+JumpIfNot(IsValid(Local(currentSlot)), "BATCH_NEXT");
+JumpIfNot(ArrayContains(Local(inventorySlots), Local(currentSlot)), "BATCH_NEXT");
 SetLocalObj(currentItem, SlotItem(Local(currentSlot)));
+JumpIfNot(Math(equalObjectFn, Local(currentItem), new EX_ArrayGetByRef {
+    ArrayVariable = Inst(selectedItems), ArrayIndex = Inst(batchIndex) }), "BATCH_NEXT");
+JumpIfNot(Ctx(Local(currentSlot), Virtual("IsLocked")), "BATCH_UNLOCKED");
+Jump("BATCH_NEXT");
+Label("BATCH_UNLOCKED");
 JumpIfNot(IsValid(Local(currentItem)), "BATCH_NEXT");
 SetLocalName(currentKey, Fingerprint());
 JumpIfNot(ArrayContains(Records(), Local(currentKey)), "BATCH_CAN_SALVAGE");
@@ -486,18 +537,15 @@ Jump("BATCH_NEXT");
 
 Label("BATCH_CAN_SALVAGE");
 JumpIfNot(Ctx(Local(currentItem), Virtual("CanSalvage")), "BATCH_NEXT");
-// SalvageItemInSlot is the game's real transaction. SelectedSlots only contains inventory slots.
-Add(Ctx(Local(stashLocal), Virtual("SalvageItemInSlot", Local(currentSlot), Local(salvageSuccess))));
+Add(Print(Str("MCD QoL | preview candidate only; NO item salvaged")));
 
 Label("BATCH_NEXT");
 SetInt(batchIndex, Math(subIntFn, Inst(batchIndex), Int(1)));
 Jump("END");
 
 Label("FINISH_BATCH");
-Add(Static(arrayDefault, arrayClearFn, Inst(selectedSlots)));
-SetBool(salvageRunning, False());
-SetBool(confirmArmed, False());
-Add(Print(Str("MCD QoL | batch salvage complete")));
+ClearSelection();
+Add(Print(Str("MCD QoL | preview finished; NO items salvaged")));
 Jump("END");
 
 Label("NORMAL_MODE");
@@ -531,6 +579,7 @@ Add(Print(SlotText()));
 Label("RESOLVE_CURRENT");
 // Resolve native slot/item for lock/select actions.
 SetLocalObj(currentSlot, CurrentSlotExpr());
+JumpIfNot(IsValid(Local(currentSlot)), "END");
 SetLocalObj(currentItem, SlotItem(Local(currentSlot)));
 
 // F8 persistent lock toggle.
@@ -540,13 +589,11 @@ JumpIfNot(IsValid(Local(currentItem)), "LOCK_EMPTY");
 SetLocalName(currentKey, Fingerprint());
 JumpIfNot(ArrayContains(Records(), Local(currentKey)), "LOCK_ADD");
 Add(Static(arrayDefault, arrayRemoveFn, Records(), Local(currentKey)));
-Add(SaveSidecar());
-Add(Print(Str("MCD QoL | item unlocked")));
+SaveAndReport("MCD QoL | fingerprint protection removed (all matching items)");
 Jump("SELECT");
 Label("LOCK_ADD");
 Add(Static(arrayDefault, arrayAddFn, Records(), Local(currentKey)));
-Add(SaveSidecar());
-Add(Print(Str("MCD QoL | item LOCKED")));
+SaveAndReport("MCD QoL | fingerprint protected (all matching items; prototype)");
 Jump("SELECT");
 Label("LOCK_EMPTY");
 Add(Print(Str("MCD QoL | empty slot, nothing to lock")));
@@ -556,6 +603,9 @@ Label("SELECT");
 JumpIfNot(KeyPressed("F9"), "CONFIRM");
 SetBool(confirmArmed, False());
 JumpIfNot(IsValid(Local(currentItem)), "SELECT_EMPTY");
+JumpIfNot(Ctx(Local(currentSlot), Virtual("IsLocked")), "SELECT_SLOT_UNLOCKED");
+Jump("SELECT_BLOCKED");
+Label("SELECT_SLOT_UNLOCKED");
 SetLocalName(currentKey, Fingerprint());
 JumpIfNot(ArrayContains(Records(), Local(currentKey)), "SELECT_NOT_LOCKED");
 Add(Print(Str("MCD QoL | locked item cannot be selected")));
@@ -563,11 +613,15 @@ Jump("CONFIRM");
 Label("SELECT_NOT_LOCKED");
 JumpIfNot(Ctx(Local(currentItem), Virtual("CanSalvage")), "SELECT_BLOCKED");
 JumpIfNot(ArrayContains(Inst(selectedSlots), Local(currentSlot)), "SELECT_ADD");
+// Remove the paired item before removing the slot so indexes stay aligned.
+Add(Static(arrayDefault, arrayRemoveIndexFn, Inst(selectedItems),
+    Static(arrayDefault, arrayFindFn, Inst(selectedSlots), Local(currentSlot))));
 Add(Static(arrayDefault, arrayRemoveFn, Inst(selectedSlots), Local(currentSlot)));
 Add(Print(Str("MCD QoL | item removed from salvage batch")));
 Jump("CONFIRM");
 Label("SELECT_ADD");
 Add(Static(arrayDefault, arrayAddFn, Inst(selectedSlots), Local(currentSlot)));
+Add(Static(arrayDefault, arrayAddFn, Inst(selectedItems), Local(currentItem)));
 Add(Print(Str("MCD QoL | item added to salvage batch")));
 Jump("CONFIRM");
 Label("SELECT_BLOCKED");
@@ -584,18 +638,25 @@ JumpIfNot(Inst(confirmArmed), "ARM_BATCH");
 SetInt(batchIndex, Math(subIntFn, ArrayLength(Inst(selectedSlots)), Int(1)));
 SetBool(salvageRunning, True());
 SetBool(confirmArmed, False());
-Add(Print(Str("MCD QoL | batch salvage started")));
+Add(Print(Str("MCD QoL | preview started; destruction disabled")));
 Jump("END");
 
 Label("ARM_BATCH");
 SetBool(confirmArmed, True());
-Add(Print(Str("MCD QoL | press F10 again to CONFIRM salvage")));
+Add(Print(Str("MCD QoL | press F10 again to PREVIEW (no destruction)")));
 Jump("END");
 
 Label("NO_SELECTION");
 SetBool(confirmArmed, False());
 Add(Print(Str("MCD QoL | no items selected")));
 
+Jump("END");
+Label("SAVE_FAILED");
+ClearSelection();
+Add(Print(Str("MCD QoL | sidecar save unavailable; protection cannot be trusted")));
+Jump("END");
+Label("INVALID_CONTEXT");
+ClearSelection();
 Label("END");
 Add(new EX_Return { ReturnExpression = new EX_Nothing() });
 Add(new EX_EndOfScript());
@@ -629,7 +690,7 @@ asset.Write(output);
 var reopened = new UAsset(output, EngineVersion.VER_UE4_22);
 KismetSerializer.asset = reopened;
 var outClass = reopened.Exports.OfType<ClassExport>().Single(x => x.ObjectName.ToString() == "BP_WASD_Movement_C");
-foreach (var required in new[] { "CursorIndex", "ConfirmArmed", "SalvageRunning", "BatchIndex", "SaveState", "SelectedSlots" })
+foreach (var required in new[] { "CursorIndex", "ConfirmArmed", "SalvageRunning", "BatchIndex", "SaveState", "SelectedSlots", "SelectedItems", "SelectionOwner" })
 {
     if (!outClass.Children.Any(x => x.IsExport() && x.ToExport(reopened).ObjectName.ToString() == required))
         throw new InvalidDataException($"Missing class field after re-open: {required}");
@@ -650,12 +711,14 @@ foreach (var root in outUber.ScriptBytecode)
         if (expr is EX_VirtualFunction vf && vf.VirtualFunctionName != null) virtualCalls.Add(vf.VirtualFunctionName.ToString());
     });
 }
-foreach (var key in new[] { "F6", "F7", "F8", "F9", "F10" })
+foreach (var key in new[] { "F5", "F6", "F7", "F8", "F9", "F10" })
     if (!keys.Contains(key)) throw new InvalidDataException($"Missing input hotkey after re-open: {key}");
 
-foreach (var call in new[] { "GetComponentByClass", "InventorySize", "GetInventorySlots", "CanSalvage", "SalvageItemInSlot" })
+foreach (var call in new[] { "GetComponentByClass", "GetInventorySlots", "IsLocked", "CanSalvage" })
     if (!virtualCalls.Contains(call)) throw new InvalidDataException($"Missing native runtime call after re-open: {call}");
 
-Console.WriteLine("[OK] Cooked QoL lock/select/native-salvage graph survived write/re-open.");
+var validatedSize = DiagnosticGraphValidator.Validate(reopened, outUber.ScriptBytecode);
+if (validatedSize != total) throw new InvalidDataException("Re-opened iCode size differs from assembly.");
+Console.WriteLine("[OK] Diagnostic protection/select/preview graph survived write/re-open; no destruction.");
 Console.WriteLine($"     iCode={total}, statements={code.Count}, imports={reopened.Imports.Count}, exports={reopened.Exports.Count}");
 return 0;

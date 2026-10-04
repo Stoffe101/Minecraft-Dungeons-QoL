@@ -517,3 +517,52 @@ FModel / UAssetAPI / repak
 ```
 
 The next engineering task is the minimal verified mirror API required for the first non-destructive inventory diagnostic Blueprint.
+
+## 18. Fresh source review and applied workflow (2026-10-04)
+
+This section supersedes earlier statements that the repository had no runtime graph. It also distinguishes upstream findings from independently verified game behavior. See `REPO_AUDIT.md`.
+
+### How a Dungeons 1 mod works
+
+Dungeons 1 loads Unreal cooked packages from pak archives. A pak is a container, not executable mod logic by itself. Replacing an asset requires its virtual package path to match the asset being replaced. New actor/widget logic additionally requires a runtime entry point: Blueprint Loader loads levels under its documented Menu/Lobby/Ingame triggers. Put our manager into small Lobby/Ingame levels; do not accidentally retain another mod's package paths.
+
+Assets created in the Unreal editor are source assets; cook them for the matching engine/platform before packaging. A cooked `.uasset` may need its companion `.uexp`/`.ubulk`. Preserve those pairs and the `Dungeons/Content` package tree. Native game C++ does not become a new runtime mod merely by compiling the editor stub DLL. The shipping game supplies `/Script/Dungeons`; the mirror must match reflected signatures, including return/out parameter types.
+
+For this gameplay/UI scope, editor-authored UE4.22 Blueprints are the maintainable target. Cooked patching is useful for diagnostic automation, but serialization success cannot certify Unreal VM behavior or native function signatures.
+
+### Tool selection
+
+| Tool / primary source | Task | Decision for this project |
+| --- | --- | --- |
+| [Dungeons Mod Kit](https://github.com/Dokucraft/Dungeons-Mod-Kit) | UE4.22 project, cooking, precooked staging, u4pak packaging | Primary authoring foundation; pin `c30e88ec5e99e401eadedddbe82af0265a056fe7` |
+| [Blueprint Loader](https://www.nexusmods.com/minecraftdungeons/mods/111) | Spawn/load mod levels at Menu, Camp and mission triggers | Runtime dependency; separate download under its published restrictions |
+| [LetMeMove](https://github.com/StainlessStasis/LetMeMove) | Working Dungeons 1 loader/actor example | MIT template; release 1.1.0 ZIP SHA-256 `9ed80bd696c5124861efe349c30d5e514412bd923364507514db4efb9299c675`; retain license and relocate assets |
+| [Camera Coordinates Overlay](https://www.nexusmods.com/minecraftdungeons/mods/112) | Loader actor creates a viewport widget | Reference for future overlay; rechecked published asset permissions |
+| [FModel](https://github.com/4sval/FModel), [installation](https://github.com/4sval/FModel/wiki/Installing-FModel) | Explore game archives/assets, paths and exported data | Inspect the installed game; current documented builds use Windows and .NET 10; choose UE4.22 settings appropriate to Dungeons 1 |
+| [UAssetAPI](https://github.com/atenfyr/UAssetAPI), [basic guide](https://atenfyr.github.io/UAssetAPI/guide/basic.html) | Inspect/edit properties and Kismet; re-open validation | Pin project tools to NuGet 1.1.0 on .NET 8; current upstream docs target .NET 10 and must not be applied blindly to the pinned API |
+| [UAssetGUI](https://github.com/atenfyr/UAssetGUI) | Interactive inspection of the same asset structures | Useful Windows companion; no automatic upgrade of project parser |
+| [repak](https://github.com/trumank/repak) | List/extract/repack pak archives | Useful alternative inspector; not a cooker or Blueprint compiler |
+| [KismetKompiler](https://github.com/tge-was-taken/KismetKompiler) | Decompile/recompile supported Blueprint graphs | Experimental; upstream states incomplete constructs and primarily UE4.23 testing; current project compatibility failures still matter |
+| [UE4SS](https://github.com/UE4SS-RE/RE-UE4SS) | Reflection dump, SDK/mirror generation, hooks, Lua/C++ | Optional investigation only; generic UE4.22 support does not establish retail Dungeons compatibility |
+| [UE4SS Dungeons issue 1219](https://github.com/UE4SS-RE/RE-UE4SS/issues/1219), [1211](https://github.com/UE4SS-RE/RE-UE4SS/issues/1211) | Dungeons 1 startup failure reports | Evidence of compatibility risk, not proof all configs fail; no UE4SS runtime dependency |
+| [MCD-PE](https://github.com/Minecraforever/MCD-PE) | Restored Steam-final inventory architecture | Reference evidence only; independently verify reflected instance functions and Store ABI before runtime release |
+| [Epic SaveGame documentation](https://dev.epicgames.com/documentation/en-us/unreal-engine/saving-and-loading-your-game?application_version=4.27) | Separate SaveGame object and SaveGameToSlot/LoadGameFromSlot | Design reference; check UE4.22 signatures and actual retail platform persistence |
+
+Sources reviewed 2026-10-04. FModel's correct repository is `4sval/FModel`. Dungeons 2 toolchains/UE5 templates are outside this project's Dungeons 1 target. Fabric/Forge Java mod loaders do not provide this Unreal workflow.
+
+### Practical development loop
+
+1. Locate the active game's Paks folder; record edition, executable version/hash, mod dependencies and startup log.
+2. Explore only the needed inventory assets/reflection metadata; keep local extraction under ignored `.research`.
+3. Write a minimal non-destructive probe to verify controller/stash discovery and exact signatures before adding UI/destruction.
+4. Author editor Blueprints against only substantiated mirror APIs. Use cooked templates where permissions and the exact patch scope are known.
+5. Cook/stage, retain companions, namespace new assets, package, hash and list the pak. Include required third-party notices outside the pak in the release artifact.
+6. Test loading and diagnostics in Camp and a mission on the actual Store/Xbox-managed installation.
+7. Add persistent identity/guards/UI, then one native salvage test, then batching/loadouts.
+8. Record source commit, actual results and unresolved checks; a generated archive is not a finished build.
+
+### Applied to this repository
+
+The new diagnostic builder pins inputs, regenerates the sidecar, relocates the manager/maps, checks bytecode and package content, includes the MIT notice and keeps the workflow read-only. F10 now previews rather than destroying items. Snapshot identity checks and stash-change cancellation provide a safer base for future batching.
+
+No broad "all tooling researched forever" claim is made: the remaining reflection/identity/UI questions require game evidence, not more generic web searching.

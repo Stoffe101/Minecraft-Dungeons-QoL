@@ -1,0 +1,7 @@
+{
+  "releaseUrl": "https://github.com/StainlessStasis/LetMeMove/releases/download/1.1.0/LetMeMove.zip",
+  "releaseSha256": "9ed80bd696c5124861efe349c30d5e514412bd923364507514db4efb9299c675",
+  "modKitCommit": "c30e88ec5e99e401eadedddbe82af0265a056fe7",
+  "buildKind": "diagnostic-no-destruction",
+  "nativeSalvageEnabled": false
+}

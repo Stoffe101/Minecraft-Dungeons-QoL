@@ -2,7 +2,9 @@
 
 A quality-of-life mod for **Minecraft Dungeons 1** focused on safer, faster inventory management.
 
-## Core features
+**Status: development prototype.** A non-destructive diagnostic pak can be generated. Gear locking, mass salvage and loadouts are not a finished, in-game-validated release yet.
+
+## Planned release features
 
 - **Gear Locking**: protect important items from salvage.
 - **Gear Manager / Loadouts**: save multiple melee, armor, ranged, and artifact setups.
@@ -25,7 +27,9 @@ If Minecraft Launcher shows only a drive such as `C:` or `D:` for the Dungeons i
 
 Do **not** assume that launching from Minecraft Launcher means the files are under `%LOCALAPPDATA%\Mojang\products`.
 
-## Installing a release
+## Installation location and dependencies
+
+These paths apply to a future release and the diagnostic prototype. No finished release is currently available.
 
 ### 1. Find the active `Paks` folder
 
@@ -127,7 +131,28 @@ This is preferable to raw cooked-Blueprint bytecode patching. The mirror module 
 
 Only reflection-visible classes, properties, enums, and functions that we can substantiate are mirrored.
 
-## Building from source
+## Building the current diagnostic
+
+Requirements: Git, Python 3.8+, .NET 8 SDK and PowerShell. No Unreal installation is needed for this cooked-template diagnostic.
+
+```powershell
+./scripts/Build-Diagnostic.ps1
+```
+
+Output: `dist/diagnostic/MinecraftDungeonsQoL-diagnostic.pak`, `BUILD_INFO.md` and the template MIT license. The build verifies the template checksum, regenerates the sidecar, relocates loader/actor packages and checks the graph. These checks do not execute the mod inside Dungeons.
+
+To install that diagnostic into your active copy:
+
+```powershell
+./scripts/Install.ps1 -PakPath "./dist/diagnostic/MinecraftDungeonsQoL-diagnostic.pak" -PaksPath "D:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks"
+```
+
+The prototype uses F5 to clear selection, F6/F7 to browse slot indexes, F8 to toggle fingerprint group protection, F9 to select/deselect and F10 twice to preview. **It does not salvage any items.** Fingerprint protection is not stable per-item locking; matching items across heroes share it, and vanilla salvage is not intercepted. See [the audit](docs/REPO_AUDIT.md) before runtime testing.
+
+## Building editor-authored source (production target)
+
+This route is scaffolding until runtime/UI assets are authored under `mod/Content`. `Build.ps1` currently rejects the missing source assets rather than producing an empty release.
+
 
 Development requirements:
 
@@ -169,24 +194,17 @@ If automatic game detection chooses the wrong copy:
 
 ## Current development status
 
-The final-build Dungeons inventory architecture has been researched far enough to identify the native Blueprint-facing operations needed for the core mod:
+The existing cooked runtime prototype has been audited and hardened into a diagnostic with no destructive calls. Its graph, loader maps and sidecar serialize and package successfully, but the actual reflected item methods, retail loading, persistence and input behavior still need in-game verification.
 
-- inventory slot enumeration
-- equipped slot enumeration
-- native slot swapping
-- native salvage
-- native salvage undo metadata
+Stable hero/item identity, equipment/loadout protection, a real review UI, controller support, native salvage testing and the gear manager remain outstanding. API findings from upstream final-Steam-build research do not establish Store/Xbox compatibility by themselves.
 
-Mass salvage will therefore use Dungeons' own `SalvageItemInSlot` transaction rather than recreating emerald/gold/enchantment-point calculations.
-
-The next build milestone is compiling the mirror API into the UE4.22 Mod Kit project, then authoring the first playable lock + batch-salvage Blueprint slice.
-
-See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md).
+See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md) and [docs/REPO_AUDIT.md](docs/REPO_AUDIT.md).
 
 ## Documentation
 
 Start at [docs/README.md](docs/README.md).
 
+- [Repository audit](docs/REPO_AUDIT.md)
 - [Current state](docs/CURRENT_STATE.md)
 - [Findings](docs/FINDINGS.md)
 - [Modding research](docs/MODDING_RESEARCH.md)

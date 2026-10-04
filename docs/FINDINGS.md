@@ -174,3 +174,10 @@ Its major limitation is that editing an existing Blueprint is substantially bett
 3. The big technical unknown has narrowed from "how do we salvage?" to "how do we integrate cleanly with vanilla selection/UI?"
 4. A custom QoL selection overlay is a safe fallback if vanilla selection cannot be bound from Blueprint.
 5. Persistent identity still needs runtime validation before permanent locks/loadouts are considered release-safe.
+
+
+## Audit correction: evidence vs runtime validation (2026-10-04)
+
+Upstream MCD-PE restoration describes final Steam class architecture; this repository has not independently verified Store/Xbox reflection metadata or complete parameter layouts. In particular, the cooked prototype's InventoryItem display/enchantment/CanSalvage instance calls are not all established as reflected functions by the inspected source. Native IsLocked describes vanilla slot state, not the user's persistent gear lock.
+
+The implemented diagnostic graph now snapshots items as well as slots, cancels on stash changes, uses a reflected inventory array local, checks sidecar class/write success and emits no destructive call. Reusing the exact LetMeMove paths would override that mod; relocating manager and loader maps resolves that packaging collision structurally. See REPO_AUDIT.md for the complete findings and runtime gaps.

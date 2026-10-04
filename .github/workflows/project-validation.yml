@@ -8,7 +8,7 @@ on:
       - "sdk/**"
       - "config/**"
       - "docs/**"
-      - "tools/UAssetProbe/**"
+      - "tools/**"
       - ".github/workflows/project-validation.yml"
   pull_request:
     paths:
@@ -16,7 +16,7 @@ on:
       - "sdk/**"
       - "config/**"
       - "docs/**"
-      - "tools/UAssetProbe/**"
+      - "tools/**"
       - ".github/workflows/project-validation.yml"
   workflow_dispatch:
 
@@ -39,6 +39,14 @@ jobs:
       - name: Build cooked-asset inspection tool
         shell: pwsh
         run: dotnet build tools/UAssetProbe/UAssetProbe.csproj -c Release
+
+      - name: Build cooked runtime tools
+        shell: pwsh
+        run: |
+          foreach ($tool in @("CookedQoLPatcher", "CookedAssetRelocator", "CookedSaveGameSynth", "CookedGraphTests")) {
+            dotnet build "tools/$tool/$tool.csproj" -c Release
+            if ($LASTEXITCODE -ne 0) { throw "$tool build failed." }
+          }
 
       - name: Confirm third-party reference notice
         shell: pwsh

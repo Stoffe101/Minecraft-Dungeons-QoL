@@ -1,13 +1,26 @@
-name: Cooked QoL Core Build
+name: Cooked QoL Diagnostic Build
 
 on:
   workflow_dispatch:
   push:
     paths:
+      - "tools/CookedQoLPatcher/**"
+      - "tools/CookedAssetRelocator/**"
+      - "tools/CookedSaveGameSynth/**"
+      - "tools/CookedGraphTests/**"
+      - "scripts/Build-Diagnostic.ps1"
+      - "config/cooked-template.json"
       - "ci-trigger/qol-navigation.txt"
+      - ".github/workflows/cooked-qol-navigation.yml"
+  pull_request:
+    paths:
+      - "tools/**"
+      - "scripts/Build-Diagnostic.ps1"
+      - "config/cooked-template.json"
+      - ".github/workflows/cooked-qol-navigation.yml"
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -15,126 +28,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
-      - name: Fetch current working Dungeons loader shell
+      - name: Build and validate non-destructive diagnostic pak
         shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force .research/qol-core | Out-Null
-          Invoke-WebRequest -Uri "https://github.com/StainlessStasis/LetMeMove/releases/download/1.1.0/LetMeMove.zip" -OutFile ".research/qol-core/LetMeMove.zip"
-          Expand-Archive ".research/qol-core/LetMeMove.zip" ".research/qol-core/zip" -Force
-          git clone --depth 1 https://github.com/Dokucraft/Dungeons-Mod-Kit.git .tools/Dungeons-Mod-Kit
-
-          $pak = Get-ChildItem ".research/qol-core/zip" -Recurse -Filter "*.pak" | Select-Object -First 1
-          if (-not $pak) { throw "LetMeMove release did not contain a pak." }
-          New-Item -ItemType Directory -Force ".research/qol-core/unpacked" | Out-Null
-          python ".tools/Dungeons-Mod-Kit/Tools/py/u4pak.py" unpack -C ".research/qol-core/unpacked" $pak.FullName
-
-      - name: Patch runtime actor
-        shell: pwsh
-        run: |
-          $actor = Get-ChildItem ".research/qol-core/unpacked" -Recurse -Filter "BP_WASD_Movement.uasset" | Select-Object -First 1
-          if (-not $actor) { throw "Cooked runtime actor not found." }
-
-          $patchedDir = ".research/qol-core/patched"
-          New-Item -ItemType Directory -Force $patchedDir | Out-Null
-          $patched = Join-Path $patchedDir "BP_WASD_Movement.uasset"
-
-          dotnet run --project tools/CookedQoLPatcher/CookedQoLPatcher.csproj -- $actor.FullName $patched
-
-          Copy-Item $patched $actor.FullName -Force
-          Copy-Item ([System.IO.Path]::ChangeExtension($patched, ".uexp")) ([System.IO.Path]::ChangeExtension($actor.FullName, ".uexp")) -Force
-
-          dotnet run --project tools/UAssetProbe/UAssetProbe.csproj -- $actor.FullName | Out-File ".research/qol-core/PATCHED_ACTOR_REPORT.txt"
-
-      - name: Stage QoL sidecar SaveGame
-        shell: pwsh
-        run: |
-          $target = ".research/qol-core/unpacked/Dungeons/Content/Mods/MinecraftDungeonsQoL"
-          New-Item -ItemType Directory -Force $target | Out-Null
-
-          foreach ($ext in @("uasset","uexp")) {
-            $source = "generated/Content/Mods/MinecraftDungeonsQoL/SG_MCDQoL.$ext"
-            if (-not (Test-Path $source)) { throw "Missing generated sidecar asset: $source" }
-            Copy-Item $source (Join-Path $target "SG_MCDQoL.$ext") -Force
-          }
-
-          dotnet run --project tools/UAssetProbe/UAssetProbe.csproj -- (Join-Path $target "SG_MCDQoL.uasset") | Out-File ".research/qol-core/SAVEGAME_REPORT.txt"
-
-      - name: Repack installable core build
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force "dist" | Out-Null
-          Push-Location ".research/qol-core/unpacked"
-          try {
-            python "$env:GITHUB_WORKSPACE/.tools/Dungeons-Mod-Kit/Tools/py/u4pak.py" pack "$env:GITHUB_WORKSPACE/dist/MinecraftDungeonsQoL.pak" Dungeons -p
-          } finally {
-            Pop-Location
-          }
-
-          if (-not (Test-Path "dist/MinecraftDungeonsQoL.pak")) {
-            throw "Core QoL pak was not produced."
-          }
-
-          python ".tools/Dungeons-Mod-Kit/Tools/py/u4pak.py" list "dist/MinecraftDungeonsQoL.pak" | Out-File ".research/qol-core/PAK_LIST.txt"
-
-          $list = Get-Content ".research/qol-core/PAK_LIST.txt" -Raw
-          foreach ($required in @(
-            "BP_WASD_Movement.uasset",
-            "SG_MCDQoL.uasset",
-            "SG_MCDQoL.uexp",
-            "BPLoader"
-          )) {
-            if (-not $list.Contains($required)) { throw "Final pak is missing required content: $required" }
-          }
-
-          $hash = (Get-FileHash "dist/MinecraftDungeonsQoL.pak" -Algorithm SHA256).Hash.ToLowerInvariant()
-          @(
-            "# Minecraft Dungeons QoL core build"
-            ""
-            "Features in this cooked build:"
-            "- F6/F7 inventory cursor navigation"
-            "- F8 persistent lock/unlock via project-owned SaveGame"
-            "- F9 multi-select for salvage"
-            "- F10 double-confirm native batch salvage"
-            "- Native Dungeons SalvageItemInSlot backend"
-            "- One selected inventory slot processed per tick"
-            "- Immediate revalidation of item existence, CanSalvage, and lock state"
-            ""
-            "Sidecar slot: MinecraftDungeonsQoL_v1"
-            "Hero save is not directly modified by QoL metadata."
-            ""
-            "SHA-256: $hash"
-          ) | Set-Content "dist/BUILD_INFO.md"
-
-      - name: Upload build artifact
+        run: ./scripts/Build-Diagnostic.ps1
+      - name: Upload diagnostic artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MinecraftDungeonsQoL-core
-          path: |
-            dist/MinecraftDungeonsQoL.pak
-            dist/BUILD_INFO.md
+          name: MinecraftDungeonsQoL-diagnostic
+          path: dist/diagnostic/*
           if-no-files-found: error
-
-      - name: Commit build manifest only
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force generated/build | Out-Null
-          Copy-Item "dist/BUILD_INFO.md" "generated/build/BUILD_INFO.md" -Force
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add generated/build/BUILD_INFO.md
-          if (-not (git diff --cached --quiet)) {
-            git commit -m "build: validate cooked QoL core pak"
-            git pull --rebase origin main
-            git push
-          }
