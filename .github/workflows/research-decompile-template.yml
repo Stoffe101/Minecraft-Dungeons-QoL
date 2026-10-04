@@ -26,7 +26,8 @@ jobs:
         run: |
           git clone --recursive https://github.com/tge-was-taken/KismetKompiler.git .tools/KismetKompiler
           git -C .tools/KismetKompiler checkout 8fbb843db1da73f96fae1c10ef36752872feab73
-          git -C .tools/KismetKompiler/external/UAssetAPI fetch origin
+          Remove-Item -Recurse -Force .tools/KismetKompiler/external/UAssetAPI
+          git clone https://github.com/atenfyr/UAssetAPI.git .tools/KismetKompiler/external/UAssetAPI
           git -C .tools/KismetKompiler/external/UAssetAPI checkout 3228c1e86261aa08131f7ec0ff1a395f5d0b2a84
 
       - name: Checkout MIT Dungeons template
