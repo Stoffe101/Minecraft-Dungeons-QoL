@@ -79,3 +79,20 @@ DungeonsModding/Useful-things confirms community extraction data for encrypted D
 ### Next research
 
 Current runtime Blueprint discovery: inventory widget, selected item fields, native item ID/GUID, salvage/equip functions, and vanilla salvage-button guard point.
+
+## 2026-10-04 — Microsoft Store ownership through Minecraft Launcher
+
+### Finding
+
+Microsoft-account ownership and game-file location are separate concerns. The normal Minecraft Launcher can use the Microsoft-account entitlement for Dungeons and can install/run the game itself.
+
+For mod installation, the authoritative location is the `Dungeons\Content\Paks` folder belonging to the executable the player actually launches.
+
+Two common layouts are:
+
+- Minecraft Launcher: `%LOCALAPPDATA%\Mojang\products\dungeons\dungeons\Dungeons\Content\Paks`
+- Xbox app: `C:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks`
+
+### Project impact
+
+No architecture change is needed. `scripts/Common.ps1` already probes both path families. If both installations exist, the user can override detection with `-PaksPath` or `MCD_PAKS_PATH`.
