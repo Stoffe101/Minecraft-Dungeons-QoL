@@ -56,6 +56,23 @@ public static class InventoryProbeTests
         var visibleOwner=open.OuterIndex;
         var textClass=FPackageIndex.FromImport(asset.Imports.FindIndex(x=>x.ObjectName.ToString()=="TextBlock"));
         Reject(()=>open.OuterIndex=textClass,()=>open.OuterIndex=visibleOwner,"Expected one inventory-open guard");
-        InventoryProbeValidator.Validate(asset,code);Console.WriteLine("[PASS] inventory-read probe remains valid after 17 rejection tests");return 0;
+        var spawnImport=spawn.StackNode.ToImport(asset);var originalSpawnName=spawnImport.ObjectName;
+        foreach(var unsafeName in new[]{"SetJustification","SetAutoWrapText"})
+            Reject(()=>spawnImport.ObjectName=new FName(asset,unsafeName),()=>spawnImport.ObjectName=originalSpawnName,"Read probe contains forbidden call");
+        var anchorsCall=calls.Single(x=>x.StackNode.ToImport(asset).ObjectName.ToString()=="SetAnchors");
+        var anchorsFunction=anchorsCall.StackNode.ToImport(asset);var anchorsOwner=anchorsFunction.OuterIndex;
+        var canvasClass=FPackageIndex.FromImport(asset.Imports.FindIndex(x=>x.ObjectName.ToString()=="CanvasPanel"));
+        Reject(()=>anchorsFunction.OuterIndex=canvasClass,()=>anchorsFunction.OuterIndex=anchorsOwner,"Wrong probe UI function owner");
+        var localFunction=asset.Imports.Single(x=>x.ObjectName.ToString()=="IsLocalPlayerController");var localName=localFunction.ObjectName;
+        Reject(()=>localFunction.ObjectName=new FName(asset,"MissingLocalPlayer"),()=>localFunction.ObjectName=localName,"Expected one local-player guard");
+        var localGate=code.OfType<EX_JumpIfNot>().Single(x=>DiagnosticGraphValidator.IsLocalPlayerCondition(asset,x.BooleanExpression));
+        var localTarget=localGate.CodeOffset;uint localFallthrough=0;
+        for(int i=0;i<=Array.IndexOf(code,localGate);i++){using var m=new MemoryStream();using var w=new AssetBinaryWriter(m,asset);localFallthrough+=(uint)ExpressionSerializer.WriteExpression(code[i],w);}
+        Reject(()=>localGate.CodeOffset=localFallthrough,()=>localGate.CodeOffset=localTarget,"Inventory input/read reachable without local player");
+        var actor=asset.Exports.OfType<UAssetAPI.ExportTypes.ClassExport>().Single();
+        var cdo=(UAssetAPI.ExportTypes.NormalExport)actor.ClassDefaultObject.ToExport(asset);
+        var replicates=cdo.Data.OfType<UAssetAPI.PropertyTypes.Objects.BoolPropertyData>().Single(x=>x.Name.ToString()=="bReplicates");
+        Reject(()=>replicates.Value=true,()=>replicates.Value=false,"Inventory actor must not replicate");
+        InventoryProbeValidator.Validate(asset,code);Console.WriteLine("[PASS] inventory-read probe remains valid after 23 rejection tests");return 0;
     }
 }

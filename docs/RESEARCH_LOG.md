@@ -330,3 +330,31 @@ Before distribution, cross-checked the open-state field beyond its declaration: 
 
 
 Combined PR #12 implementation head `dba3341c103e575a0da186051cb5d3a36618c648` passed Windows [Project Validation](https://github.com/Stoffe101/Minecraft-Dungeons-QoL/actions/runs/37236710991) and [Cooked QoL Diagnostic Build](https://github.com/Stoffe101/Minecraft-Dungeons-QoL/actions/runs/37236710957). Logs confirm all 36 tests. Downloaded the [paused-UI inventory probe](https://github.com/Stoffe101/Minecraft-Dungeons-QoL/actions/runs/37236710957/artifacts/11316036639), unpacked the actual pak and reran all 17 probe rejection tests successfully. Independently inspected the packaged CDO: all three tick flags true, TickInterval zero. Pak SHA-256 `ff170d3e5c9e7c2e189be8a02cd878643e6804e940cc5379320888fe51f796b9`; BUILD_INFO records synthetic merge commit `4188077fe3c873cdeca122b7a272f2e84ffecd54`. The probe needs an in-game retry; no native rendering/input/production feature success is claimed.
+
+## 2026-10-04: online inventory crash, native calls and client bootstrap
+
+Inspected the supplied screenshot, CrashContext and minidump locally. Private account data, dumps and game assets remain outside git. debug(1).log contains Chromium GPU initialization messages, not the gameplay call stack. The exception is 0xc0000005 reading 0x98; Dungeons-relative instruction offset 0x1237080 executes `testl $0x400,0x98(%r9)` with r9=0. This differs from the earlier class initialization crashes and strongly suggests a null UFunction at script dispatch. The dump lacks the UObject/function/script heap needed to identify which import failed.
+
+Removed the optional TextLayoutWidget.SetJustification/SetAutoWrapText calls rather than replacing them with another unproven owner. Current Unreal documentation is not proof of a reflected function in retail UE4.22. Supplied 008_UMG_InventoryItemInspectInfo metadata verifies native InventoryItem.GetDisplayNameText; HUD metadata verifies GetDisplayItemPowerInt. Explicit native FinalFunction calls now preserve those owners. UI validation checks owner, module and argument count.
+
+Downloaded the official Blueprint Loader archive (CurseForge file 3385182), SHA-256 5f6dc432674b951c917a0cfb718793188bdcd223f698cccb4bfca52e7052bcd6, for inspection only. Its widget/tent exports decoded with zero parser errors. The widget selects Menu/Lobby/Ingame GameModes via GameplayStatics.GetGameMode before loading the matching trigger folders. All failed casts end the execution path. Unreal's documented contract returns null on clients; thus joining a friend likely prevents loader startup. This is an architectural inference, not a tested Dungeons network result. Host and joining client require separate tests. No dependency assets or implementation were copied.
+
+Both manager generators now require native Controller.IsLocalPlayerController and set bReplicates=false. Graph reachability checks reject inventory/input/UI creation before the guard or on its false branch. These checks constrain local execution, but cannot make the existing loader start on a joining client.
+
+Primary references:
+- https://dev.epicgames.com/documentation/unreal-engine/API/Runtime/Engine/UGameplayStatics (GetGameMode client behavior; GetPlayerController network distinctions).
+- https://dev.epicgames.com/documentation/unreal-engine/API/Runtime/Engine/AController/IsLocalPlayerController
+- https://www.curseforge.com/minecraft-dungeons/mods/blueprint-loader/files/3385182
+- https://www.nexusmods.com/minecraftdungeons/mods/111?tab=description (modification and asset use require author permission; uploads to other sites forbidden).
+
+Local verification: 19 diagnostic plus 23 inventory-probe rejection tests passed after generating both cooked graphs. Runtime crash repair, visible text, native item reads and all online/co-op paths remain unverified.
+
+## PR #13 packaged validation (2026-10-04)
+
+Implementation head: 845fece40161c1e3b371b2026d069663f4d907ac. Windows Cooked QoL Diagnostic Build run 37238191986 passed all 19 diagnostic and 23 probe regression checks; Project Validation run 37238191980 passed.
+
+Downloaded artifact 11315778743, verified pak SHA-256 `db2e73dc8bf2cfb9634b1f0765a87c7a9c8d6563f56ab3e8a664ead05e715efb`, integrity-unpacked it and reran all 23 probe rejection tests against the packaged manager. Inspected its CDO: bReplicates=false; bCanEverTick, bStartWithTickEnabled and bTickEvenWhenPaused=true; TickInterval=0. BUILD_INFO records CI synthetic merge dc726c4c6d973cce03e5ba9909b4ff7e63202bcf.
+
+Candidate download: https://github.com/Stoffe101/Minecraft-Dungeons-QoL/actions/runs/37238191986/artifacts/11315778743
+
+This validates packaging and structure only. Inventory-open crash repair, visible overlay/input and online host/join compatibility require retail tests. PR #12 remains withdrawn.

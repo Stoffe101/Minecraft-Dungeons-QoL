@@ -159,3 +159,7 @@ Published project: https://www.curseforge.com/minecraft-dungeons/mods/dungeons-g
 Published file: https://www.curseforge.com/minecraft-dungeons/mods/dungeons-gui-x/files/6857197
 
 The author listing specifies AGPLv3. Its cooked WidgetAdder was inspected locally to understand actor-started UMG creation. No implementation or binary assets were copied, adapted or redistributed; it introduces no bundled dependency. Our inventory feedback implementation is project-authored, using native engine widgets and references to game fields. Do not copy this mod's implementation under assumed MIT terms.
+
+## Blueprint Loader inspection and permissions
+
+Official CurseForge file 3385182 was inspected locally to understand online startup. Its widget uses GetGameMode-dependent triggers. The author permissions on https://www.nexusmods.com/minecraftdungeons/mods/111?tab=description require permission for modifications/asset use and prohibit uploads to other sites. No loader assets or code are copied, modified or bundled by this project. It remains an external installation dependency. A joining-client replacement must use project-owned implementation or separately obtained author permission.

@@ -540,6 +540,7 @@ void SaveAndReport(string message)
 // Resolve local player + stash; never keep a selection across pawn/hero changes.
 SetLocalObj(playerControllerLocal, Static(gameplayDefault, getPlayerControllerFn, Self(), Int(0)));
 JumpIfNot(IsValid(Local(playerControllerLocal)), "INVALID_CONTEXT");
+JumpIfNot(Ctx(Local(playerControllerLocal), Final(EnsureFunction(EnsureClass("/Script/Engine", "Controller"), "IsLocalPlayerController"))), "INVALID_CONTEXT");
 SetLocalObj(controllerBpLocal, new EX_DynamicCast { ClassPtr = controllerBpClass, Target = Local(playerControllerLocal) });
 JumpIfNot(IsValid(Local(controllerBpLocal)), "INVALID_CONTEXT");
 SetLocalObj(sharedUiLocal, Ctx(Local(controllerBpLocal), ImportedVar(sharedUiMember), Ptr(sharedUiMember)));

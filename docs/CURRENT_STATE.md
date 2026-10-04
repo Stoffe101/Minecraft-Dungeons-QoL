@@ -1,4 +1,4 @@
-> Runtime status: the archetype-repaired loading probe reached camp on the user’s Store build without crashing. Feature code remains unverified. The inventory probe still shows no text or visible F6/F7 effect after the entry layout repair. A second defect is now repaired: offline inventory pauses the game, but the manager did not tick during pauses. A retail retry remains required. Earlier PR #7/#8 diagnostics remain withdrawn.
+> Runtime status: PR #12 reached camp but crashed when inventory opened in an online session. Withdraw that inventory probe. The replacement removes unverified text setters, binds item reads to native functions, and requires a local player controller with a non-replicated manager. These are candidate repairs; retail confirmation is pending. Online hosting and joining friends are required, and joining-client startup is an unresolved blocker. Production features remain unfinished.
 
 # Current State
 
@@ -99,3 +99,21 @@ Both executable generators now serialize bCanEverTick=true, bStartWithTickEnable
 
 
 The same pass also replaces the field-only IsInventoryOpen check with native Widget.IsVisible on the resolved InventoryHUD, matching the controller's actual toggle/pausing logic. No assignment to that Boolean appears in the collected HUD/controller graphs, so its runtime semantics were not established. Two additional negative tests verify the visibility guard's widget receiver and native function owner. Pause behavior and visibility are independently observed contracts; the revised probe still needs retail confirmation.
+
+## Inventory-open crash and online requirement (2026-10-04)
+
+The user confirmed online play and reported an inventory-open crash with PR #12. Pause ticking does not explain this online failure. The new dump records a null read at 0x98 in Dungeons module offset 0x1237080. The instruction tests FUNC_Native on a null function pointer, consistent with unresolved script function dispatch. Without symbols or captured UObject/script heaps, the exact failing call remains unknown.
+
+The replacement removes SetJustification and SetAutoWrapText imports previously assigned to TextLayoutWidget without a verified UE4.22 reflection contract. Native item name/power calls now use explicit FinalFunction imports supported by supplied game metadata. Validators require native UI owners and arities. Both generators require Controller.IsLocalPlayerController before input, inventory reads or UI construction and serialize bReplicates=false on their manager. Six new rejection tests raise coverage to 42 total. This is structural verification, not runtime success.
+
+See COOP_COMPATIBILITY.md: the external Blueprint Loader branches on GetGameMode, which is normally null on joining clients. Client bootstrap needs a project-owned solution and retail tests. The dependency's permissions do not authorize modifying or redistributing it.
+
+## PR #13 packaged validation (2026-10-04)
+
+Implementation head: 845fece40161c1e3b371b2026d069663f4d907ac. Windows Cooked QoL Diagnostic Build run 37238191986 passed all 19 diagnostic and 23 probe regression checks; Project Validation run 37238191980 passed.
+
+Downloaded artifact 11315778743, verified pak SHA-256 `db2e73dc8bf2cfb9634b1f0765a87c7a9c8d6563f56ab3e8a664ead05e715efb`, integrity-unpacked it and reran all 23 probe rejection tests against the packaged manager. Inspected its CDO: bReplicates=false; bCanEverTick, bStartWithTickEnabled and bTickEvenWhenPaused=true; TickInterval=0. BUILD_INFO records CI synthetic merge dc726c4c6d973cce03e5ba9909b4ff7e63202bcf.
+
+Candidate download: https://github.com/Stoffe101/Minecraft-Dungeons-QoL/actions/runs/37238191986/artifacts/11315778743
+
+This validates packaging and structure only. Inventory-open crash repair, visible overlay/input and online host/join compatibility require retail tests. PR #12 remains withdrawn.
