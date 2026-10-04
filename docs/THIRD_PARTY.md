@@ -144,3 +144,7 @@ Do not commit extracted proprietary game assets merely because they are technica
 `Build-Diagnostic.ps1` directly adapts the LetMeMove 1.1.0 release actor and Lobby/Ingame maps. Its full MIT text is retained at `third_party/LetMeMove-LICENSE.txt` and copied alongside the diagnostic pak. Template release checksum and packager commit live in `config/cooked-template.json`. The derived packages use MinecraftDungeonsQoL paths, so they do not deliberately replace the original mod. Blueprint Loader is still downloaded/installed separately.
 
 The editor mirror also retains the complete Apache-2.0 license at `sdk/Apache-2.0-LICENSE.txt`, alongside the existing SDK attribution notice.
+
+## Installed-game evidence tooling
+
+[UeBlueprintDumper](https://github.com/CrystalFerrai/UeBlueprintDumper) (Apache-2.0) is downloaded from its official 1.2.0 release into ignored `.tools`, preserving the release contents/notices. The collector does not bundle it in mod paks. A local .NET runtime is downloaded from Microsoft's official distribution with its checksum from official release metadata. Versions/hashes are recorded in `config/evidence-tool.json`. No code/assets from the old unlicensed zMCDungeons-SDK were copied.

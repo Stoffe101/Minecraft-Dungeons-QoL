@@ -10,8 +10,14 @@ function Find-McdPaksPath {
 
     $candidates = New-Object System.Collections.Generic.List[string]
 
-    if ($Override) { $candidates.Add($Override) }
-    if ($env:MCD_PAKS_PATH) { $candidates.Add($env:MCD_PAKS_PATH) }
+    $explicit = $Override
+    if (-not $explicit) { $explicit = $env:MCD_PAKS_PATH }
+    if ($explicit) {
+        if (-not (Test-Path $explicit -PathType Container)) {
+            throw "Explicit Dungeons Paks path does not exist: $explicit"
+        }
+        return (Resolve-Path $explicit).Path
+    }
 
     foreach ($drive in Get-PSDrive -PSProvider FileSystem) {
         $candidates.Add((Join-Path $drive.Root "XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks"))
@@ -21,10 +27,10 @@ function Find-McdPaksPath {
         $candidates.Add((Join-Path $env:LOCALAPPDATA "Mojang\products\dungeons\dungeons\Dungeons\Content\Paks"))
     }
 
-    foreach ($candidate in $candidates | Select-Object -Unique) {
-        if ($candidate -and (Test-Path $candidate)) {
-            return (Resolve-Path $candidate).Path
-        }
+    $matches = @($candidates | Select-Object -Unique | Where-Object { $_ -and (Test-Path $_ -PathType Container) })
+    if ($matches.Count -eq 1) { return (Resolve-Path $matches[0]).Path }
+    if ($matches.Count -gt 1) {
+        throw "Multiple Dungeons installations found. Pass -PaksPath explicitly: $($matches -join '; ')"
     }
 
     throw "Minecraft Dungeons Paks folder was not found. Pass -PaksPath or set MCD_PAKS_PATH."

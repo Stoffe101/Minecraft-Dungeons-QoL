@@ -194,6 +194,8 @@ If automatic game detection chooses the wrong copy:
 
 ## Current development status
 
+To supply the installed-game evidence required for the next runtime work, run the read-only collector described in [docs/GAME_EVIDENCE.md](docs/GAME_EVIDENCE.md). It produces `.research/game-evidence.zip` without reading hero saves or modifying the game.
+
 The existing cooked runtime prototype has been audited and hardened into a diagnostic with no destructive calls. Its graph, loader maps and sidecar serialize and package successfully, but the actual reflected item methods, retail loading, persistence and input behavior still need in-game verification.
 
 Stable hero/item identity, equipment/loadout protection, a real review UI, controller support, native salvage testing and the gear manager remain outstanding. API findings from upstream final-Steam-build research do not establish Store/Xbox compatibility by themselves.
@@ -206,6 +208,7 @@ Start at [docs/README.md](docs/README.md).
 
 - [Repository audit](docs/REPO_AUDIT.md)
 - [Current state](docs/CURRENT_STATE.md)
+- [Installed-game evidence](docs/GAME_EVIDENCE.md)
 - [Findings](docs/FINDINGS.md)
 - [Modding research](docs/MODDING_RESEARCH.md)
 - [Architecture](docs/ARCHITECTURE.md)

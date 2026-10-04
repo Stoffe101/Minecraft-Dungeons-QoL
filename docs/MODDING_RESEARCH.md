@@ -566,3 +566,11 @@ Sources reviewed 2026-10-04. FModel's correct repository is `4sval/FModel`. Dung
 The new diagnostic builder pins inputs, regenerates the sidecar, relocates the manager/maps, checks bytecode and package content, includes the MIT notice and keeps the workflow read-only. F10 now previews rather than destroying items. Snapshot identity checks and stash-change cancellation provide a safer base for future batching.
 
 No broad "all tooling researched forever" claim is made: the remaining reflection/identity/UI questions require game evidence, not more generic web searching.
+
+## 19. Installed-build evidence route (2026-10-04)
+
+[UeBlueprintDumper](https://github.com/CrystalFerrai/UeBlueprintDumper) exports Blueprint class/function metadata and disassembly through CUE4Parse. Reviewed commit `9726294772458eb6114946e967e204925f8b1b66`; pinned release 1.2.0, .NET 8 runtime. Its argument parser requires `game directory`, `engine version`, `asset match`, `output directory`, despite the shorter usage banner omitting the engine position. `--list --dump` supports both listing and inspection in one invocation. Dungeons is inspected initially with `UE4_22`; parser failure is evidence to investigate, not permission to assume compatibility.
+
+Applied in `Collect-GameEvidence.ps1` with six inventory-related path terms, checksum verification, active-install disambiguation, manifest/diagnostic ZIP and no save access. Logs can include local paths and need review before sharing. Cooked Blueprint references can establish call patterns, but are not a replacement for native reflection signatures or in-game tests. See `GAME_EVIDENCE.md`.
+
+Also inspected [zMCDungeons-SDK](https://github.com/zH4x-SDK/zMCDungeons-SDK), commit `ab9d8f0ab04b215577dd2eb067e65015b5a70521`. Its JSON identifies version 1.0.3; inspected inventory methods in C++ have void declarations, empty parameter structures and zero-size class metadata. Reject this dump as exact signature/identity evidence for the current release. No code was copied from it.

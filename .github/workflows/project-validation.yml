@@ -36,6 +36,10 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
+      - name: Test read-only game evidence collection
+        shell: pwsh
+        run: ./scripts/Test-GameEvidence.ps1 -TestBootstrap
+
       - name: Build cooked-asset inspection tool
         shell: pwsh
         run: dotnet build tools/UAssetProbe/UAssetProbe.csproj -c Release
