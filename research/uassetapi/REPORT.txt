@@ -1,0 +1,10 @@
+# UAssetAPI 1.1.0 Dungeons probe
+
+Exit code: 0
+
+=== VER_UE4_20 ===
+SUCCESS
+ObjectVersion=VER_UE4_FIX_WIDE_STRING_CRC (517)
+Names=228
+Imports=67
+Exports=83
