@@ -49,6 +49,30 @@ foreach (var version in versions)
             var super = export.SuperIndex.Index;
             Console.WriteLine($"E{i + 1}: {export.GetType().Name} name={export.ObjectName} outer={outer} class={cls} super={super}");
 
+            if (export is ClassExport ce)
+            {
+                Console.WriteLine($"    SuperStruct={ce.SuperStruct.Index}");
+                Console.WriteLine($"    ClassFlags={ce.ClassFlags}");
+                Console.WriteLine($"    ClassWithin={ce.ClassWithin.Index}");
+                Console.WriteLine($"    ClassGeneratedBy={ce.ClassGeneratedBy.Index}");
+                Console.WriteLine($"    ClassDefaultObject={ce.ClassDefaultObject.Index}");
+                Console.WriteLine($"    bCooked={ce.bCooked}");
+                Console.WriteLine($"    Children=[{string.Join(",", ce.Children.Select(x => x.Index))}]");
+                Console.WriteLine($"    FuncMap=[{string.Join(",", ce.FuncMap.Keys.Select((k,i) => $"{k}:{ce.FuncMap[i].Index}"))}]");
+            }
+
+            if (export is NormalExport ne)
+            {
+                Console.WriteLine($"    DataCount={ne.Data?.Count ?? 0}");
+                if (ne.Data != null)
+                {
+                    foreach (var d in ne.Data)
+                    {
+                        Console.WriteLine($"    Data {d.Name}: {d.GetType().Name} = {d.RawValue}");
+                    }
+                }
+            }
+
             if (export is PropertyExport pe && pe.Property != null)
             {
                 Console.WriteLine($"    PropertyType={pe.Property.GetType().Name}");
