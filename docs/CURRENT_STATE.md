@@ -4,97 +4,114 @@ Last updated: 2026-10-04
 
 ## Repository state
 
-The repository has:
+The repository now has:
 
 - reproducible Dungeons Mod Kit setup
 - environment detection for Unreal Engine 4.22 and Minecraft Dungeons
 - build/install scripts
-- support for both Minecraft Launcher and Xbox app / Microsoft Store install paths
-- player-facing installation instructions for `.pak` placement
-- architecture for gear locking, mass salvage, persistence, and loadouts
+- Minecraft Launcher and Xbox app / Microsoft Store install support
+- player-facing pak installation instructions
+- architecture for locking, mass salvage, persistence, and loadouts
 - item identity research
 - final-build native inventory/salvage API research
+- comprehensive Dungeons 1 modding/toolchain research
+- UAssetAPI compatibility probes against real working Dungeons Blueprints
 - documentation and test structure
 
 ## Functional status
 
 No user-tested release pak exists yet.
 
-The project is now past the earlier "unknown salvage API" blocker. A final-build reverse-engineering/source-restoration project confirms the relevant Dungeons 1 native class architecture and Blueprint-callable methods still exist.
+The project is no longer blocked on understanding how Dungeons inventory/salvage works.
+
+The remaining work is primarily **authoring and packaging the actual runtime Blueprints/UI**, then validating them in the real game.
+
+## Chosen production approach
+
+The canonical implementation route is now:
+
+1. Unreal Engine 4.22.x
+2. Dokucraft Dungeons Mod Kit
+3. editor-facing Dungeons class/function stubs
+4. project-owned manager actor and widget Blueprints
+5. Blueprint Loader levels under Lobby and Ingame
+6. normal UE4 cook
+7. normal Mod Kit/u4pak packaging
+8. install to the active game's `Paks\~mods`
+
+UAssetAPI is a supporting inspection/validation/precooked-modification tool.
+
+KismetKompiler is experimental and is no longer allowed to block the release path.
+
+See `MODDING_RESEARCH.md`.
+
+## Proven reusable patterns
+
+Camera Coordinates Overlay demonstrates the exact UI bootstrap pattern needed:
+
+`Blueprint Loader level -> actor -> create widget -> add to viewport`
+
+Its published Nexus permissions allow modification and asset reuse.
+
+LetMeMove is MIT licensed and provides a modern known-working Dungeons 1 actor/loader reference.
 
 ## Verified native inventory surface
 
-`UInventoryItemSlot` is Blueprint-visible and exposes the current item.
-
-`UItemStashComponent` is a Blueprint-spawnable actor component and exposes the critical operations we need:
+`UInventoryItemSlot` and `UItemStashComponent` expose the core operations needed, including:
 
 ```text
 GetInventorySlots()
 GetEquipmentSlots()
 GetChangeIndex()
+CanSwapWith(...)
+Swap(...)
+IsLocked()
 EnterInventoryUI()
 ExitInventoryUI()
-SalvageItemInSlot(slot, success)
-SalvageItemUndo(undoInfo)
-GetSalvageInfo(item)
-CompareItemPowerWithEquipped(item)
+SalvageItemInSlot(...)
+SalvageItemUndo(...)
+GetSalvageInfo(...)
+CompareItemPowerWithEquipped(...)
 AvailableEnchantmentPoints()
 ```
 
-This changes the implementation plan substantially: mass salvage does **not** need custom destruction/reward math. Each validated selected slot can be passed through `SalvageItemInSlot`, preserving Dungeons' own salvage result handling and undo metadata.
-
-## Selection finding
-
-Dungeons internally has:
-
-`UItemStashComponent::OnInventoryItemSlotSelected`
-
-and the vanilla hint system subscribes to it for gear-selection hints.
-
-However, the restored declaration is a native multicast delegate and is not marked `BlueprintAssignable`. A pure Blueprint mod cannot assume it can bind directly to that delegate.
-
-Therefore the first playable build must either:
-
-1. hook/observe the vanilla inventory widget/selection through another Blueprint-accessible path, or
-2. provide its own selection overlay backed by `GetInventorySlots()`.
-
-Option 2 is the safe fallback and still allows a complete lock + batch-salvage workflow without replacing the game's save/economy behavior.
-
-## Identity state
-
-Public save-format research confirms:
-
-- hero profiles contain `uniqueSaveId`
-- items contain `inventoryIndex`
-- equipped gear remains in the same item collection and is identified by `equipmentSlot`
-
-This remains the fallback persistence locator if runtime item objects expose no stronger stable instance identity.
+Mass salvage therefore uses the native Dungeons transaction rather than recreating reward math.
 
 ## Immediate implementation target
 
-Produce a first playable Blueprint Loader build that:
+The next build milestone is deliberately non-destructive:
 
-1. finds the local player's `UItemStashComponent`
-2. enumerates `GetInventorySlots()`
-3. excludes all `GetEquipmentSlots()`
-4. lets the player mark/unmark inventory slots in a batch
-5. keeps an in-session protected/locked set
-6. revalidates every slot immediately before destruction
-7. calls `SalvageItemInSlot` for each accepted slot
-8. records success/failure and undo information
-9. never directly mutates currency or the hero save
+1. add minimal verified Dungeons inventory class/function stubs to the Mod Kit editor overlay
+2. create the project-owned manager actor
+3. create the project-owned overlay widget
+4. load it in Camp and missions
+5. find the local player's `UItemStashComponent`
+6. enumerate inventory/equipment slots
+7. display diagnostic counts/state
+8. implement selection and in-session lock state without destroying anything
 
-Persistent locks/loadouts follow once the runtime identity/persistence bridge is verified.
+Only after that works in-game do we enable `SalvageItemInSlot`.
+
+## Identity state
+
+Persistent item identity still needs runtime verification.
+
+Fallback research supports:
+
+`hero uniqueSaveId + inventoryIndex + sanity fingerprint`
+
+but storage transfers and index reuse mean ambiguity must fail closed.
 
 ## Known external requirements
 
 - Windows
 - Minecraft Dungeons 1
 - Blueprint Loader
-- Dungeons Mod Kit / UE4.22 for normal authoring, unless the bytecode-tooling route proves reliable
+- Unreal Engine 4.22.x for the standard authoring route
+- Dungeons Mod Kit
 
 ## Safety policy
 
-The project must not directly edit hero save files or manually add emeralds/enchantment points to simulate salvage.
+The project must not directly edit hero saves or manually grant salvage rewards.
 
-Every destructive operation must be revalidated and sent through Dungeons' native salvage path.
+Every destructive operation must be revalidated and sent through the native Dungeons salvage path.
