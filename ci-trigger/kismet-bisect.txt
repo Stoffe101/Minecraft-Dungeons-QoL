@@ -1,1 +1,1 @@
-2026-10-04 compatibility bisect
+2026-10-04 compatibility bisect with upstream commits
