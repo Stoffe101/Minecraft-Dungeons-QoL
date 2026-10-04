@@ -49,15 +49,27 @@ foreach (var version in versions)
             var super = export.SuperIndex.Index;
             Console.WriteLine($"E{i + 1}: {export.GetType().Name} name={export.ObjectName} outer={outer} class={cls} super={super}");
 
-            var t = export.GetType();
-            foreach (var propName in new[] { "PropertyFlags", "ArrayDim", "ElementSize", "PropertyClass", "Struct", "Enum", "KeyProp", "ValueProp" })
+            if (export is PropertyExport pe && pe.Property != null)
             {
-                var p = t.GetProperty(propName);
-                if (p != null)
+                Console.WriteLine($"    PropertyType={pe.Property.GetType().Name}");
+                Console.WriteLine($"    ArrayDim={pe.Property.ArrayDim}");
+                Console.WriteLine($"    ElementSize={pe.Property.ElementSize}");
+                Console.WriteLine($"    PropertyFlags={pe.Property.PropertyFlags}");
+                Console.WriteLine($"    RepNotifyFunc={pe.Property.RepNotifyFunc}");
+
+                var pt = pe.Property.GetType();
+                foreach (var propName in new[] { "Next", "Inner", "PropertyClass", "Struct", "Enum", "UnderlyingProp", "KeyProp", "ValueProp" })
                 {
+                    var p = pt.GetField(propName) ?? (System.Reflection.MemberInfo?)pt.GetProperty(propName);
+                    if (p == null) continue;
                     try
                     {
-                        var value = p.GetValue(export);
+                        object? value = p switch
+                        {
+                            System.Reflection.FieldInfo fi => fi.GetValue(pe.Property),
+                            System.Reflection.PropertyInfo pi => pi.GetValue(pe.Property),
+                            _ => null
+                        };
                         if (value != null) Console.WriteLine($"    {propName}={value}");
                     }
                     catch {}
