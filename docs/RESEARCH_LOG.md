@@ -12,23 +12,19 @@ Establish a safe development foundation for a Minecraft Dungeons 1 QoL mod conta
 
 ### Findings
 
-- The Dokucraft Dungeons Mod Kit uses UE 4.22 and is MIT licensed.
-- Blueprint Loader can inject content at Menu, Lobby, and Ingame triggers.
-- A new 2026 Dungeons 1 mod, LetMeMove!, reports that the old Dungeons 1 Blueprint Loader still works on the latest game build.
-- LetMeMove is MIT licensed and confirms a minimal current Blueprint Loader content structure.
-- Modern Xbox app / Microsoft Store installs expose the Paks directory under the normal game installation, commonly beneath `C:\XboxGames`.
-- Vanilla salvage returns emeralds and invested enchantment points and has a limited undo state.
-- Therefore mass salvage should invoke the native salvage path rather than reimplementing the economy.
-- Blueprint Loader's Nexus permissions mean it must remain a separately installed dependency.
+- Dokucraft Dungeons Mod Kit uses UE4.22 and is MIT licensed.
+- Blueprint Loader injects content at Menu, Lobby, and Ingame triggers.
+- Current Dungeons 1 community work still uses the established modding pipeline.
+- Modern Xbox app / Microsoft Store installs expose an accessible Paks directory.
+- Vanilla salvage returns currency and invested enchantment points.
+- Mass salvage should invoke the native salvage path rather than reimplementing the economy.
 
 ### Decisions
 
-- Target Microsoft Store / Xbox app first.
 - Use a separate project-owned SaveGame slot for lock/loadout metadata.
 - Do not mutate hero save files.
-- Prefer overlay UI and event/function hooks over wholesale replacement of the vanilla inventory widget.
+- Prefer overlay UI and native game APIs over wholesale vanilla asset replacement.
 - Native vanilla salvage must be the destructive backend.
-- Lock protection must eventually guard vanilla salvage as well as project-owned bulk salvage.
 
 ### Implementation completed
 
@@ -41,7 +37,7 @@ Establish a safe development foundation for a Minecraft Dungeons 1 QoL mod conta
 
 ### Not yet tested
 
-PowerShell tooling must be verified on a real Windows development machine.
+PowerShell tooling still needs verification on a real Windows Dungeons development machine.
 
 ## 2026-10-04 — Save identity investigation
 
@@ -58,41 +54,95 @@ The save model contains:
 - profile `uniqueSaveId`
 - item `inventoryIndex`
 - item `equipmentSlot`
-- type, rarity, power, enchantments, gilded/netherite enchant data and other useful fingerprint fields
+- type, rarity, power, enchantments, gilded/netherite data
 
-The editor's item-list logic:
+The editor's item-list logic sorts by inventory index and assigns new items `max(existing index) + 1`.
 
-- sorts inventory by `InventoryIndex`
-- assigns newly-added items `max(existing index) + 1`
-- keeps equipped items in the same Items collection, distinguished by `EquipmentSlot`
-
-Storage transfer adds the item to the target collection, which assigns the target collection's next index. Therefore `InventoryIndex` is not a cross-storage permanent ID. A deleted highest index can also be reused by a future item.
+Storage transfer can assign a new target-collection index, so `inventoryIndex` is not a permanent cross-storage identity.
 
 ### Result
 
-`uniqueSaveId + inventoryIndex` is a strong provisional locator, not a guaranteed permanent identity. Prefer a native runtime GUID if one exists. If no GUID exists, pair the index with sanity/fingerprint data and fail closed when data disagrees.
-
-### Additional research tooling
-
-DungeonsModding/Useful-things confirms community extraction data for encrypted Dungeons assets exists. The project research helper should accept an AES key parameter rather than embedding one.
-
-### Next research
-
-Current runtime Blueprint discovery: inventory widget, selected item fields, native item ID/GUID, salvage/equip functions, and vanilla salvage-button guard point.
+`uniqueSaveId + inventoryIndex` is a provisional locator, not a guaranteed permanent identity. Prefer a native runtime GUID if one exists. Otherwise combine the locator with sanity/fingerprint data and fail closed on disagreement.
 
 ## 2026-10-04 — Microsoft Store ownership through Minecraft Launcher
 
 ### Finding
 
-Microsoft-account ownership and game-file location are separate concerns. The normal Minecraft Launcher can use the Microsoft-account entitlement for Dungeons and can install/run the game itself.
+Microsoft-account ownership and game-file location are separate concerns.
 
-For mod installation, the authoritative location is the `Dungeons\Content\Paks` folder belonging to the executable the player actually launches.
+For mod installation, the authoritative location is the `Dungeons\Content\Paks` folder belonging to the copy actually launched.
 
-Two common layouts are:
+Common layouts:
 
 - Minecraft Launcher: `%LOCALAPPDATA%\Mojang\products\dungeons\dungeons\Dungeons\Content\Paks`
 - Xbox app: `C:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks`
 
 ### Project impact
 
-No architecture change is needed. `scripts/Common.ps1` already probes both path families. If both installations exist, the user can override detection with `-PaksPath` or `MCD_PAKS_PATH`.
+The project supports both path families and permits explicit override when multiple copies are installed.
+
+## 2026-10-04 — Native inventory/salvage API research
+
+### Source
+
+Minecraforever/MCD-PE:
+https://github.com/Minecraforever/MCD-PE
+
+### Findings
+
+Final-build-verified class architecture includes:
+
+- `UItemStashComponent`
+- `UInventoryItemSlot`
+- equipment-slot enumeration
+- inventory-slot enumeration
+- slot swap functions
+- native `SalvageItemInSlot`
+- native salvage undo/info functions
+
+### Result
+
+The QoL mod does not need custom salvage reward calculations.
+
+Bulk salvage can validate each chosen slot and call the game's own native salvage transaction.
+
+## 2026-10-04 — Proven Dungeons modding workflow research
+
+### Findings
+
+Research across the Dungeons Mod Kit, Blueprint Loader documentation, current Dungeons 1 mods, and known Blueprint Loader examples established the preferred production workflow:
+
+1. UE4.22.x
+2. Dungeons Mod Kit
+3. Blueprint Loader
+4. small Lobby/Ingame loader levels
+5. manager actor
+6. actor-created UI widgets
+7. cook with UE4.22
+8. package with the Mod Kit/u4pak pipeline
+9. install the pak under the active game's `Paks\~mods`
+
+Camera Coordinates Overlay is explicitly published as a Blueprint Loader example and demonstrates the actor-to-widget pattern we need.
+
+A Dungeons 1 mod updated in 2026 explicitly states it was made using the Dungeons Mod Kit, confirming the toolchain is still relevant to the final Dungeons 1 release.
+
+### Binary tooling result
+
+UAssetAPI 1.1.0 successfully parses the known-working LetMeMove Dungeons Blueprint:
+
+- object version 517
+- 228 names
+- 67 imports
+- 83 exports
+
+KismetKompiler's old UAssetAPI cannot parse the same asset. Replacing the dependency with modern UAssetAPI causes source-API incompatibilities, so KismetKompiler remains an experimental automation path rather than the main implementation strategy.
+
+### Decision
+
+Standard UE4.22 authoring is now the primary path.
+
+Permitted existing mod assets are allowed as templates where they materially reduce risk, especially Camera Coordinates Overlay for UI bootstrapping and LetMeMove for a known-working actor/loader structure.
+
+Modern UAssetAPI remains the preferred inspection/validation/precooked-patching tool.
+
+Full analysis is documented in `MODDING_RESEARCH.md`.
