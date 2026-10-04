@@ -1,65 +1,76 @@
 # Minecraft Dungeons QoL
 
-A quality-of-life mod for **Minecraft Dungeons 1** focused on fixing the inventory chores that become painful once you start keeping several builds.
+A quality-of-life mod for **Minecraft Dungeons 1** focused on safer, faster inventory management.
 
-## Planned core features
+## Core features
 
 - **Gear Locking**: protect important items from salvage.
-- **Gear Manager / Loadouts**: save and switch between multiple gear sets.
-- **Mass Salvage**: select several items, review the batch, then salvage them together.
-- **Safety first**: equipped, locked, loadout-assigned, or unresolved items are protected from destructive actions.
+- **Gear Manager / Loadouts**: save multiple melee, armor, ranged, and artifact setups.
+- **Mass Salvage**: select several eligible items, review the batch, then salvage them together.
+- **Safety first**: equipped, locked, loadout-assigned, or unresolved items must never be bulk-salvaged.
 
 ## Supported PC installs
 
-The mod targets the same Windows Dungeons 1 game regardless of where the Microsoft account entitlement came from.
+Minecraft Dungeons ownership and the location of the installed game are separate concerns.
 
-Supported install layouts:
+The project is being built to support:
 
-- **Minecraft Launcher**, including players who bought/own Dungeons through Microsoft Store but install and launch it from the normal Minecraft Launcher.
-- **Xbox app / Microsoft Store installation**.
-- Steam is planned for validation as well, but the first testing target is the Microsoft-account builds above.
+- **Microsoft Store / Xbox app installs**, including the common case where the game is owned through Microsoft Store but launched from the normal Minecraft Launcher.
+- the older standalone **Minecraft Launcher installation layout**.
+- Steam validation later in the hardening phase.
 
-The important part is **which Dungeons installation is actually being launched**, not where the license was purchased.
+### Important: Microsoft Store ownership launched from Minecraft Launcher
+
+If Minecraft Launcher shows only a drive such as `C:` or `D:` for the Dungeons installation, the Launcher is using the Microsoft Store/Xbox-managed installation. Use the **Microsoft Store / Xbox app path** below.
+
+Do **not** assume that launching from Minecraft Launcher means the files are under `%LOCALAPPDATA%\Mojang\products`.
 
 ## Installing a release
 
-### 1. Find the active Dungeons `Paks` folder
+### 1. Find the active `Paks` folder
 
-If you use the **normal Minecraft Launcher**, a common path is:
+#### Microsoft Store / Xbox app install
 
-```text
-%LOCALAPPDATA%\Mojang\products\dungeons\dungeons\Dungeons\Content\Paks
-```
+Open the Xbox app:
 
-If you installed Dungeons through the **Xbox app / Microsoft Store**, a common path is:
+1. Minecraft Dungeons
+2. **Manage**
+3. **Files**
+4. Note the installation folder.
+
+A common default is:
 
 ```text
 C:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks
 ```
 
-The Xbox app may place `XboxGames` on another drive, for example:
+It may instead be on another drive, for example:
 
 ```text
 D:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks
 ```
 
-If you have more than one Dungeons installation, use the `Paks` folder belonging to the copy you actually launch.
+This is also the path family to use when Minecraft Launcher is merely launching the Store/Xbox-managed copy.
 
-### 2. Create the Blueprint Loader mods folder
+#### Older standalone Minecraft Launcher install
 
-Inside `Paks`, create a folder named exactly:
+If Minecraft Launcher shows a real folder path for its Dungeons installation, use that folder and locate:
+
+```text
+<launcher-install>\dungeons\dungeons\Dungeons\Content\Paks
+```
+
+Older Launcher installs have an important caveat: launching Dungeons through Minecraft Launcher can restore/remove modified files. For that layout, launch `Dungeons.exe` directly after installing mods.
+
+### 2. Create the mods folder
+
+Inside the active `Paks` folder, create:
 
 ```text
 ~mods
 ```
 
-The final path should look like one of these:
-
-```text
-%LOCALAPPDATA%\Mojang\products\dungeons\dungeons\Dungeons\Content\Paks\~mods
-```
-
-or:
+Example:
 
 ```text
 C:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks\~mods
@@ -67,19 +78,17 @@ C:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks\~mods
 
 ### 3. Install Blueprint Loader
 
-This mod uses **Blueprint Loader for Minecraft Dungeons 1** as a separate runtime dependency.
-
-Download/install Blueprint Loader from its original Nexus Mods page:
+Minecraft Dungeons QoL uses **Blueprint Loader for Minecraft Dungeons 1** as a separate runtime dependency:
 
 https://www.nexusmods.com/minecraftdungeons/mods/111
 
-Follow Blueprint Loader's installation instructions and place its required files in the same Dungeons installation you actually launch.
+Blueprint Loader is not bundled with this repository because its redistribution permissions require it to remain a separate download.
 
-Blueprint Loader is **not bundled** with this project because its redistribution permissions do not allow us to simply repackage it.
+Install Blueprint Loader into the **same Dungeons installation that you actually run**.
 
 ### 4. Install Minecraft Dungeons QoL
 
-Put the release file:
+Put:
 
 ```text
 MinecraftDungeonsQoL.pak
@@ -97,54 +106,62 @@ Example:
 C:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks\~mods\MinecraftDungeonsQoL.pak
 ```
 
-Then launch Minecraft Dungeons normally through the Minecraft Launcher or Xbox app.
+For a modern Store/Xbox install, launch normally through Minecraft Launcher, Xbox app, Microsoft Store, or Start.
 
-Updating the mod is simply replacing the old `MinecraftDungeonsQoL.pak` with the newer one while the game is closed.
+For the older standalone Launcher layout, launch its `Dungeons.exe` directly if Minecraft Launcher removes the mod files.
+
+Updating the mod is simply replacing the old `MinecraftDungeonsQoL.pak` while the game is closed.
+
+## Development approach
+
+The primary development route is now:
+
+1. **Unreal Engine 4.22.x**
+2. **Dungeons Mod Kit**
+3. a small project-owned **mirror of verified Dungeons reflection APIs**
+4. normal Blueprint authoring against those mirror classes
+5. cook/package through the Mod Kit
+6. load the resulting assets through **Blueprint Loader**
+
+This is preferable to raw cooked-Blueprint bytecode patching. The mirror module is also named `Dungeons`, so Blueprint references compile against paths such as `/Script/Dungeons.ItemStashComponent`, which the shipping game can resolve to its real classes at runtime.
+
+Only reflection-visible classes, properties, enums, and functions that we can substantiate are mirrored.
 
 ## Building from source
 
-Development currently targets:
+Development requirements:
 
 - Windows
 - Unreal Engine **4.22.x**
 - Python 3.8+
 - Dungeons Mod Kit
-- Blueprint Loader
 - Minecraft Dungeons 1
 
-Check the local environment:
+Check the environment:
 
 ```powershell
 ./scripts/Check-Environment.ps1
 ```
 
-Bootstrap the pinned Dungeons Mod Kit:
+Bootstrap the pinned Mod Kit:
 
 ```powershell
 ./scripts/Bootstrap-ModKit.ps1
 ```
 
-Build once project Blueprint assets are available:
+Build:
 
 ```powershell
 ./scripts/Build.ps1
 ```
 
-Install the built pak automatically:
+Install the resulting pak:
 
 ```powershell
 ./scripts/Install.ps1
 ```
 
-The installer searches both the normal Minecraft Launcher path and Xbox app paths.
-
-If more than one copy exists, specify the active one:
-
-```powershell
-./scripts/Install.ps1 -PaksPath "$env:LOCALAPPDATA\Mojang\products\dungeons\dungeons\Dungeons\Content\Paks"
-```
-
-or:
+If automatic game detection chooses the wrong copy:
 
 ```powershell
 ./scripts/Install.ps1 -PaksPath "D:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks"
@@ -152,29 +169,27 @@ or:
 
 ## Current development status
 
-The repository now has the build/install foundation and the exact native Dungeons inventory/salvage API has been identified from final-build reverse-engineering work.
-
-Most importantly, Dungeons exposes Blueprint-callable inventory functions including:
+The final-build Dungeons inventory architecture has been researched far enough to identify the native Blueprint-facing operations needed for the core mod:
 
 - inventory slot enumeration
 - equipped slot enumeration
-- the native salvage transaction
-- native salvage undo information
+- native slot swapping
+- native salvage
+- native salvage undo metadata
 
-That means the bulk-salvage implementation can use the **same game operation as normal salvage**, rather than recreating reward calculations.
+Mass salvage will therefore use Dungeons' own `SalvageItemInSlot` transaction rather than recreating emerald/gold/enchantment-point calculations.
 
-The next milestone is producing and validating the first playable Blueprint Loader build.
+The next build milestone is compiling the mirror API into the UE4.22 Mod Kit project, then authoring the first playable lock + batch-salvage Blueprint slice.
 
-See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md) for the exact implementation state.
+See [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md).
 
 ## Documentation
 
 Start at [docs/README.md](docs/README.md).
 
-Key project records:
-
 - [Current state](docs/CURRENT_STATE.md)
 - [Findings](docs/FINDINGS.md)
+- [Modding research](docs/MODDING_RESEARCH.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Feature specification](docs/FEATURE_SPEC.md)
 - [Roadmap](docs/ROADMAP.md)
