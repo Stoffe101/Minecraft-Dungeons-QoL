@@ -81,6 +81,7 @@ void Show(KismetExpression s) {
 }
 
 Obj(pc,Static(gameplayDefault,Fn(gameplay,"GetPlayerController"),new EX_Self(),N(0)));Branch(Valid(L(pc)),"HIDE");
+Branch(C(L(pc),F(Fn(Class("/Script/Engine","Controller"),"IsLocalPlayerController"))),"HIDE");
 Obj(controller,new EX_DynamicCast {ClassPtr=Existing("BP_PlayerController_C"),Target=L(pc)});Branch(Valid(L(controller)),"HIDE");
 Obj(shared,C(L(controller),V(Existing("SharedUI")),Index(shared)));Branch(Valid(L(shared)),"HIDE");
 Obj(hud,new EX_DynamicCast {ClassPtr=Existing("UMG_InventoryHUD_C"),Target=C(L(shared),V(Existing("InventoryHUD")),Index(hud))});Branch(Valid(L(hud)),"HIDE");
@@ -100,8 +101,6 @@ Obj(oldCanvas,L(canvas),true);
 Add(C(L(uiSlot),F(Fn(slotClass,"SetAnchors"),new EX_StructConst {Struct=anchors,StructSize=16,Value=new KismetExpression[]{Vec(0.5f,1f),Vec(0.5f,1f)}})));
 Add(C(L(uiSlot),F(Fn(slotClass,"SetAlignment"),Vec(0.5f,1f))));Add(C(L(uiSlot),F(Fn(slotClass,"SetPosition"),Vec(0f,-100f))));
 Add(C(L(uiSlot),F(Fn(slotClass,"SetSize"),Vec(1000f,90f))));Add(C(L(uiSlot),F(Fn(slotClass,"SetZOrder"),N(100))));
-Add(C(I(text),F(Fn(Class("/Script/UMG","TextLayoutWidget"),"SetJustification"),new EX_ByteConst{Value=1})));
-Add(C(I(text),F(Fn(Class("/Script/UMG","TextLayoutWidget"),"SetAutoWrapText"),new EX_True())));
 Label("READY");Visibility(3); // HitTestInvisible: display only, no input capture.
 Obj(stash,C(L(controller),F(Existing("GetItemStashComponent")),Index(stash)));Branch(Valid(L(stash)),"NO_STASH");
 Add(new EX_Let {Value=Ptr(Index(slots)),Variable=L(slots),Expression=C(L(stash),F(Existing("GetInventorySlots")),Index(slots))});
@@ -112,11 +111,11 @@ Branch(M("Less_IntInt",I(cursor),N(0)),"HIGH");Int(M("Subtract_IntInt",Length(L(
 Label("HIGH");Branch(M("GreaterEqual_IntInt",I(cursor),Length(L(slots))),"ITEM");Int(N(0));
 Label("ITEM");Obj(currentSlot,new EX_ArrayGetByRef {ArrayVariable=L(slots),ArrayIndex=I(cursor)});Branch(Valid(L(currentSlot)),"EMPTY_SLOT");
 Obj(item,C(L(currentSlot),V(Existing("Item")),Index(item)));Branch(Valid(L(item)),"EMPTY_SLOT");
-var display=C(L(item),new EX_VirtualFunction {VirtualFunctionName=new FName(asset,"GetDisplayNameText"),Parameters=Array.Empty<KismetExpression>()});
+var display=C(L(item),F(Fn(Existing("InventoryItem"),"GetDisplayNameText")));
 var name=Static(textDefault,Fn(textLib,"Conv_TextToString"),display);
 var description=Build(Build(S("MCD QoL READ-ONLY | "),Length(L(slots))," slots | F6/F7 browse\nSlot "),I(cursor)," | ");
 var joined=Static(stringDefault,Fn(stringClass,"Concat_StrStr"),description,name);
-Show(Build(Static(stringDefault,Fn(stringClass,"Concat_StrStr"),joined,S(" | power ")),C(L(item),new EX_VirtualFunction {VirtualFunctionName=new FName(asset,"GetDisplayItemPowerInt"),Parameters=Array.Empty<KismetExpression>()})," | no item changes"));Jump("END");
+Show(Build(Static(stringDefault,Fn(stringClass,"Concat_StrStr"),joined,S(" | power ")),C(L(item),F(Fn(Existing("InventoryItem"),"GetDisplayItemPowerInt")))," | no item changes"));Jump("END");
 Label("EMPTY_SLOT");Show(Build(S("MCD QoL READ-ONLY | slot "),I(cursor)," is empty | F6/F7 browse"));Jump("END");
 Label("EMPTY");Int(N(0));Show(S("MCD QoL READ-ONLY | inventory has no slots"));Jump("END");
 Label("NO_STASH");Show(S("MCD QoL READ-ONLY | inventory UI found; stash unavailable"));Jump("END");

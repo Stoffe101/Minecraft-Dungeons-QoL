@@ -144,3 +144,17 @@ The PR #11 event entry repair still produced no text or visible F6/F7 response f
 Automatic tests reject all three disabled tick flags, omitted bTickEvenWhenPaused and a positive TickInterval. Packaging verification reopens the actual pak's manager to check those defaults. The original offline game pause is preserved; this probe performs no item/save mutations.
 
 The revised open guard calls Widget.IsVisible on InventoryHUD as the controller does. Additional negative tests reject checking visibility on the wrong local or importing IsVisible under the wrong native class. Inventory reads and UI construction remain unreachable before or after the closed path of that guard.
+
+## Required online/co-op gate after the inventory crash
+
+PR #12 inventory probe is withdrawn after an online inventory-open crash. Test the replacement alone after a full restart, with Blueprint Loader present. No activation setting is needed. Record the pak hash, session role, visible initial text, F6/F7 response and inventory-close hiding. A passed camp test does not pass this gate.
+
+| Session | Required checks | Status |
+|---|---|---|
+| Online alone | Camp and mission inventory, initial text, F6/F7, repeated opens | Pending |
+| Host with friends | Own inventory only, friends unaffected, transitions and disconnect | Pending |
+| Join a friend | Client bootstrap, own inventory only, transitions/rejoin | Blocked/unverified |
+| Friends without mod | Joining/hosting continues; no mod actor or UI replicated | Pending |
+| Offline | Inventory remains paused; overlay and keys still work | Pending |
+
+Run mission travel, return to camp, character change, friend join/leave, disconnect/reconnect and simultaneous inventory opens. Verify no remote item reads/writes and no sidecar writes in this probe. Production lock/salvage/loadout tests remain separate and incomplete.

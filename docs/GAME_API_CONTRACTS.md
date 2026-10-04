@@ -70,3 +70,11 @@ The manager's own PrimaryActorTick must explicitly enable bCanEverTick, bStartWi
 
 
 The executable gate now uses native Widget.IsVisible with zero parameters on the resolved MCDQoL_InventoryHUD local. This matches the collected controller's before/after ToggleWidget checks; it does not assume the otherwise unwritten IsInventoryOpen field is updated by the game. Shared validation verifies the receiver plus the function's Widget owner and /Script/UMG module. Wrong receivers/owners are rejected alongside missing/bypassed guards.
+
+## Local inventory probe contracts after the online crash
+
+Require /Script/Engine.Controller.IsLocalPlayerController on the resolved player controller before reads/input/widget creation; a server may have remote controllers. The manager CDO must serialize bReplicates=false. Do not infer local ownership from player index alone.
+
+Native UI calls must be imported from /Script/UMG with these reflected owners: AddChildToCanvas → CanvasPanel; SetText → TextBlock; SetVisibility/RemoveFromParent → Widget; SetAnchors/SetAlignment/SetPosition/SetSize/SetZOrder → CanvasPanelSlot. Each setter takes one argument; RemoveFromParent takes none. Optional SetJustification/SetAutoWrapText are forbidden in the probe until a retail reflected contract is established.
+
+Native InventoryItem.GetDisplayNameText is present in supplied inventory-inspect metadata; GetDisplayItemPowerInt is present in HUD metadata. Emit explicit FinalFunction imports. Metadata supports ownership/signature; it does not prove that every runtime slot is valid.

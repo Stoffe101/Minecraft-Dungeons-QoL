@@ -1,4 +1,4 @@
-> Runtime status: the archetype-repaired loading probe reached camp on the user’s Store build without crashing. Feature code remains unverified. Both visible inventory probes reached camp but showed no text. Offline inventory pauses the world; the manager now explicitly ticks during pauses. The replacement probe is validated offline and needs an in-game retry. Earlier PR #7/#8 diagnostics remain withdrawn.
+> Runtime status: PR #12 reached camp but crashed when inventory opened in an online session. Withdraw that inventory probe. The replacement removes unverified text setters, binds item reads to native functions, and requires a local player controller with a non-replicated manager. These are candidate repairs; retail confirmation is pending. Online hosting and joining friends are required, and joining-client startup is an unresolved blocker. Production features remain unfinished.
 
 # Minecraft Dungeons QoL
 

@@ -17,6 +17,12 @@ public static class DiagnosticGraphValidator
     }
     public static void ConfigureInventoryTick(UAsset asset)
     {
+        var owner = asset.Exports.OfType<ClassExport>().Single();
+        var cdo = (NormalExport)owner.ClassDefaultObject.ToExport(asset);
+        var replicated = cdo.Data.Where(x => x.Name.ToString() == "bReplicates").ToArray();
+        if (replicated.Length == 0) cdo.Data.Add(new BoolPropertyData(new FName(asset, "bReplicates")) { Value = false });
+        else if (replicated.Length == 1 && replicated[0] is BoolPropertyData flag) flag.Value = false;
+        else throw new InvalidDataException("Invalid inventory actor replication flag.");
         var tick = InventoryTickDefaults(asset);
         foreach (var name in new[] { "bCanEverTick", "bStartWithTickEnabled", "bTickEvenWhenPaused" })
         {
@@ -34,6 +40,11 @@ public static class DiagnosticGraphValidator
     }
     public static void ValidateInventoryTick(UAsset asset)
     {
+        var owner = asset.Exports.OfType<ClassExport>().Single();
+        var cdo = (NormalExport)owner.ClassDefaultObject.ToExport(asset);
+        var replicated = cdo.Data.Where(x => x.Name.ToString() == "bReplicates").ToArray();
+        if (replicated.Length != 1 || replicated[0] is not BoolPropertyData { Value: false })
+            throw new InvalidDataException("Inventory actor must not replicate.");
         var tick = InventoryTickDefaults(asset);
         if (tick.StructType.ToString() != "ActorTickFunction")
             throw new InvalidDataException("Wrong inventory actor tick struct.");
@@ -90,6 +101,18 @@ public static class DiagnosticGraphValidator
         var owner = function.OuterIndex.ToImport(asset);
         return owner.ObjectName.ToString() == "Widget" && owner.OuterIndex.IsImport()
             && owner.OuterIndex.ToImport(asset).ObjectName.ToString() == "/Script/UMG";
+    }
+    public static bool IsLocalPlayerCondition(UAsset asset, KismetExpression expression)
+    {
+        if (expression is not EX_Context { ObjectExpression: EX_LocalVariable pc,
+            ContextExpression: EX_FinalFunction call } || !pc.Variable.Old.IsExport()
+            || pc.Variable.Old.ToExport(asset).ObjectName.ToString() != "CallFunc_GetPlayerController_ReturnValue"
+            || !call.StackNode.IsImport() || call.Parameters.Length != 0) return false;
+        var function = call.StackNode.ToImport(asset);
+        if (function.ObjectName.ToString() != "IsLocalPlayerController" || !function.OuterIndex.IsImport()) return false;
+        var owner = function.OuterIndex.ToImport(asset);
+        return owner.ObjectName.ToString() == "Controller" && owner.OuterIndex.IsImport()
+            && owner.OuterIndex.ToImport(asset).ObjectName.ToString() == "/Script/Engine";
     }
     public static int Validate(UAsset asset, IReadOnlyList<KismetExpression> code, bool requireEquipmentGuards = true)
     {
@@ -168,6 +191,12 @@ public static class DiagnosticGraphValidator
             && IsInventoryOpenCondition(asset, g.BooleanExpression)).ToArray();
         if (guards.Length != 1) throw new InvalidDataException("Expected one inventory-open guard.");
         var guard = guards[0];
+        var localGuards = Enumerable.Range(0, code.Count).Where(i => code[i] is EX_JumpIfNot g
+            && IsLocalPlayerCondition(asset, g.BooleanExpression)).ToArray();
+        if (localGuards.Length != 1) throw new InvalidDataException("Expected one local-player guard.");
+        var localGuard = localGuards[0];
+        var beforeLocal = Reach(0, localGuard);
+        var remotePath = Reach(offsets[((EX_JumpIfNot)code[localGuard]).CodeOffset]);
         var beforeGate = Reach(0, guard);
         var closedPath = Reach(offsets[((EX_JumpIfNot)code[guard]).CodeOffset]);
         for (var i = 0; i < code.Count; i++)
@@ -178,6 +207,8 @@ public static class DiagnosticGraphValidator
                 var name = expr is EX_FinalFunction ff ? Member(ff.StackNode) : "";
                 if (name is "WasInputKeyJustPressed" or "GetInventorySlots" or "GetSalvageInfo" or "SpawnObject" or "AddChildToCanvas") sensitive = true;
             });
+            if (sensitive && (beforeLocal.Contains(i) || remotePath.Contains(i)))
+                throw new InvalidDataException("Inventory input/read reachable without local player.");
             if (sensitive && (beforeGate.Contains(i) || closedPath.Contains(i)))
                 throw new InvalidDataException("Inventory input/read reachable without open inventory.");
         }

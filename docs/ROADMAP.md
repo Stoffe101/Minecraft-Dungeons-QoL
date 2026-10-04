@@ -127,3 +127,10 @@ Immediate priorities: visible read-only inventory probe, stable hero/item identi
 - [ ] Integrate confirmed feedback into lock/select/preview runtime and validate it before native salvage.
 
 The loading milestone does not mark Phase 2 launch/features complete. Mission transitions, full event graph, persistence and all production lock/loadout/salvage behavior remain open.
+
+## Immediate blocking work: online and co-op
+
+- [ ] Retail confirmation of inventory-open crash repair and visible text/input.
+- [ ] Project-owned client bootstrap independent of server-only GetGameMode, with no unlicensed dependency modifications.
+- [ ] Host and joining-client camp/mission/travel/rejoin matrix, including friends without the mod.
+- [ ] Complete and validate the planned production features after the read-only probe works.
