@@ -1,1 +1,1 @@
-2026-10-04 cooked property metadata for SaveGame synthesis
+2026-10-04 inspect class children flags CDO data for SaveGame synthesis
