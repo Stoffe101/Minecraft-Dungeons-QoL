@@ -78,6 +78,20 @@ foreach (var guard in code.OfType<EX_JumpIfNot>().Where(x => HasMember(x.Boolean
     Rejected(() => compare.Parameters[0] = new EX_LocalVariable { Variable = new KismetPropertyPointer { Old = slot } },
         () => compare.Parameters[0] = oldOperand, "missing equipment exclusion", "explicit equipment guards");
 }
+var owner = asset.Exports.OfType<ClassExport>().Single();
+var child = owner.Children.Last();
+var edge = owner.SerializationBeforeSerializationDependencies.FindIndex(x => x.Index == child.Index);
+if (edge < 0) throw new Exception("Expected new property preload edge");
+Rejected(() => owner.SerializationBeforeSerializationDependencies.RemoveAt(edge),
+    () => owner.SerializationBeforeSerializationDependencies.Insert(edge, child), "missing generated child preload", "Missing child preload");
+var field = child.ToExport(asset);
+var outer = field.CreateBeforeCreateDependencies.ToArray();
+Rejected(() => field.CreateBeforeCreateDependencies.Clear(),
+    () => field.CreateBeforeCreateDependencies.AddRange(outer), "missing field outer creation", "Missing field outer");
+var array = asset.Exports.OfType<PropertyExport>().First(x => x.Property is UAssetAPI.FieldTypes.UArrayProperty);
+var deps = array.SerializationBeforeSerializationDependencies.ToArray();
+Rejected(() => array.SerializationBeforeSerializationDependencies.Clear(),
+    () => array.SerializationBeforeSerializationDependencies.AddRange(deps), "missing array inner preload", "Missing array inner");
 DiagnosticGraphValidator.Validate(asset, code);
-Console.WriteLine("[PASS] original diagnostic graph remains valid after 13 rejection tests");
+Console.WriteLine("[PASS] original diagnostic graph remains valid after 16 rejection tests");
 return 0;

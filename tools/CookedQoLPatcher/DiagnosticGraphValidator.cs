@@ -9,6 +9,7 @@ public static class DiagnosticGraphValidator
     public static int Validate(UAsset asset, IReadOnlyList<KismetExpression> code)
     {
         KismetSerializer.asset = asset;
+        CookedDependencyGraph.Validate(asset);
         int Size(KismetExpression expr)
         {
             using var stream = new MemoryStream();

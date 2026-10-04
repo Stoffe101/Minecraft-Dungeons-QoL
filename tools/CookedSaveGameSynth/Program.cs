@@ -124,10 +124,38 @@ cdo.SuperIndex = new FPackageIndex(0);
 cdo.TemplateIndex = saveGameDefault;
 cdo.Data = new List<PropertyData>();
 
+// Keep only the SaveGame class, CDO, Records and its inner property.
+// Actor functions/components and their preload edges cannot remain in a SaveGame package.
+asset.Exports = new List<Export> { classExport, cdo, donor, inner };
+classExport.OuterIndex = new FPackageIndex(0);
+classExport.ClassDefaultObject = FPackageIndex.FromExport(1);
+classExport.ClassGeneratedBy = new FPackageIndex(0);
+classExport.Children = new[] { FPackageIndex.FromExport(2) };
+classExport.Data.Clear();
+asset.AssetRegistryRecords?.Clear();
+cdo.ClassIndex = FPackageIndex.FromExport(0);
+donor.OuterIndex = FPackageIndex.FromExport(0);
+inner.OuterIndex = FPackageIndex.FromExport(2);
+recordsProperty.Inner = FPackageIndex.FromExport(3);
+foreach (var e in asset.Exports)
+{
+    e.SerializationBeforeSerializationDependencies.Clear();
+    e.CreateBeforeSerializationDependencies.Clear();
+    e.SerializationBeforeCreateDependencies.Clear();
+    e.CreateBeforeCreateDependencies.Clear();
+}
+classExport.SerializationBeforeCreateDependencies.Add(classExport.ClassIndex);
+classExport.SerializationBeforeCreateDependencies.Add(classExport.TemplateIndex);
+classExport.SerializationBeforeSerializationDependencies.Add(saveGameClass);
+cdo.SerializationBeforeCreateDependencies.Add(cdo.ClassIndex);
+cdo.SerializationBeforeCreateDependencies.Add(saveGameDefault);
+CookedDependencyGraph.Repair(asset);
 asset.Write(output);
 
 // Re-open and validate the exact persisted surface.
 var reopened = new UAsset(output, EngineVersion.VER_UE4_22);
+CookedDependencyGraph.Validate(reopened);
+if (reopened.Exports.Count != 4) throw new InvalidDataException("SaveGame retained actor exports.");
 var outClass = reopened.Exports.OfType<ClassExport>().Single(x => x.ObjectName.ToString() == "SG_MCDQoL_C");
 if (!outClass.SuperStruct.IsImport() || outClass.SuperStruct.ToImport(reopened).ObjectName.ToString() != "SaveGame")
     throw new InvalidDataException("Generated class does not inherit SaveGame after re-open.");

@@ -1,3 +1,5 @@
+> Runtime status: the PR #7 diagnostic crashed at character selection on the user's Store build. The old pak is withdrawn from testing. Cooked preload dependency repairs and SaveGame export cleanup are candidate fixes; a successful game retry is required before claiming the crash resolved.
+
 # Current State
 
 Last updated: 2026-10-04 (successful game metadata and inventory/equipment guards)
@@ -55,3 +57,9 @@ The full legacy collector passed Windows PowerShell 5.1 CI against the real UE4.
 The successful export contains 5,298 properties and 824 Blueprint functions. The generated manager now resolves controller SharedUI/InventoryHUD with the correct widget-class import kind and clears selection when inventory closes or cannot be resolved. It uses controller GetItemStashComponent, an imported GetInventorySlots call, and read-only GetSalvageInfo for fingerprint refund points. Selection/preview explicitly exclude all six equipped item objects and fail closed on incomplete equipment UI. Structural checks verify input/read control flow behind the open flag; negative tests cover bypasses and missing equipment guards. Runtime behavior still needs actual-game validation.
 
 PR #7 head `11c64ed` passed both Windows workflows, including all 13 negative graph tests and full pak packaging. The downloaded CI pak re-read without errors. The next practical gate is an in-game diagnostic test with Blueprint Loader: verify inventory-only hotkeys, six-slot exclusion, closing-inventory cancellation and visible feedback. No further duplicate metadata export is needed. This is still a diagnostic build; physical-item locks, loadouts, vanilla interception and native bulk salvage remain unfinished.
+
+## Character-selection crash response
+
+The supplied minidump records a write access violation at address 0x28 while a reflected child-list reconstruction dereferences a null child. Its captured instruction sequence copies a serialized field array into linked Next pointers; without symbols/heap data we cannot identify the exact failed struct. The manager appended new class/function fields without adding child preload edges, and cleared new field outer/array-inner dependencies. The synthesized SaveGame retained actor exports and obsolete dependencies. These are independently demonstrated generation defects consistent with loading failure.
+
+The new cooked dependency helper adds child, outer, array-inner and referenced-type ordering edges and rebuilds DependsMap. SaveGame now has only class/CDO/Records/Name inner exports with remapped indices and clean dependencies. Native bool metadata follows the donor. Dependency checks run before writing and after re-opening; 16 negative graph/dependency tests replace the previous 13-test gate. In-game retry remains pending.

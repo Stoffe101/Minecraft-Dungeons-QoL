@@ -196,6 +196,7 @@ UBoolProperty NewBool(EPropertyFlags flags = EPropertyFlags.CPF_BlueprintVisible
 {
     ArrayDim = boolDonor.Property.ArrayDim,
     ElementSize = 1,
+    NativeBool = ((UBoolProperty)boolDonor.Property).NativeBool,
     PropertyFlags = flags,
     RepNotifyFunc = new FName(asset, "None"),
     BlueprintReplicationCondition = ELifetimeCondition.COND_None,
@@ -755,12 +756,14 @@ uber.ScriptBytecode = code.ToArray();
 uber.ScriptBytecodeRaw = Array.Empty<byte>();
 uber.ScriptBytecodeSize = (int)total;
 
+CookedDependencyGraph.Repair(asset);
 asset.Write(output);
 
 // ---------- structural re-open validation ----------
 
 var reopened = new UAsset(output, EngineVersion.VER_UE4_22);
 KismetSerializer.asset = reopened;
+CookedDependencyGraph.Validate(reopened);
 var outClass = reopened.Exports.OfType<ClassExport>().Single(x => x.ObjectName.ToString() == "BP_WASD_Movement_C");
 foreach (var required in new[] { "CursorIndex", "ConfirmArmed", "SalvageRunning", "BatchIndex", "SaveState", "SelectedSlots", "SelectedItems", "SelectionOwner" })
 {

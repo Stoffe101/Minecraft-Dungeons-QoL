@@ -210,3 +210,7 @@ Actual fixture results: LetMeMove UE4.22 actor exports 34 legacy properties and 
 ## Successful installed-game metadata (2026-10-04)
 
 The legacy export recovered all 31 targeted assets with zero reported errors: 5,298 properties and 824 functions. See [GAME_API_CONTRACTS.md](GAME_API_CONTRACTS.md) for observed native call shapes, widget import kinds, controller-to-HUD resolution, six-slot equipment traversal and the separate salvage undo-return/success-output contract. Persistent hero/item identifiers and native equip are still not established by this export. Repeating the same export is unnecessary.
+
+## Runtime crash invalidates earlier diagnostic readiness
+
+The PR #7 diagnostic crashes at profile selection in the user’s game. The minidump shows a null-child write during reflected list reconstruction; symbol-less evidence cannot identify the precise class. Missing new-field preload dependencies and retained actor exports in the synthetic SaveGame were found independently and repaired. See CURRENT_STATE/RESEARCH_LOG. Previous packaging success and 13 graph checks did not test the cooked loader dependency graph. The replacement remains a candidate until a game retry succeeds.
