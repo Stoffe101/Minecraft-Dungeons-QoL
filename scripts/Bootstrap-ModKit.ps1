@@ -56,6 +56,8 @@ foreach ($sample in $sampleFiles) {
 Write-Host "[OK] UE editor directory: $ue"
 Write-Host "[OK] Package output: $packageOutput"
 
+& (Join-Path $PSScriptRoot "Sync-GameApi.ps1")
+
 try {
     $resolvedPaks = Find-McdPaksPath -Override $PaksPath
     Write-Host "[OK] Minecraft Dungeons Paks: $resolvedPaks"
