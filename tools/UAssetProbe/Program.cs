@@ -68,6 +68,27 @@ foreach (var version in versions)
         KismetSerializer.asset = asset;
 
         Console.WriteLine();
+        Console.WriteLine("== CONTEXT OFFSET CHECK ==");
+        foreach (var fn in asset.Exports.OfType<FunctionExport>())
+        {
+            if (fn.ScriptBytecode is not { Length: > 0 }) continue;
+            foreach (var root in fn.ScriptBytecode)
+            {
+                uint visitOffset = 0;
+                root.Visit(asset, ref visitOffset, (expr, statementOffset) =>
+                {
+                    if (expr is UAssetAPI.Kismet.Bytecode.Expressions.EX_Context ctx)
+                    {
+                        using var stream = new MemoryStream();
+                        using var writer = new AssetBinaryWriter(stream, asset);
+                        var computed = UAssetAPI.Kismet.Bytecode.ExpressionSerializer.WriteExpression(ctx.ContextExpression, writer);
+                        Console.WriteLine($"{fn.ObjectName}: statement={statementOffset} storedSkip={ctx.Offset} computedContextICode={computed} storageBytes={stream.Length}");
+                    }
+                });
+            }
+        }
+
+        Console.WriteLine();
         Console.WriteLine("== FUNCTIONS / KISMET JSON ==");
         foreach (var fn in asset.Exports.OfType<FunctionExport>())
         {
