@@ -116,6 +116,32 @@ E39: PropertyExport name=CallFunc_Multiply_VectorFloat_ReturnValue outer=6 class
 E40: PropertyExport name=CallFunc_Multiply_VectorFloat_ReturnValue1 outer=6 class=-11 super=0
 E41: PropertyExport name=CallFunc_Normal_ReturnValue outer=6 class=-11 super=0
 
+== CONTEXT OFFSET CHECK ==
+ExecuteUbergraph_BP_WASD_Movement: statement=10 storedSkip=16 computedContextICode=16 storageBytes=12
+ExecuteUbergraph_BP_WASD_Movement: statement=10 storedSkip=37 computedContextICode=37 storageBytes=25
+ExecuteUbergraph_BP_WASD_Movement: statement=10 storedSkip=37 computedContextICode=37 storageBytes=25
+ExecuteUbergraph_BP_WASD_Movement: statement=10 storedSkip=37 computedContextICode=37 storageBytes=25
+ExecuteUbergraph_BP_WASD_Movement: statement=10 storedSkip=37 computedContextICode=37 storageBytes=25
+ExecuteUbergraph_BP_WASD_Movement: statement=18 storedSkip=10 computedContextICode=10 storageBytes=6
+ExecuteUbergraph_BP_WASD_Movement: statement=19 storedSkip=9 computedContextICode=9 storageBytes=5
+ExecuteUbergraph_BP_WASD_Movement: statement=10 storedSkip=16 computedContextICode=16 storageBytes=12
+ExecuteUbergraph_BP_WASD_Movement: statement=0 storedSkip=14 computedContextICode=14 storageBytes=10
+ExecuteUbergraph_BP_WASD_Movement: statement=10 storedSkip=16 computedContextICode=16 storageBytes=12
+ExecuteUbergraph_BP_WASD_Movement: statement=10 storedSkip=10 computedContextICode=10 storageBytes=6
+ExecuteUbergraph_BP_WASD_Movement: statement=10 storedSkip=37 computedContextICode=37 storageBytes=25
+ExecuteUbergraph_BP_WASD_Movement: statement=10 storedSkip=37 computedContextICode=37 storageBytes=25
+ExecuteUbergraph_BP_WASD_Movement: statement=10 storedSkip=37 computedContextICode=37 storageBytes=25
+ExecuteUbergraph_BP_WASD_Movement: statement=10 storedSkip=37 computedContextICode=37 storageBytes=25
+ExecuteUbergraph_BP_WASD_Movement: statement=18 storedSkip=10 computedContextICode=10 storageBytes=6
+ExecuteUbergraph_BP_WASD_Movement: statement=19 storedSkip=9 computedContextICode=9 storageBytes=5
+ExecuteUbergraph_BP_WASD_Movement: statement=0 storedSkip=29 computedContextICode=29 storageBytes=21
+ExecuteUbergraph_BP_WASD_Movement: statement=10 storedSkip=16 computedContextICode=16 storageBytes=12
+ExecuteUbergraph_BP_WASD_Movement: statement=10 storedSkip=10 computedContextICode=10 storageBytes=6
+ExecuteUbergraph_BP_WASD_Movement: statement=9 storedSkip=9 computedContextICode=9 storageBytes=5
+ExecuteUbergraph_BP_WASD_Movement: statement=10 storedSkip=9 computedContextICode=9 storageBytes=5
+ExecuteUbergraph_BP_WASD_Movement: statement=1 storedSkip=9 computedContextICode=9 storageBytes=5
+ExecuteUbergraph_BP_WASD_Movement: statement=2 storedSkip=9 computedContextICode=9 storageBytes=5
+
 == FUNCTIONS / KISMET JSON ==
 ### ExecuteUbergraph_BP_WASD_Movement bytecode=60
 [
