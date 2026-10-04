@@ -28,13 +28,20 @@ public static class InventoryProbeTests
         Reject(()=>gate.CodeOffset=fallthrough,()=>gate.CodeOffset=target,"Inventory input/read reachable without open inventory");
         var jump=code.OfType<EX_Jump>().First();var oldJump=jump.CodeOffset;
         Reject(()=>jump.CodeOffset=1,()=>jump.CodeOffset=oldJump,"Jump does not target a statement boundary");
-        var context=(EX_Context)((EX_LetObj)code[0]).AssignmentExpression; // First controller lookup.
+        var context=(EX_Context)((EX_LetObj)code[1]).AssignmentExpression; // First controller lookup.
         var skip=context.Offset;
         Reject(()=>context.Offset++,()=>context.Offset=skip,"Invalid context skip offset");
 
         var anchor=asset.Imports.Single(x=>x.ObjectName.ToString()=="Anchors");var oldOuter=anchor.OuterIndex;
         var umg=FPackageIndex.FromImport(asset.Imports.FindIndex(x=>x.ObjectName.ToString()=="/Script/UMG"));
         Reject(()=>anchor.OuterIndex=umg,()=>anchor.OuterIndex=oldOuter,"Wrong native Anchors struct");
-        InventoryProbeValidator.Validate(asset,code);Console.WriteLine("[PASS] inventory-read probe remains valid after 7 rejection tests");return 0;
+        var dispatcher=(EX_ComputedJump)code[0];var entry=dispatcher.CodeOffsetExpression;
+        Reject(()=>dispatcher.CodeOffsetExpression=new EX_IntConst {Value=10},()=>dispatcher.CodeOffsetExpression=entry,"Missing tick entry dispatcher");
+        var tick=asset.Exports.OfType<UAssetAPI.ExportTypes.FunctionExport>().Single(x=>x.ObjectName.ToString()=="ReceiveTick");
+        var call=tick.ScriptBytecode.OfType<EX_LocalFinalFunction>().Single();var targetEntry=(EX_IntConst)call.Parameters.Single();
+        Reject(()=>targetEntry.Value=0,()=>targetEntry.Value=10,"ReceiveTick must call the graph body at offset 10");
+        var originalTarget=call.StackNode;
+        Reject(()=>call.StackNode=UAssetAPI.UnrealTypes.FPackageIndex.FromExport(asset.Exports.IndexOf(tick)),()=>call.StackNode=originalTarget,"ReceiveTick must call the graph body at offset 10");
+        InventoryProbeValidator.Validate(asset,code);Console.WriteLine("[PASS] inventory-read probe remains valid after 10 rejection tests");return 0;
     }
 }
