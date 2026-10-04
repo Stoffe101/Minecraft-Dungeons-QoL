@@ -33,15 +33,49 @@ Establish a safe development foundation for a Minecraft Dungeons 1 QoL mod conta
 ### Implementation completed
 
 - repository documentation structure
-- Mod Kit bootstrap/tooling design
-- environment/path detection design
-- asset sync/build/install tooling design
+- Mod Kit bootstrap tooling
+- environment/path detection
+- asset sync/build/install tooling
 - initial feature/architecture/test specifications
+- offline inventory asset research helper
 
 ### Not yet tested
 
-PowerShell tooling must be verified on a real Windows development machine after it is committed.
+PowerShell tooling must be verified on a real Windows development machine.
+
+## 2026-10-04 — Save identity investigation
+
+### Source
+
+CutFlame/MCDSaveEdit:
+https://github.com/CutFlame/MCDSaveEdit
+
+### Findings
+
+The save model contains:
+
+- profile `playerId`
+- profile `uniqueSaveId`
+- item `inventoryIndex`
+- item `equipmentSlot`
+- type, rarity, power, enchantments, gilded/netherite enchant data and other useful fingerprint fields
+
+The editor's item-list logic:
+
+- sorts inventory by `InventoryIndex`
+- assigns newly-added items `max(existing index) + 1`
+- keeps equipped items in the same Items collection, distinguished by `EquipmentSlot`
+
+Storage transfer adds the item to the target collection, which assigns the target collection's next index. Therefore `InventoryIndex` is not a cross-storage permanent ID. A deleted highest index can also be reused by a future item.
+
+### Result
+
+`uniqueSaveId + inventoryIndex` is a strong provisional locator, not a guaranteed permanent identity. Prefer a native runtime GUID if one exists. If no GUID exists, pair the index with sanity/fingerprint data and fail closed when data disagrees.
+
+### Additional research tooling
+
+DungeonsModding/Useful-things confirms community extraction data for encrypted Dungeons assets exists. The project research helper should accept an AES key parameter rather than embedding one.
 
 ### Next research
 
-Inventory runtime discovery: widget, selected item, stable item ID, salvage/equip functions, and vanilla salvage-button guard point.
+Current runtime Blueprint discovery: inventory widget, selected item fields, native item ID/GUID, salvage/equip functions, and vanilla salvage-button guard point.
