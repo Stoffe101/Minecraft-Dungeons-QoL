@@ -1,1 +1,1 @@
-2026-10-04 initial custom runtime navigation build
+2026-10-04 persistent locks + multi-select + native batch salvage
