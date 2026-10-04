@@ -3,14 +3,19 @@ param(
     [Parameter(Mandatory=$true)][string]$AesKey,
     [string]$OutputDirectory,
     [string]$DotNetPath,
-    [string]$AssetMatch
+    [string]$AssetMatch,
+    [switch]$CollectInventoryPatchSources
 )
 . (Join-Path $PSScriptRoot 'Common.ps1')
 if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) { throw 'This collector requires Windows x64.' }
 if ($AesKey -notmatch '^(0x)?[0-9a-fA-F]{64}$') { throw 'Supply a 256-bit hexadecimal -AesKey.' }
+if ($CollectInventoryPatchSources -and $AssetMatch) { throw 'Patch-source collection uses an exact seven-package allowlist; do not combine it with -AssetMatch.' }
 $root = Get-ProjectRoot
 $paks = Find-McdPaksPath -Override $PaksPath
-if (-not $OutputDirectory) { $OutputDirectory = Join-Path $root '.research/game-evidence-legacy' }
+if (-not $OutputDirectory) {
+    $folder = if ($CollectInventoryPatchSources) { 'inventory-patch-sources-' + [DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss') } else { 'game-evidence-legacy' }
+    $OutputDirectory = Join-Path $root ('.research/' + $folder)
+}
 $out = [System.IO.Path]::GetFullPath($OutputDirectory)
 $game = [System.IO.Path]::GetFullPath((Split-Path (Split-Path $paks -Parent) -Parent)).TrimEnd('\', '/') + [System.IO.Path]::DirectorySeparatorChar
 if (($out + [System.IO.Path]::DirectorySeparatorChar).StartsWith($game, [StringComparison]::OrdinalIgnoreCase)) { throw 'Output must be outside the game directory.' }
@@ -54,6 +59,7 @@ try {
     $data = Join-Path $out 'Metadata'
     $arguments = @((Join-Path $buildDir 'LegacyEvidenceExporter.dll'), '--paks', $paks, $AesKey, $data, $libraries)
     if ($AssetMatch) { $arguments += $AssetMatch }
+    if ($CollectInventoryPatchSources) { $arguments += '--inventory-patch-sources' }
     $code = Invoke-EvidenceProcess $DotNetPath $arguments (Join-Path $out 'Exporter.log')
     if ($code -ne 0) { $issues.Add("Legacy exporter returned $code; partial metadata and logs retained.") }
     if (-not (Test-Path (Join-Path $data 'EXPORT_REPORT.json'))) { $issues.Add('Exporter produced no completion manifest.') }
@@ -65,8 +71,9 @@ try {
     parser = 'UAssetAPI 1.1.0 legacy UProperty / UE4_22'
     archiveReader = 'CUE4Parse from pinned UeBlueprintDumper 1.2.0'
     aesKeyProvided = $true
+    inventoryPatchSources = [bool]$CollectInventoryPatchSources
     issues = @($issues.ToArray())
-    note = 'Metadata/imports/Kismet only. Raw package companions are held in a temporary directory and removed by the exporter. No saves inspected.'
+    note = $(if ($CollectInventoryPatchSources) { 'Includes seven allowlisted cooked inventory UI packages and available .uexp companions for private patch development. No saves or executables inspected. Do not publish these game-owned files.' } else { 'Metadata/imports/Kismet only. Raw package companions are held in a temporary directory and removed by the exporter. No saves inspected.' })
 } | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $out 'REPORT.json')
 Compress-Archive -Path (Join-Path $out '*') -DestinationPath "$out.zip"
 Write-Host "[OK] Legacy evidence archive: $out.zip"
