@@ -1,4 +1,4 @@
-> The earlier PR #7 diagnostic crashed at profile selection and should be removed. The replacement includes cooked preload repairs and SaveGame cleanup, but remains a candidate pending an in-game retry. See [current state](docs/CURRENT_STATE.md).
+> Runtime status: both PR #7 and PR #8 diagnostics crashed at character selection on the Store build. Both are withdrawn. Property archetype repairs and an event-free loading probe are implemented; neither has passed an in-game retry.
 
 # Minecraft Dungeons QoL
 

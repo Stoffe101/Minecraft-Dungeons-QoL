@@ -214,3 +214,8 @@ The legacy export recovered all 31 targeted assets with zero reported errors: 5,
 ## Runtime crash invalidates earlier diagnostic readiness
 
 The PR #7 diagnostic crashes at profile selection in the user’s game. The minidump shows a null-child write during reflected list reconstruction; symbol-less evidence cannot identify the precise class. Missing new-field preload dependencies and retained actor exports in the synthetic SaveGame were found independently and repaired. See CURRENT_STATE/RESEARCH_LOG. Previous packaging success and 13 graph checks did not test the cooked loader dependency graph. The replacement remains a candidate until a game retry succeeds.
+
+
+## Follow-up crash: native property archetypes
+
+The PR #8 retry also crashed. The new dump's child count (43) and failing loop position match the first new manager locals, although missing heap/symbol data prevents direct object identification. Newly generated property exports had zero TemplateIndex, unlike the source UE4.22 template. This metadata is required by cooked object creation and was missed by the previous validator. Repair now creates native property default-object imports of the correct type and adds class/archetype creation preloads; three negative tests cover those invariants. An event-free probe isolates repaired loading before any feature-code retry. Both old diagnostics remain withdrawn; no confirmed runtime fix yet.
