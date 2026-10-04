@@ -4,60 +4,97 @@ Last updated: 2026-10-04
 
 ## Repository state
 
-The repository has been bootstrapped with:
+The repository has:
 
 - reproducible Dungeons Mod Kit setup
 - environment detection for Unreal Engine 4.22 and Minecraft Dungeons
-- asset sync, build, and install scripts
-- Microsoft Store / Xbox app targeting
-- initial architecture for gear locking, mass salvage, persistence, and loadouts
-- research helper for current inventory assets
+- build/install scripts
+- support for both Minecraft Launcher and Xbox app / Microsoft Store install paths
+- player-facing installation instructions for `.pak` placement
+- architecture for gear locking, mass salvage, persistence, and loadouts
+- item identity research
+- final-build native inventory/salvage API research
 - documentation and test structure
 
 ## Functional status
 
-No playable QoL pak has been produced yet.
+No user-tested release pak exists yet.
 
-There are not yet any project-owned `.uasset` / `.umap` Blueprint assets under `mod/Content`. This is intentional: the first Blueprint pass depends on identifying the current Dungeons 1 inventory classes/functions rather than guessing stale names from old builds.
+The project is now past the earlier "unknown salvage API" blocker. A final-build reverse-engineering/source-restoration project confirms the relevant Dungeons 1 native class architecture and Blueprint-callable methods still exist.
 
-## New identity findings
+## Verified native inventory surface
 
-Public MCDSaveEdit source confirms:
+`UInventoryItemSlot` is Blueprint-visible and exposes the current item.
+
+`UItemStashComponent` is a Blueprint-spawnable actor component and exposes the critical operations we need:
+
+```text
+GetInventorySlots()
+GetEquipmentSlots()
+GetChangeIndex()
+EnterInventoryUI()
+ExitInventoryUI()
+SalvageItemInSlot(slot, success)
+SalvageItemUndo(undoInfo)
+GetSalvageInfo(item)
+CompareItemPowerWithEquipped(item)
+AvailableEnchantmentPoints()
+```
+
+This changes the implementation plan substantially: mass salvage does **not** need custom destruction/reward math. Each validated selected slot can be passed through `SalvageItemInSlot`, preserving Dungeons' own salvage result handling and undo metadata.
+
+## Selection finding
+
+Dungeons internally has:
+
+`UItemStashComponent::OnInventoryItemSlotSelected`
+
+and the vanilla hint system subscribes to it for gear-selection hints.
+
+However, the restored declaration is a native multicast delegate and is not marked `BlueprintAssignable`. A pure Blueprint mod cannot assume it can bind directly to that delegate.
+
+Therefore the first playable build must either:
+
+1. hook/observe the vanilla inventory widget/selection through another Blueprint-accessible path, or
+2. provide its own selection overlay backed by `GetInventorySlots()`.
+
+Option 2 is the safe fallback and still allows a complete lock + batch-salvage workflow without replacing the game's save/economy behavior.
+
+## Identity state
+
+Public save-format research confirms:
 
 - hero profiles contain `uniqueSaveId`
 - items contain `inventoryIndex`
 - equipped gear remains in the same item collection and is identified by `equipmentSlot`
-- new items are assigned `max inventoryIndex + 1`
 
-This gives us a strong fallback identity plan if there is no native runtime GUID.
+This remains the fallback persistence locator if runtime item objects expose no stronger stable instance identity.
 
-Caveats: storage transfer can assign a new index, and a deleted highest index can later be reused. Therefore runtime GUID/unique-ID discovery is still preferred, and any index-based fallback needs sanity checks/reconciliation.
+## Immediate implementation target
 
-## Immediate technical target
+Produce a first playable Blueprint Loader build that:
 
-Discover and verify, on the current Dungeons 1 runtime:
+1. finds the local player's `UItemStashComponent`
+2. enumerates `GetInventorySlots()`
+3. excludes all `GetEquipmentSlots()`
+4. lets the player mark/unmark inventory slots in a batch
+5. keeps an in-session protected/locked set
+6. revalidates every slot immediately before destruction
+7. calls `SalvageItemInSlot` for each accepted slot
+8. records success/failure and undo information
+9. never directly mutates currency or the hero save
 
-1. the inventory widget/class used in camp and missions
-2. the selected item object / item instance structure
-3. whether it exposes a native GUID/unique ID
-4. whether it exposes the save-format `inventoryIndex`
-5. whether hero state exposes `uniqueSaveId`
-6. the native salvage function and its required parameters
-7. the native equip/unequip function
-8. whether the vanilla salvage button can be intercepted/guarded without replacing the whole inventory screen
-
-Once those are known, implement the smallest vertical slice:
-
-**select item -> toggle lock -> persist lock -> show lock overlay -> reject that item in mass-salvage selection**
+Persistent locks/loadouts follow once the runtime identity/persistence bridge is verified.
 
 ## Known external requirements
 
 - Windows
-- Unreal Engine 4.22.x
-- Dungeons Mod Kit
+- Minecraft Dungeons 1
 - Blueprint Loader
-- Minecraft Dungeons 1 installation
+- Dungeons Mod Kit / UE4.22 for normal authoring, unless the bytecode-tooling route proves reliable
 
 ## Safety policy
 
-The project must not directly edit hero save files or manually add emeralds/enchantment points to simulate salvage. Bulk salvage should call the game's native salvage path for each validated item.
+The project must not directly edit hero save files or manually add emeralds/enchantment points to simulate salvage.
+
+Every destructive operation must be revalidated and sent through Dungeons' native salvage path.
