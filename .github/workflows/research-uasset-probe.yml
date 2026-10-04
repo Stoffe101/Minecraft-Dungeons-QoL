@@ -1,0 +1,56 @@
+name: Research UAssetAPI Compatibility
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "ci-trigger/uasset-probe.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Checkout MIT Dungeons template
+        shell: pwsh
+        run: |
+          git clone https://github.com/StainlessStasis/LetMeMove.git .research/LetMeMove
+          git -C .research/LetMeMove checkout 49ac4067ab13d1aeebfad362a892a49d98c0b3dd
+
+      - name: Probe current UAssetAPI
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force research/uassetapi | Out-Null
+          $asset = ".research/LetMeMove/Content/Mods/LetMeMove/BP_WASD_Movement.uasset"
+          $output = & dotnet run --project tools/UAssetProbe/UAssetProbe.csproj -- $asset 2>&1
+          $code = $LASTEXITCODE
+          @(
+            "# UAssetAPI 1.1.0 Dungeons probe"
+            ""
+            "Exit code: $code"
+            ""
+            $output
+          ) | Set-Content "research/uassetapi/REPORT.txt"
+          Write-Host ($output | Out-String)
+          exit 0
+
+      - name: Save probe report
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/uassetapi/REPORT.txt
+          if (-not (git diff --cached --quiet)) {
+            git commit -m "research: record current UAssetAPI Dungeons probe"
+            git push
+          }
