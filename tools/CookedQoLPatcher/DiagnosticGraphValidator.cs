@@ -114,9 +114,49 @@ public static class DiagnosticGraphValidator
         return owner.ObjectName.ToString() == "Controller" && owner.OuterIndex.IsImport()
             && owner.OuterIndex.ToImport(asset).ObjectName.ToString() == "/Script/Engine";
     }
+    // UE4 native const-reference parameters must read a typed value, not a nested call.
+    // StepCompiledInRef can otherwise reuse a property address left by that inner call.
+    public static void ValidateReferenceArguments(UAsset asset, IReadOnlyList<KismetExpression> code)
+    {
+        string CallName(KismetExpression e)=>e switch {
+            EX_FinalFunction f when f.StackNode.IsImport()=>f.StackNode.ToImport(asset).ObjectName.ToString(),
+            EX_VirtualFunction f=>f.VirtualFunctionName.ToString(), _=>""
+        };
+        bool Typed(KismetExpression value, bool text) {
+            if(!text && value is EX_StringConst)return true;
+            if(text && value is EX_TextConst)return true;
+            var index=value switch {EX_LocalVariable l=>l.Variable.Old,EX_InstanceVariable i=>i.Variable.Old,_=>null};
+            return index != null && index.IsExport() && index.ToExport(asset) is PropertyExport p
+                && (text ? p.Property is UAssetAPI.FieldTypes.UTextProperty : p.Property is UAssetAPI.FieldTypes.UStrProperty);
+        }
+        foreach(var root in code) {
+            uint offset=0;
+            root.Visit(asset,ref offset,(e,_)=> {
+                var name=CallName(e);
+                var parameters=e switch {EX_FinalFunction f=>f.Parameters,EX_VirtualFunction f=>f.Parameters,_=>null};
+                int[] indices=name switch {
+                    "BuildString_Int"=>new[]{0,1,3}, "Concat_StrStr" or "EqualEqual_StrStr"=>new[]{0,1},
+                    "Conv_StringToText" or "Conv_StringToName" or "Conv_TextToString" or "SetText"=>new[]{0},
+                    "PrintString"=>new[]{1}, _=>Array.Empty<int>()
+                };
+                foreach(var index in indices)
+                    if(parameters==null || index>=parameters.Length || !Typed(parameters[index],name is "Conv_TextToString" or "SetText"))
+                        throw new InvalidDataException("Reference argument must be a typed value: "+name+"["+index+"]");
+            });
+            if(root is EX_Let {Expression:EX_Context context} assignment) {
+                var name=CallName(context.ContextExpression);
+                if(name is "GetDisplayNameText" or "Conv_StringToText" or "Conv_TextToString" or "BuildString_Int" or "Concat_StrStr") {
+                    if(!Typed(assignment.Variable,name is "GetDisplayNameText" or "Conv_StringToText")
+                        || context.RValuePointer.Old.Index!=assignment.Value.Old.Index)
+                        throw new InvalidDataException("Native scalar return needs a matching typed local: "+name);
+                }
+            }
+        }
+    }
     public static int Validate(UAsset asset, IReadOnlyList<KismetExpression> code, bool requireEquipmentGuards = true)
     {
         KismetSerializer.asset = asset;
+        ValidateReferenceArguments(asset, code);
         CookedDependencyGraph.Validate(asset);
         ValidateTickEntry(asset, code);
         ValidateInventoryTick(asset);

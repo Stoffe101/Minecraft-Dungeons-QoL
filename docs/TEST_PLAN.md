@@ -158,3 +158,7 @@ PR #12 inventory probe is withdrawn after an online inventory-open crash. Test t
 | Offline | Inventory remains paused; overlay and keys still work | Pending |
 
 Run mission travel, return to camp, character change, friend join/leave, disconnect/reconnect and simultaneous inventory opens. Verify no remote item reads/writes and no sidecar writes in this probe. Production lock/salvage/loadout tests remain separate and incomplete.
+
+## Typed-reference repair gate (PR #13 withdrawn)
+
+PR #13 also crashes when pressing I online. The replacement materializes string/text values before native reference calls. Verify initial text before F6/F7, repeated inventory opens, item names/power and close hiding. Use online host and join-friend cases; splitscreen does not substitute for these. If it still crashes, retain the new dump and record whether any overlay appeared before the failure. Do not claim all planned features work because this read-only probe passes.

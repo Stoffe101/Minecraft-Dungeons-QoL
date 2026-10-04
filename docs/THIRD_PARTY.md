@@ -163,3 +163,7 @@ The author listing specifies AGPLv3. Its cooked WidgetAdder was inspected locall
 ## Blueprint Loader inspection and permissions
 
 Official CurseForge file 3385182 was inspected locally to understand online startup. Its widget uses GetGameMode-dependent triggers. The author permissions on https://www.nexusmods.com/minecraftdungeons/mods/111?tab=description require permission for modifications/asset use and prohibit uploads to other sites. No loader assets or code are copied, modified or bundled by this project. It remains an external installation dependency. A joining-client replacement must use project-owned implementation or separately obtained author permission.
+
+## Expanded runtime/tool review (2026-10-05)
+
+See MODDING_OPTIONS_REVIEW.md for pinned inspected sources and reuse decisions. UE4SS currently publishes MIT licensing and is a potential runtime diagnostic/client loader option; it is not yet a verified or bundled dependency. GUI X AGPLv3 assets were inspected for compiled value flow, with no implementation/assets copied. Epic UE4.22.3 source was inspected via a version-pinned mirror to understand VM references; no engine code is redistributed. DungeonsLevelLoader, Custom-Skins-Loader and MCD-SMF had no root reuse license observed and remain inspection only. Existing MIT LetMeMove/UAssetAPI/Mod Kit reuse retains its notices.

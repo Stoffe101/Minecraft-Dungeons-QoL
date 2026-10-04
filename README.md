@@ -1,4 +1,4 @@
-> Runtime status: PR #12 reached camp but crashed when inventory opened in an online session. Withdraw that inventory probe. The replacement removes unverified text setters, binds item reads to native functions, and requires a local player controller with a non-replicated manager. These are candidate repairs; retail confirmation is pending. Online hosting and joining friends are required, and joining-client startup is an unresolved blocker. Production features remain unfinished.
+> Runtime status: PR #13 also crashed opening inventory online and is withdrawn. A UE4.22.3 source investigation identified unsafe nested calls into native reference parameters. The new generators store text/string results in typed locals before reuse, matching the supplied game graph. Retail crash repair remains unverified. Online host and joining-friend play are required; splitscreen is outside the current requirement. Production features remain unfinished.
 
 # Minecraft Dungeons QoL
 

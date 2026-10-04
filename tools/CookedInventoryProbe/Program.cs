@@ -63,7 +63,19 @@ KismetExpression Valid(KismetExpression p)=>Static(systemDefault,Fn(system,"IsVa
 KismetExpression Length(KismetExpression p)=>Static(arrayDefault,Fn(arrayClass,"Array_Length"),p);
 KismetExpression Vec(float x,float y)=>new EX_StructConst {Struct=vector2,StructSize=8,Value=new KismetExpression[]{new EX_FloatConst{Value=x},new EX_FloatConst{Value=y}}};
 KismetExpression Press(string name)=>C(L(pc),F(Fn(Class("/Script/Engine","PlayerController"),"WasInputKeyJustPressed"),new EX_StructConst {Struct=key,StructSize=32,Value=new KismetExpression[]{new EX_NameConst{Value=new FName(asset,name)}}}));
-KismetExpression Build(KismetExpression prefix,KismetExpression number,string suffix)=>Static(stringDefault,Fn(stringClass,"BuildString_Int"),prefix,S(""),number,S(suffix));
+var temporaryIndex=0;
+KismetExpression Temporary(KismetExpression value,bool isText=false) {
+    var p=NewString("ProbeValue_"+(temporaryIndex++),false);
+    if(isText) {
+        p.ClassIndex=Class("/Script/CoreUObject","TextProperty");
+        p.Property=new UTextProperty {ArrayDim=Field("MCDQoL_CurrentSlot").Property.ArrayDim,ElementSize=0,
+            PropertyFlags=EPropertyFlags.CPF_None,RepNotifyFunc=new FName(asset,"None"),Next=new FPackageIndex(0)};
+    }
+    if(value is EX_Context context)context.RValuePointer=Ptr(Index(p));
+    Add(new EX_Let {Value=Ptr(Index(p)),Variable=L(p),Expression=value});return L(p);
+}
+KismetExpression Build(KismetExpression prefix,KismetExpression number,string suffix)=>Temporary(Static(stringDefault,Fn(stringClass,"BuildString_Int"),prefix,S(""),number,S(suffix)));
+KismetExpression Concat(KismetExpression a,KismetExpression b)=>Temporary(Static(stringDefault,Fn(stringClass,"Concat_StrStr"),a,b));
 var code=new List<KismetExpression> { DiagnosticGraphValidator.TickDispatch(asset) };var labels=new Dictionary<string,int>();var jumps=new List<(KismetExpression,string)>();
 void Add(KismetExpression e)=>code.Add(e);void Label(string name)=>labels[name]=code.Count;
 void Branch(KismetExpression e,string target){var b=new EX_JumpIfNot {BooleanExpression=e};Add(b);jumps.Add((b,target));}
@@ -77,7 +89,8 @@ void Show(KismetExpression s) {
     var write="WRITE_TEXT_"+(reportNumber++);
     Branch(Static(stringDefault,Fn(stringClass,"EqualEqual_StrStr"),L(pendingText),I(cachedText)),write);Jump("END");Label(write);
     Add(new EX_Let {Value=Ptr(Index(cachedText)),Variable=I(cachedText),Expression=L(pendingText)});
-    Add(C(I(text),F(Fn(textClass,"SetText"),Static(textDefault,Fn(textLib,"Conv_StringToText"),L(pendingText)))));
+    var converted=Temporary(Static(textDefault,Fn(textLib,"Conv_StringToText"),L(pendingText)),true);
+    Add(C(I(text),F(Fn(textClass,"SetText"),converted)));
 }
 
 Obj(pc,Static(gameplayDefault,Fn(gameplay,"GetPlayerController"),new EX_Self(),N(0)));Branch(Valid(L(pc)),"HIDE");
@@ -111,11 +124,11 @@ Branch(M("Less_IntInt",I(cursor),N(0)),"HIGH");Int(M("Subtract_IntInt",Length(L(
 Label("HIGH");Branch(M("GreaterEqual_IntInt",I(cursor),Length(L(slots))),"ITEM");Int(N(0));
 Label("ITEM");Obj(currentSlot,new EX_ArrayGetByRef {ArrayVariable=L(slots),ArrayIndex=I(cursor)});Branch(Valid(L(currentSlot)),"EMPTY_SLOT");
 Obj(item,C(L(currentSlot),V(Existing("Item")),Index(item)));Branch(Valid(L(item)),"EMPTY_SLOT");
-var display=C(L(item),F(Fn(Existing("InventoryItem"),"GetDisplayNameText")));
-var name=Static(textDefault,Fn(textLib,"Conv_TextToString"),display);
+var display=Temporary(C(L(item),F(Fn(Existing("InventoryItem"),"GetDisplayNameText"))),true);
+var name=Temporary(Static(textDefault,Fn(textLib,"Conv_TextToString"),display));
 var description=Build(Build(S("MCD QoL READ-ONLY | "),Length(L(slots))," slots | F6/F7 browse\nSlot "),I(cursor)," | ");
-var joined=Static(stringDefault,Fn(stringClass,"Concat_StrStr"),description,name);
-Show(Build(Static(stringDefault,Fn(stringClass,"Concat_StrStr"),joined,S(" | power ")),C(L(item),F(Fn(Existing("InventoryItem"),"GetDisplayItemPowerInt")))," | no item changes"));Jump("END");
+var joined=Concat(description,name);
+Show(Build(Concat(joined,S(" | power ")),C(L(item),F(Fn(Existing("InventoryItem"),"GetDisplayItemPowerInt")))," | no item changes"));Jump("END");
 Label("EMPTY_SLOT");Show(Build(S("MCD QoL READ-ONLY | slot "),I(cursor)," is empty | F6/F7 browse"));Jump("END");
 Label("EMPTY");Int(N(0));Show(S("MCD QoL READ-ONLY | inventory has no slots"));Jump("END");
 Label("NO_STASH");Show(S("MCD QoL READ-ONLY | inventory UI found; stash unavailable"));Jump("END");
