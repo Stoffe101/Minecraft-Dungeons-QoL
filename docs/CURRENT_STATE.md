@@ -40,4 +40,6 @@ The audited changes were merged through [PR #1](https://github.com/Stoffe101/Min
 
 `Collect-GameEvidence.ps1` now gathers read-only asset lists/Blueprint metadata and executable version/hash evidence from the active installation. It pins its dumper/runtime downloads, refuses invalid/ambiguous installations and preserves failure diagnostics. See `GAME_EVIDENCE.md`. No installed-game evidence has been collected here.
 
+User confirmed the active Paks path as `C:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks`. Their first collection attempt encountered access denied reading `Binaries/Win64/Dungeons.exe`. Executable hashes are now optional: denied metadata is recorded as warnings while archive inspection continues.
+
 The next blocker is runtime/reflection evidence from the actual Dungeons 1 executable, followed by stable hero/item identity, equipment guards and a proper review UI. Native salvage remains the intended production backend, gated behind that work. Standard UE4.22 Mod Kit Blueprint authoring remains the preferred route for the finished UI; KismetKompiler and UE4SS are optional research tools.

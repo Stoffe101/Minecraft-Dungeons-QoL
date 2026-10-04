@@ -37,6 +37,8 @@ A failed collection exits with code 1 and still creates a diagnostic ZIP once ou
 
 ## What this unblocks
 
+Xbox installations can deny reads of `Dungeons.exe` even when their pak archives are readable. Executable version/hash collection is optional: failures are recorded in `REPORT.json` warnings with unavailable fields set to null, and Blueprint inspection continues. Do not change ownership or permissions just to obtain this optional hash. If an older collector stopped there, update the repository and retry with a fresh `-OutputDirectory` (for example `.research/game-evidence-2`); the interrupted attempt may already have created the default folder.
+
 Inspect native function references, slot/equipment UI patterns, argument expression types and inventory/controller access in the game's cooked Blueprints. These are evidence for the mirror API, not a complete native ABI dump. Native return/out-parameter signatures still need corroboration, and stable hero/physical-item identity may require a separate non-destructive runtime probe.
 
 After static evidence, the diagnostic pak needs actual Camp/mission testing for loading, stash discovery, input, persistence and hero changes. Production work then covers physical item identity, equipment/loadout guards, review UI, loadout swapping and verified native salvage. The evidence collector alone does not make those features complete.

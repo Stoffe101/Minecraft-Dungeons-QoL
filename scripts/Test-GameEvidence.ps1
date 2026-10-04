@@ -36,6 +36,24 @@ exit 0
     catch { if ($_.Exception.Message -notlike "Output already exists:*") { throw } }
     try { & (Join-Path $PSScriptRoot "Collect-GameEvidence.ps1") -PaksPath $paks -DumperExe $mock -OutputDirectory (Join-Path $paks 'evidence'); throw "Game directory output accepted" }
     catch { if ($_.Exception.Message -notlike "Evidence output must be outside the game directory:*") { throw } }
+    $bin = Join-Path $fixture 'game with spaces/Dungeons/Binaries/Win64'
+    New-Item -ItemType Directory -Force $bin | Out-Null
+    Set-Content (Join-Path $bin 'Dungeons.exe') 'synthetic executable fixture'
+    # Model Xbox executable read denial without changing file permissions or relying on admin rights.
+    function Get-FileHash {
+        param([string]$Path, [string]$Algorithm = 'SHA256')
+        if ((Split-Path $Path -Leaf) -eq 'Dungeons.exe') { throw [System.UnauthorizedAccessException]::new('Synthetic Xbox executable access denied') }
+        Microsoft.PowerShell.Utility\Get-FileHash -Path $Path -Algorithm $Algorithm
+    }
+    try {
+        $deniedOut = Join-Path $fixture 'denied exe evidence'
+        & (Join-Path $PSScriptRoot 'Collect-GameEvidence.ps1') -PaksPath $paks -DumperExe $mock -OutputDirectory $deniedOut
+        if ($LASTEXITCODE -ne 0) { throw 'Optional executable denial failed collection' }
+        $deniedReport = Get-Content (Join-Path $deniedOut 'REPORT.json') -Raw | ConvertFrom-Json
+        if ($deniedReport.issues.Count -ne 0 -or $deniedReport.warnings.Count -ne 1 -or $deniedReport.executables.Count -ne 1 -or $null -ne $deniedReport.executables[0].sha256) { throw 'Executable denial not accurately recorded' }
+        if (@(Get-ChildItem $deniedOut -Recurse -Filter Class_fixture.txt).Count -ne 6 -or -not (Test-Path "$deniedOut.zip")) { throw 'Executable denial interrupted asset inspection' }
+    } finally { Remove-Item Function:Get-FileHash }
+    Remove-Item (Join-Path $bin 'Dungeons.exe')
     $failedMock = Join-Path $fixture 'failed dumper.ps1'
     'exit 23' | Set-Content $failedMock
     $failedOut = Join-Path $fixture 'failed evidence'
@@ -55,7 +73,7 @@ exit 0
         }
         Write-Host '[PASS] Pinned Windows tool/runtime downloads, checksum verification and real dumper rejection of invalid archives'
     }
-    Write-Host "[PASS] Explicit/missing paths, six dumps, metadata ZIP, read-only input, output guards and failure diagnostics"
+    Write-Host "[PASS] Explicit/missing paths, six dumps, metadata ZIP, read-only input, output guards, executable access denial and failure diagnostics"
 } finally {
     $env:MCD_PAKS_PATH = $oldEnv
     Remove-Item $fixture -Recurse -Force
