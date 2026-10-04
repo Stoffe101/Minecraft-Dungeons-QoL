@@ -1,0 +1,69 @@
+# CameraCoords_WidgetAdder
+
+Source: third_party/camera-coordinates-overlay/Content/Mods/CameraCoords/WidgetAdder.uasset
+Exit code: 0
+
+=== VER_UE4_20 ===
+SUCCESS
+ObjectVersion=VER_UE4_FIX_WIDE_STRING_CRC (517)
+Names=159
+Imports=50
+Exports=30
+
+== IMPORTS ==
+I1: /Script/Engine.Actor Default__Actor outer=-44
+I2: /Script/CoreUObject.Class EdGraphSchema_K2 outer=-42
+I3: /Script/CoreUObject.Class K2Node_CallArrayFunction outer=-42
+I4: /Script/CoreUObject.Class K2Node_CallFunction outer=-42
+I5: /Script/CoreUObject.Class K2Node_Event outer=-42
+I6: /Script/CoreUObject.Class K2Node_FunctionEntry outer=-42
+I7: /Script/CoreUObject.Class K2Node_IfThenElse outer=-42
+I8: /Script/CoreUObject.Class ArrayProperty outer=-43
+I9: /Script/CoreUObject.Class BoolProperty outer=-43
+I10: /Script/CoreUObject.Class Function outer=-43
+I11: /Script/CoreUObject.Class IntProperty outer=-43
+I12: /Script/CoreUObject.Class MetaData outer=-43
+I13: /Script/CoreUObject.Class Object outer=-43
+I14: /Script/CoreUObject.Class ObjectProperty outer=-43
+I15: /Script/CoreUObject.Class StructProperty outer=-43
+I16: /Script/CoreUObject.Class Actor outer=-44
+I17: /Script/CoreUObject.Class Blueprint outer=-44
+I18: /Script/CoreUObject.Class BlueprintGeneratedClass outer=-44
+I19: /Script/CoreUObject.Class EdGraph outer=-44
+I20: /Script/CoreUObject.Class GameplayStatics outer=-44
+I21: /Script/CoreUObject.Class KismetArrayLibrary outer=-44
+I22: /Script/CoreUObject.Class KismetMathLibrary outer=-44
+I23: /Script/CoreUObject.Class PlayerController outer=-44
+I24: /Script/CoreUObject.Class SceneComponent outer=-44
+I25: /Script/CoreUObject.Class SCS_Node outer=-44
+I26: /Script/CoreUObject.Class SimpleConstructionScript outer=-44
+I27: /Script/CoreUObject.Class UserWidget outer=-45
+I28: /Script/CoreUObject.Class WidgetBlueprintLibrary outer=-45
+I29: /Script/CoreUObject.Class K2Node_CreateWidget outer=-46
+I30: /Script/CoreUObject.Class SceneThumbnailInfo outer=-47
+I31: /Script/CoreUObject.Function ReceiveBeginPlay outer=-16
+I32: /Script/CoreUObject.Function GetPlayerController outer=-20
+I33: /Script/CoreUObject.Function Array_Length outer=-21
+I34: /Script/CoreUObject.Function EqualEqual_IntInt outer=-22
+I35: /Script/CoreUObject.Function AddToViewport outer=-27
+I36: /Script/CoreUObject.Function Create outer=-28
+I37: /Script/CoreUObject.Function GetAllWidgetsOfClass outer=-28
+I38: /Script/Engine.GameplayStatics Default__GameplayStatics outer=-44
+I39: /Script/Engine.KismetArrayLibrary Default__KismetArrayLibrary outer=-44
+I40: /Script/Engine.KismetMathLibrary Default__KismetMathLibrary outer=-44
+I41: /Script/CoreUObject.Package /Game/Mods/CameraCoords/CameraCoordsOverlay outer=0
+I42: /Script/CoreUObject.Package /Script/BlueprintGraph outer=0
+I43: /Script/CoreUObject.Package /Script/CoreUObject outer=0
+I44: /Script/CoreUObject.Package /Script/Engine outer=0
+I45: /Script/CoreUObject.Package /Script/UMG outer=0
+I46: /Script/CoreUObject.Package /Script/UMGEditor outer=0
+I47: /Script/CoreUObject.Package /Script/UnrealEd outer=0
+I48: /Script/CoreUObject.ScriptStruct PointerToUberGraphFrame outer=-44
+I49: /Script/UMG.WidgetBlueprintGeneratedClass CameraCoordsOverlay_C outer=-41
+I50: /Script/UMG.WidgetBlueprintLibrary Default__WidgetBlueprintLibrary outer=-45
+
+== FUNCTIONS ==
+### ExecuteUbergraph_WidgetAdder bytecode=24
+Kismet serialization failed: NullReferenceException: Object reference not set to an instance of an object.
+### ReceiveBeginPlay bytecode=7
+Kismet serialization failed: NullReferenceException: Object reference not set to an instance of an object.

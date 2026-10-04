@@ -1,0 +1,86 @@
+# LetMeMove_Actor
+
+Source: .research/LetMeMove/Content/Mods/LetMeMove/BP_WASD_Movement.uasset
+Exit code: 0
+
+=== VER_UE4_20 ===
+SUCCESS
+ObjectVersion=VER_UE4_FIX_WIDE_STRING_CRC (517)
+Names=228
+Imports=67
+Exports=83
+
+== IMPORTS ==
+I1: /Script/Engine.Actor Default__Actor outer=-60
+I2: /Script/CoreUObject.BoolProperty bOrientRotationToMovement outer=-25
+I3: /Script/CoreUObject.Class EdGraphSchema_K2 outer=-58
+I4: /Script/CoreUObject.Class K2Node_CallFunction outer=-58
+I5: /Script/CoreUObject.Class K2Node_CommutativeAssociativeBinaryOperator outer=-58
+I6: /Script/CoreUObject.Class K2Node_DynamicCast outer=-58
+I7: /Script/CoreUObject.Class K2Node_Event outer=-58
+I8: /Script/CoreUObject.Class K2Node_FunctionEntry outer=-58
+I9: /Script/CoreUObject.Class K2Node_IfThenElse outer=-58
+I10: /Script/CoreUObject.Class K2Node_Knot outer=-58
+I11: /Script/CoreUObject.Class K2Node_VariableGet outer=-58
+I12: /Script/CoreUObject.Class K2Node_VariableSet outer=-58
+I13: /Script/CoreUObject.Class BoolProperty outer=-59
+I14: /Script/CoreUObject.Class FloatProperty outer=-59
+I15: /Script/CoreUObject.Class Function outer=-59
+I16: /Script/CoreUObject.Class IntProperty outer=-59
+I17: /Script/CoreUObject.Class MetaData outer=-59
+I18: /Script/CoreUObject.Class Object outer=-59
+I19: /Script/CoreUObject.Class ObjectProperty outer=-59
+I20: /Script/CoreUObject.Class StructProperty outer=-59
+I21: /Script/CoreUObject.Class Actor outer=-60
+I22: /Script/CoreUObject.Class Blueprint outer=-60
+I23: /Script/CoreUObject.Class BlueprintGeneratedClass outer=-60
+I24: /Script/CoreUObject.Class Character outer=-60
+I25: /Script/CoreUObject.Class CharacterMovementComponent outer=-60
+I26: /Script/CoreUObject.Class Controller outer=-60
+I27: /Script/CoreUObject.Class EdGraph outer=-60
+I28: /Script/CoreUObject.Class GameplayStatics outer=-60
+I29: /Script/CoreUObject.Class KismetMathLibrary outer=-60
+I30: /Script/CoreUObject.Class Pawn outer=-60
+I31: /Script/CoreUObject.Class PlayerCameraManager outer=-60
+I32: /Script/CoreUObject.Class PlayerController outer=-60
+I33: /Script/CoreUObject.Class SceneComponent outer=-60
+I34: /Script/CoreUObject.Class SCS_Node outer=-60
+I35: /Script/CoreUObject.Class SimpleConstructionScript outer=-60
+I36: /Script/CoreUObject.Class SceneThumbnailInfo outer=-62
+I37: /Script/CoreUObject.Function ReceiveTick outer=-21
+I38: /Script/CoreUObject.Function K2_GetPawn outer=-26
+I39: /Script/CoreUObject.Function GetPlayerController outer=-28
+I40: /Script/CoreUObject.Function Add_VectorVector outer=-29
+I41: /Script/CoreUObject.Function BreakRotator outer=-29
+I42: /Script/CoreUObject.Function Conv_VectorToRotator outer=-29
+I43: /Script/CoreUObject.Function GetForwardVector outer=-29
+I44: /Script/CoreUObject.Function GetRightVector outer=-29
+I45: /Script/CoreUObject.Function Greater_FloatFloat outer=-29
+I46: /Script/CoreUObject.Function MakeRotator outer=-29
+I47: /Script/CoreUObject.Function Multiply_VectorFloat outer=-29
+I48: /Script/CoreUObject.Function Normal outer=-29
+I49: /Script/CoreUObject.Function SelectFloat outer=-29
+I50: /Script/CoreUObject.Function Subtract_FloatFloat outer=-29
+I51: /Script/CoreUObject.Function VSize outer=-29
+I52: /Script/CoreUObject.Function GetCameraRotation outer=-31
+I53: /Script/CoreUObject.Function IsInputKeyDown outer=-32
+I54: /Script/Engine.GameplayStatics Default__GameplayStatics outer=-60
+I55: /Script/Engine.KismetMathLibrary Default__KismetMathLibrary outer=-60
+I56: /Script/CoreUObject.ObjectProperty CharacterMovement outer=-24
+I57: /Script/CoreUObject.ObjectProperty PlayerCameraManager outer=-32
+I58: /Script/CoreUObject.Package /Script/BlueprintGraph outer=0
+I59: /Script/CoreUObject.Package /Script/CoreUObject outer=0
+I60: /Script/CoreUObject.Package /Script/Engine outer=0
+I61: /Script/CoreUObject.Package /Script/InputCore outer=0
+I62: /Script/CoreUObject.Package /Script/UnrealEd outer=0
+I63: /Script/CoreUObject.ScriptStruct Rotator outer=-59
+I64: /Script/CoreUObject.ScriptStruct Vector outer=-59
+I65: /Script/CoreUObject.ScriptStruct PointerToUberGraphFrame outer=-60
+I66: /Script/CoreUObject.ScriptStruct Key outer=-61
+I67: /Script/CoreUObject.StructProperty RotationRate outer=-25
+
+== FUNCTIONS ==
+### ExecuteUbergraph_BP_WASD_Movement bytecode=76
+Kismet serialization failed: NullReferenceException: Object reference not set to an instance of an object.
+### ReceiveTick bytecode=10
+Kismet serialization failed: NullReferenceException: Object reference not set to an instance of an object.

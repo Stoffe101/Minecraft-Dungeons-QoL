@@ -1,0 +1,82 @@
+# CameraCoords_Widget
+
+Source: third_party/camera-coordinates-overlay/Content/Mods/CameraCoords/CameraCoordsOverlay.uasset
+Exit code: 0
+
+=== VER_UE4_20 ===
+SUCCESS
+ObjectVersion=VER_UE4_FIX_WIDE_STRING_CRC (517)
+Names=222
+Imports=61
+Exports=49
+
+== IMPORTS ==
+I1: /Script/CoreUObject.Class EdGraphSchema_K2 outer=-49
+I2: /Script/CoreUObject.Class K2Node_CallFunction outer=-49
+I3: /Script/CoreUObject.Class K2Node_CommutativeAssociativeBinaryOperator outer=-49
+I4: /Script/CoreUObject.Class K2Node_Event outer=-49
+I5: /Script/CoreUObject.Class K2Node_VariableGet outer=-49
+I6: /Script/CoreUObject.Class BoolProperty outer=-50
+I7: /Script/CoreUObject.Class FloatProperty outer=-50
+I8: /Script/CoreUObject.Class Function outer=-50
+I9: /Script/CoreUObject.Class IntProperty outer=-50
+I10: /Script/CoreUObject.Class MetaData outer=-50
+I11: /Script/CoreUObject.Class Object outer=-50
+I12: /Script/CoreUObject.Class ObjectProperty outer=-50
+I13: /Script/CoreUObject.Class StrProperty outer=-50
+I14: /Script/CoreUObject.Class StructProperty outer=-50
+I15: /Script/CoreUObject.Class TextProperty outer=-50
+I16: /Script/CoreUObject.Class EdGraph outer=-51
+I17: /Script/CoreUObject.Class GameplayStatics outer=-51
+I18: /Script/CoreUObject.Class KismetStringLibrary outer=-51
+I19: /Script/CoreUObject.Class KismetTextLibrary outer=-51
+I20: /Script/CoreUObject.Class PlayerCameraManager outer=-51
+I21: /Script/CoreUObject.Class PlayerController outer=-51
+I22: /Script/CoreUObject.Class CanvasPanel outer=-53
+I23: /Script/CoreUObject.Class CanvasPanelSlot outer=-53
+I24: /Script/CoreUObject.Class TextBlock outer=-53
+I25: /Script/CoreUObject.Class UserWidget outer=-53
+I26: /Script/CoreUObject.Class WidgetBlueprintGeneratedClass outer=-53
+I27: /Script/CoreUObject.Class WidgetBlueprintLibrary outer=-53
+I28: /Script/CoreUObject.Class WidgetTree outer=-53
+I29: /Script/CoreUObject.Class K2Node_CreateWidget outer=-54
+I30: /Script/CoreUObject.Class WidgetBlueprint outer=-54
+I31: /Script/CoreUObject.Enum ESearchCase outer=-50
+I32: /Script/CoreUObject.Enum ESearchDir outer=-50
+I33: /Script/Engine.Font NewFive outer=-48
+I34: /Script/CoreUObject.Function GetPlayerCameraManager outer=-17
+I35: /Script/CoreUObject.Function Concat_StrStr outer=-18
+I36: /Script/CoreUObject.Function Conv_VectorToString outer=-18
+I37: /Script/CoreUObject.Function Replace outer=-18
+I38: /Script/CoreUObject.Function Split outer=-18
+I39: /Script/CoreUObject.Function Conv_StringToText outer=-19
+I40: /Script/CoreUObject.Function GetCameraLocation outer=-20
+I41: /Script/CoreUObject.Function AddToViewport outer=-25
+I42: /Script/CoreUObject.Function Destruct outer=-25
+I43: /Script/CoreUObject.Function Tick outer=-25
+I44: /Script/CoreUObject.Function Create outer=-27
+I45: /Script/Engine.GameplayStatics Default__GameplayStatics outer=-51
+I46: /Script/Engine.KismetStringLibrary Default__KismetStringLibrary outer=-51
+I47: /Script/Engine.KismetTextLibrary Default__KismetTextLibrary outer=-51
+I48: /Script/CoreUObject.Package /Game/Fonts/NewFive outer=0
+I49: /Script/CoreUObject.Package /Script/BlueprintGraph outer=0
+I50: /Script/CoreUObject.Package /Script/CoreUObject outer=0
+I51: /Script/CoreUObject.Package /Script/Engine outer=0
+I52: /Script/CoreUObject.Package /Script/SlateCore outer=0
+I53: /Script/CoreUObject.Package /Script/UMG outer=0
+I54: /Script/CoreUObject.Package /Script/UMGEditor outer=0
+I55: /Script/CoreUObject.ScriptStruct Vector outer=-50
+I56: /Script/CoreUObject.ScriptStruct PointerToUberGraphFrame outer=-51
+I57: /Script/CoreUObject.ScriptStruct Geometry outer=-52
+I58: /Script/UMG.UserWidget Default__UserWidget outer=-53
+I59: /Script/UMGEditor.WidgetBlueprint Default__WidgetBlueprint outer=-54
+I60: /Script/UMG.WidgetBlueprintLibrary Default__WidgetBlueprintLibrary outer=-53
+I61: /Script/UMG.WidgetTree WidgetTree outer=-59
+
+== FUNCTIONS ==
+### ExecuteUbergraph_CameraCoordsOverlay bytecode=30
+Kismet serialization failed: NullReferenceException: Object reference not set to an instance of an object.
+### Destruct bytecode=7
+Kismet serialization failed: NullReferenceException: Object reference not set to an instance of an object.
+### Tick bytecode=11
+Kismet serialization failed: NullReferenceException: Object reference not set to an instance of an object.

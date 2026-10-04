@@ -1,0 +1,45 @@
+# CameraCoords_LoaderMap
+
+Source: third_party/camera-coordinates-overlay/Content/BPLoader/Menu/CameraCoords.umap
+Exit code: 0
+
+=== VER_UE4_20 ===
+SUCCESS
+ObjectVersion=VER_UE4_FIX_WIDE_STRING_CRC (517)
+Names=132
+Imports=30
+Exports=21
+
+== IMPORTS ==
+I1: /Script/Engine.BlueprintGeneratedClass WidgetAdder_C outer=-24
+I2: /Script/Engine.Brush Default__Brush outer=-27
+I3: /Script/Engine.BrushComponent BrushComponent0 outer=-2
+I4: /Script/CoreUObject.Class EdGraphSchema_K2 outer=-25
+I5: /Script/CoreUObject.Class K2Node_Event outer=-25
+I6: /Script/CoreUObject.Class MetaData outer=-26
+I7: /Script/CoreUObject.Class Object outer=-26
+I8: /Script/CoreUObject.Class Actor outer=-27
+I9: /Script/CoreUObject.Class BlueprintGeneratedClass outer=-27
+I10: /Script/CoreUObject.Class Brush outer=-27
+I11: /Script/CoreUObject.Class BrushComponent outer=-27
+I12: /Script/CoreUObject.Class EdGraph outer=-27
+I13: /Script/CoreUObject.Class Level outer=-27
+I14: /Script/CoreUObject.Class LevelScriptActor outer=-27
+I15: /Script/CoreUObject.Class LevelScriptBlueprint outer=-27
+I16: /Script/CoreUObject.Class Model outer=-27
+I17: /Script/CoreUObject.Class Polys outer=-27
+I18: /Script/CoreUObject.Class SceneComponent outer=-27
+I19: /Script/CoreUObject.Class World outer=-27
+I20: /Script/CoreUObject.Class WorldSettings outer=-27
+I21: /Script/CoreUObject.Class NavigationSystemModuleConfig outer=-28
+I22: /Script/CoreUObject.Class WorldThumbnailInfo outer=-29
+I23: /Script/Engine.LevelScriptActor Default__LevelScriptActor outer=-27
+I24: /Script/CoreUObject.Package /Game/Mods/CameraCoords/WidgetAdder outer=0
+I25: /Script/CoreUObject.Package /Script/BlueprintGraph outer=0
+I26: /Script/CoreUObject.Package /Script/CoreUObject outer=0
+I27: /Script/CoreUObject.Package /Script/Engine outer=0
+I28: /Script/CoreUObject.Package /Script/NavigationSystem outer=0
+I29: /Script/CoreUObject.Package /Script/UnrealEd outer=0
+I30: /Script/Engine.SceneComponent DefaultSceneRoot_GEN_VARIABLE outer=-1
+
+== FUNCTIONS ==
