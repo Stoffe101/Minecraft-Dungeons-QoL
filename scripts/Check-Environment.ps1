@@ -26,8 +26,29 @@ try {
 try {
     $ue = Find-Ue422EditorDirectory -Override $UeEditorDirectory
     Write-Host "[OK] UE 4.22: $ue"
+
+    $engineDir = Split-Path (Split-Path $ue -Parent) -Parent
+    $ubt = Join-Path $engineDir "Binaries\DotNET\UnrealBuildTool.exe"
+    if (Test-Path $ubt) {
+        Write-Host "[OK] UnrealBuildTool: $ubt"
+    } else {
+        Write-Warning "UnrealBuildTool was not found at $ubt"
+    }
 } catch {
     Write-Warning $_
+}
+
+$programFilesX86 = [Environment]::GetFolderPath("ProgramFilesX86")
+$vswhere = Join-Path $programFilesX86 "Microsoft Visual Studio\Installer\vswhere.exe"
+if (Test-Path $vswhere) {
+    $vs = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath 2>$null
+    if ($vs) {
+        Write-Host "[OK] Visual Studio C++ tools: $vs"
+    } else {
+        Write-Warning "Visual Studio was found, but the MSVC C++ toolchain was not detected."
+    }
+} else {
+    Write-Warning "vswhere.exe was not found. UE4.22 editor-module builds require Visual Studio 2017/2019 C++ build tools."
 }
 
 try {
