@@ -7,7 +7,7 @@ https://github.com/Dokucraft/Dungeons-Mod-Kit
 
 License: MIT.
 
-We use it as an external development dependency. The bootstrap script clones it into `.tools/`, which is ignored by Git.
+Used as an external development dependency and pinned for reproducibility.
 
 Pinned commit:
 `c30e88ec5e99e401eadedddbe82af0265a056fe7`
@@ -19,7 +19,7 @@ https://github.com/StainlessStasis/LetMeMove
 
 License: MIT.
 
-Use in this project: reference implementation/layout only at this stage. No LetMeMove binary assets are currently copied into this repository.
+Use: modern Dungeons 1 Blueprint Loader compatibility and package-layout reference. Any future direct reuse of its MIT assets must retain the required MIT notice.
 
 ## Blueprint Loader for Dungeons 1
 
@@ -28,11 +28,29 @@ https://www.nexusmods.com/minecraftdungeons/mods/111
 
 Blueprint Loader is a separate runtime dependency.
 
-The Nexus permissions prohibit redistributing/modifying its assets without the author's permission. Therefore:
+Its Nexus permissions do not permit us to simply redistribute it as part of this project's release, therefore users install it separately.
 
-- do not vendor it
-- do not upload it as part of our releases
-- instruct users to install it separately
+## MCD-PE
+
+Repository:
+https://github.com/Minecraforever/MCD-PE
+
+License: Apache-2.0.
+
+Use: research/reference for final-build Dungeons 1 native class/function architecture, particularly inventory, item slots, salvage, and UI event wiring.
+
+The repository states that restored class architecture was checked against the final game binary. If code is copied or adapted rather than merely referenced, Apache-2.0 attribution/notice requirements must be followed.
+
+## KismetKompiler
+
+Repository:
+https://github.com/tge-was-taken/KismetKompiler
+
+License: MIT.
+
+Potential use: decompile/recompile existing UE4 Blueprint bytecode in automated build/research workflows.
+
+Current status: research dependency only until UE4.22 compatibility with Dungeons assets is proven.
 
 ## UeBlueprintDumper
 
@@ -41,10 +59,19 @@ https://github.com/CrystalFerrai/UeBlueprintDumper
 
 License: Apache-2.0.
 
-Potential use: offline research against locally installed game assets to discover Blueprint classes/functions. It is not vendored by this repository.
+Potential use: offline research against locally installed game assets.
+
+## MCDSaveEdit
+
+Repository:
+https://github.com/CutFlame/MCDSaveEdit
+
+Use: save-format research only, including `uniqueSaveId`, `inventoryIndex`, `equipmentSlot`, and item fingerprint fields.
+
+Before copying any implementation code, its applicable license must be checked for the exact version/repository content being reused.
 
 ## Minecraft / Minecraft Dungeons assets
 
 Game assets belong to their respective rights holders.
 
-Do not commit extracted proprietary game assets to this repository merely because they are useful for technical research. Store raw research output locally under `.research/` and document only the necessary findings.
+Do not commit extracted proprietary game assets merely because they are technically useful. Raw extraction/research output belongs under ignored local research folders. Commit only project-owned assets, permitted third-party assets with correct attribution, and documentation of necessary technical findings.
