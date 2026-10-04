@@ -6,33 +6,6 @@ param(
 )
 # Read-only game inspection. Outputs metadata, never hero saves or raw game assets.
 . (Join-Path $PSScriptRoot "Common.ps1")
-function Invoke-EvidenceProcess {
-    param([string]$Executable, [string[]]$Arguments, [string]$LogPath)
-    $info = New-Object System.Diagnostics.ProcessStartInfo
-    $info.FileName = $Executable
-    # Windows argv quoting also works with .NET Framework / PowerShell 5.1.
-    $info.Arguments = (@($Arguments | ForEach-Object {
-        $escaped = [regex]::Replace($_, '(\\*)"', '$1$1\"')
-        $escaped = [regex]::Replace($escaped, '(\\+)$', '$1$1')
-        '"' + $escaped + '"'
-    }) -join ' ')
-    $info.UseShellExecute = $false
-    $info.CreateNoWindow = $true
-    $info.RedirectStandardOutput = $true
-    $info.RedirectStandardError = $true
-    $process = New-Object System.Diagnostics.Process
-    $process.StartInfo = $info
-    try {
-        if (-not $process.Start()) { throw "Could not start inspector: $Executable" }
-        $stdout = $process.StandardOutput.ReadToEndAsync()
-        $stderr = $process.StandardError.ReadToEndAsync()
-        $process.WaitForExit()
-        $output = $stdout.GetAwaiter().GetResult()
-        $errors = $stderr.GetAwaiter().GetResult()
-        [System.IO.File]::WriteAllText($LogPath, $output + "`n--- Inspector stderr ---`n" + $errors)
-        return $process.ExitCode
-    } finally { $process.Dispose() }
-}
 if ($AesKey -and $AesKey -notmatch '^(0x)?[0-9a-fA-F]{64}$') { throw "-AesKey must contain a 256-bit hexadecimal key (64 digits, optionally prefixed with 0x)." }
 $root = Get-ProjectRoot
 $paks = Find-McdPaksPath -Override $PaksPath

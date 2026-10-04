@@ -4,6 +4,19 @@ The next runtime work needs evidence from the **actual copy being launched**. Pu
 
 ## Collect metadata on Windows x64
 
+**Use the legacy collector below for Dungeons 1.** The older `Collect-GameEvidence.ps1` remains useful for lists/catalogs, but its UeBlueprintDumper Blueprint export assumes newer FProperty metadata and failed on every targeted UE4.22 class/function in the user's installation.
+
+```powershell
+git pull origin main
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Collect-LegacyGameEvidence.ps1 -PaksPath "C:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks" -AesKey "0x7D5F892ECEBFA53CC22001DF48B871D51C0DF7C54CE41933BFB285219829B3A8"
+```
+
+Upload `.research/game-evidence-legacy.zip`, including failures if any. This route uses the verified archive reader plus the project's pinned legacy UAssetAPI parser. It compiles the small exporter with an existing .NET SDK 8/9/10; otherwise it downloads a checksum-pinned local .NET 8 SDK (about 200 MB) without a global installation. NuGet access is needed to restore UAssetAPI. No Unreal editor is required. Downloads/libraries remain under `.tools`.
+
+The ZIP contains `Metadata/*.json` (imports, legacy property metadata and Kismet), `Metadata/EXPORT_REPORT.json`, build/export logs and `REPORT.json`. Native layouts/behavior still need corroboration. Raw asset companions are temporarily staged outside the game and deleted by the exporter on normal completion/failure; they are never included in the ZIP. Hero saves and optional protected executable hashes are not accessed by this route.
+
+For another attempt, pass a fresh `-OutputDirectory`. Output inside the game directory or existing output is rejected. `-DotNetPath` can select an SDK host explicitly. `-AssetMatch` is an optional inspection override; normal collection uses the 31 identified targets. The old catalog route follows for reference.
+
 Update this repository, or download and extract its main-branch ZIP. Open PowerShell in that folder and run:
 
 ```powershell

@@ -198,3 +198,11 @@ The catalog establishes these concrete inspection targets. Counts refer to match
 | PlayerController | `Actors/Characters/Player/BP_PlayerController` | 3 | Controller/interface/shared UI integration |
 
 Important names include `UMG_InventoryHUD`, `UMG_InventorySlotWidget`, `UMG_InventoryGearSlotWidget`, `UMG_SalvageButtonConfirm`, `UMG_SalvageButtonToggle`, `UMG_SalvageUndoButton`, `UMG_InventoryItemInspector`, `UMG_SlotGridWidget` and `BP_PlayerControllerSharedUI`. No ItemStash-named cooked asset is required for its native `/Script/Dungeons` class to exist. The next evidence is these assets' actual exported references/properties/functions, followed by a non-destructive in-game probe.
+
+### Legacy parser compatibility
+
+The next targeted upload successfully ran all groups but contained only lists/logs. Class exports raised `ArgumentNullException (source)` and functions raised `NullReferenceException`. Source inspection confirms UeBlueprintDumper 1.2.0 unconditionally enumerates `ChildProperties` in both cases. Pinned CUE4Parse initializes this array only for the newer FProperties custom version; UE4.22 keeps property exports in `Children`. Merely changing engine settings or ignoring exceptions would omit the needed signatures.
+
+`LegacyEvidenceExporter` uses the already-working archive reader and UAssetAPI's legacy PropertyExport/FunctionExport support. It outputs indexed imports/exports, property flags/type references, class/function children and Kismet JSON. Opaque buffers, normal asset bodies and raw companions are excluded from evidence. Temporary raw companions are deleted on normal completion/failure. Native ABI is still not certified by successful serialization.
+
+Actual fixture results: LetMeMove UE4.22 actor exports 34 legacy properties and 2 functions with no metadata errors; the generated diagnostic pak exports its manager (50 properties, 2 functions) and sidecar (35 properties, 2 functions). This resolves a specific parser compatibility failure; the user's actual targeted metadata is still required.

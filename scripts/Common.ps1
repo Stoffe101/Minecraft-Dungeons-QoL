@@ -86,3 +86,31 @@ function Get-DistPakPath {
     $root = Get-ProjectRoot
     return (Join-Path $root "dist\MinecraftDungeonsQoL.pak")
 }
+
+function Invoke-EvidenceProcess {
+    param([string]$Executable, [string[]]$Arguments, [string]$LogPath)
+    $info = New-Object System.Diagnostics.ProcessStartInfo
+    $info.FileName = $Executable
+    # Windows argv quoting also works with .NET Framework / PowerShell 5.1.
+    $info.Arguments = (@($Arguments | ForEach-Object {
+        $escaped = [regex]::Replace($_, '(\\*)"', '$1$1\"')
+        $escaped = [regex]::Replace($escaped, '(\\+)$', '$1$1')
+        '"' + $escaped + '"'
+    }) -join ' ')
+    $info.UseShellExecute = $false
+    $info.CreateNoWindow = $true
+    $info.RedirectStandardOutput = $true
+    $info.RedirectStandardError = $true
+    $process = New-Object System.Diagnostics.Process
+    $process.StartInfo = $info
+    try {
+        if (-not $process.Start()) { throw "Could not start inspector: $Executable" }
+        $stdout = $process.StandardOutput.ReadToEndAsync()
+        $stderr = $process.StandardError.ReadToEndAsync()
+        $process.WaitForExit()
+        $output = $stdout.GetAwaiter().GetResult()
+        $errors = $stderr.GetAwaiter().GetResult()
+        [System.IO.File]::WriteAllText($LogPath, $output + "`n--- Inspector stderr ---`n" + $errors)
+        return $process.ExitCode
+    } finally { $process.Dispose() }
+}
