@@ -84,7 +84,7 @@ Obj(pc,Static(gameplayDefault,Fn(gameplay,"GetPlayerController"),new EX_Self(),N
 Obj(controller,new EX_DynamicCast {ClassPtr=Existing("BP_PlayerController_C"),Target=L(pc)});Branch(Valid(L(controller)),"HIDE");
 Obj(shared,C(L(controller),V(Existing("SharedUI")),Index(shared)));Branch(Valid(L(shared)),"HIDE");
 Obj(hud,new EX_DynamicCast {ClassPtr=Existing("UMG_InventoryHUD_C"),Target=C(L(shared),V(Existing("InventoryHUD")),Index(hud))});Branch(Valid(L(hud)),"HIDE");
-Branch(C(L(hud),V(Existing("IsInventoryOpen"))),"HIDE");
+Branch(C(L(hud),F(Fn(widgetClass,"IsVisible"))),"HIDE");
 // One manager owns feedback; additional loader instances stay idle. No actor is destroyed.
 Add(Static(gameplayDefault,Fn(gameplay,"GetAllActorsOfClass"),new EX_Self(),O(Index(owner)),L(actorArray)));
 Branch(M("GreaterEqual_IntInt",Length(L(actorArray)),N(1)),"HIDE");
@@ -125,6 +125,7 @@ Label("END");Add(new EX_Return {ReturnExpression=new EX_Nothing()});Add(new EX_E
 uint offset=0;var offsets=new List<uint>();foreach(var e in code){offsets.Add(offset);offset+=(uint)Size(e);}
 foreach(var (e,target) in jumps){var n=offsets[labels[target]];if(e is EX_Jump j)j.CodeOffset=n;else ((EX_JumpIfNot)e).CodeOffset=n;}
 uber.ScriptBytecode=code.ToArray();uber.ScriptBytecodeRaw=null;uber.ScriptBytecodeSize=(int)offset;
+DiagnosticGraphValidator.ConfigureInventoryTick(asset);
 CookedDependencyGraph.Repair(asset);Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(args[1]))!);asset.Write(args[1]);
 var reopened=new UAsset(args[1],EngineVersion.VER_UE4_22);var fn=reopened.Exports.OfType<FunctionExport>().Single(x=>x.ObjectName.ToString().StartsWith("ExecuteUbergraph_"));
 InventoryProbeValidator.Validate(reopened,fn.ScriptBytecode);

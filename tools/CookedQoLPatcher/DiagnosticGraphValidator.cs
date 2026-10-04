@@ -1,5 +1,7 @@
 using UAssetAPI;
 using UAssetAPI.ExportTypes;
+using UAssetAPI.PropertyTypes.Objects;
+using UAssetAPI.PropertyTypes.Structs;
 using UAssetAPI.UnrealTypes;
 using UAssetAPI.Kismet;
 using UAssetAPI.Kismet.Bytecode;
@@ -7,6 +9,44 @@ using UAssetAPI.Kismet.Bytecode.Expressions;
 
 public static class DiagnosticGraphValidator
 {
+    public static StructPropertyData InventoryTickDefaults(UAsset asset)
+    {
+        var owner = asset.Exports.OfType<ClassExport>().Single();
+        var cdo = (NormalExport)owner.ClassDefaultObject.ToExport(asset);
+        return cdo.Data.OfType<StructPropertyData>().Single(x => x.Name.ToString() == "PrimaryActorTick");
+    }
+    public static void ConfigureInventoryTick(UAsset asset)
+    {
+        var tick = InventoryTickDefaults(asset);
+        foreach (var name in new[] { "bCanEverTick", "bStartWithTickEnabled", "bTickEvenWhenPaused" })
+        {
+            var fields = tick.Value.Where(x => x.Name.ToString() == name).ToArray();
+            if (fields.Length > 1 || fields.Length == 1 && fields[0] is not BoolPropertyData)
+                throw new InvalidDataException("Invalid inventory actor tick flag: " + name);
+            if (fields.Length == 0) tick.Value.Add(new BoolPropertyData(new FName(asset, name)) { Value = true });
+            else ((BoolPropertyData)fields[0]).Value = true;
+        }
+        var intervals = tick.Value.Where(x => x.Name.ToString() == "TickInterval").ToArray();
+        if (intervals.Length > 1 || intervals.Length == 1 && intervals[0] is not FloatPropertyData)
+            throw new InvalidDataException("Invalid inventory actor tick interval.");
+        if (intervals.Length == 0) tick.Value.Add(new FloatPropertyData(new FName(asset, "TickInterval")) { Value = 0f });
+        else ((FloatPropertyData)intervals[0]).Value = 0f;
+    }
+    public static void ValidateInventoryTick(UAsset asset)
+    {
+        var tick = InventoryTickDefaults(asset);
+        if (tick.StructType.ToString() != "ActorTickFunction")
+            throw new InvalidDataException("Wrong inventory actor tick struct.");
+        foreach (var name in new[] { "bCanEverTick", "bStartWithTickEnabled", "bTickEvenWhenPaused" })
+        {
+            var fields = tick.Value.Where(x => x.Name.ToString() == name).ToArray();
+            if (fields.Length != 1 || fields[0] is not BoolPropertyData { Value: true })
+                throw new InvalidDataException("Inventory actor tick flag must be enabled: " + name);
+        }
+        var intervals = tick.Value.Where(x => x.Name.ToString() == "TickInterval").ToArray();
+        if (intervals.Length != 1 || intervals[0] is not FloatPropertyData { Value: 0f })
+            throw new InvalidDataException("Inventory actor tick interval must be zero.");
+    }
     // Keep the reviewed cooked actor's event entry contract: ReceiveTick calls offset 10.
     public static EX_ComputedJump TickDispatch(UAsset asset)
     {
@@ -39,11 +79,24 @@ public static class DiagnosticGraphValidator
             || calls[0].Parameters.Length != 1 || calls[0].Parameters[0] is not EX_IntConst n || n.Value != 10)
             throw new InvalidDataException("ReceiveTick must call the graph body at offset 10.");
     }
+    public static bool IsInventoryOpenCondition(UAsset asset, KismetExpression expression)
+    {
+        if (expression is not EX_Context { ObjectExpression: EX_LocalVariable hud,
+            ContextExpression: EX_FinalFunction call } || !hud.Variable.Old.IsExport()
+            || hud.Variable.Old.ToExport(asset).ObjectName.ToString() != "MCDQoL_InventoryHUD"
+            || !call.StackNode.IsImport() || call.Parameters.Length != 0) return false;
+        var function = call.StackNode.ToImport(asset);
+        if (function.ObjectName.ToString() != "IsVisible" || !function.OuterIndex.IsImport()) return false;
+        var owner = function.OuterIndex.ToImport(asset);
+        return owner.ObjectName.ToString() == "Widget" && owner.OuterIndex.IsImport()
+            && owner.OuterIndex.ToImport(asset).ObjectName.ToString() == "/Script/UMG";
+    }
     public static int Validate(UAsset asset, IReadOnlyList<KismetExpression> code, bool requireEquipmentGuards = true)
     {
         KismetSerializer.asset = asset;
         CookedDependencyGraph.Validate(asset);
         ValidateTickEntry(asset, code);
+        ValidateInventoryTick(asset);
         int Size(KismetExpression expr)
         {
             using var stream = new MemoryStream();
@@ -112,7 +165,7 @@ public static class DiagnosticGraphValidator
             return seen;
         }
         var guards = Enumerable.Range(0, code.Count).Where(i => code[i] is EX_JumpIfNot g
-            && HasMember(g.BooleanExpression, "IsInventoryOpen")).ToArray();
+            && IsInventoryOpenCondition(asset, g.BooleanExpression)).ToArray();
         if (guards.Length != 1) throw new InvalidDataException("Expected one inventory-open guard.");
         var guard = guards[0];
         var beforeGate = Reach(0, guard);

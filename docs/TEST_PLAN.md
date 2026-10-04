@@ -130,3 +130,17 @@ Close the game, remove every other MinecraftDungeonsQoL pak (including load-prob
 5. If stable, enter a mission and repeat; record whether overlay ownership/lifecycle survives the transition.
 
 No F8/F9/F10 actions are active. No items or sidecar saves are changed. If text is missing, report that alongside crash/no-crash and inventory responsiveness; a missing overlay is not proof that the reads ran successfully. If it crashes, preserve fresh CrashContext/minidump. Layout at common resolutions/controller behavior require screenshots and actual testing later.
+
+
+## Pause-capable inventory probe retry
+
+The PR #11 event entry repair still produced no text or visible F6/F7 response for the user. The next probe adds explicit paused ticking to the manager class defaults. Use the replacement inventory-probe artifact alone with Blueprint Loader; there is no activation setting.
+
+1. Enter camp offline and open inventory. Wait briefly without pressing keys; record whether the initial read-only overlay appears. This separates initial rendering from input polling.
+2. If text appears, press F7 once and F6 once. Record text changes, separately from the vanilla selected item's highlight.
+3. Close/reopen inventory; confirm hiding/reappearance and only one overlay. Retest a mission transition if stable.
+4. If text still does not appear, preserve the installed pak's SHA-256 alongside the report. The screenshot's filename/location does not establish the installed build or which guard failed.
+
+Automatic tests reject all three disabled tick flags, omitted bTickEvenWhenPaused and a positive TickInterval. Packaging verification reopens the actual pak's manager to check those defaults. The original offline game pause is preserved; this probe performs no item/save mutations.
+
+The revised open guard calls Widget.IsVisible on InventoryHUD as the controller does. Additional negative tests reject checking visibility on the wrong local or importing IsVisible under the wrong native class. Inventory reads and UI construction remain unreachable before or after the closed path of that guard.
