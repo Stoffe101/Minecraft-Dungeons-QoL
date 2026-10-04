@@ -75,6 +75,7 @@ I60: /Script/CoreUObject.StructProperty RotationRate outer=-15
 
 == EXPORTS ==
 E1: PropertyExport name=UberGraphFrame outer=2 class=-11 super=0
+    DataCount=0
     PropertyType=UStructProperty
     ArrayDim=TArray
     ElementSize=0
@@ -82,8 +83,24 @@ E1: PropertyExport name=UberGraphFrame outer=2 class=-11 super=0
     RepNotifyFunc=None
     Struct=-55
 E2: ClassExport name=BP_WASD_Movement_C outer=0 class=-13 super=-12
+    SuperStruct=-12
+    ClassFlags=CLASS_Parsed, CLASS_ReplicationDataIsSetUp, CLASS_CompiledFromBlueprint, CLASS_HasInstancedReference
+    ClassWithin=-9
+    ClassGeneratedBy=0
+    ClassDefaultObject=3
+    bCooked=True
+    Children=[1,24,6,4]
+    FuncMap=[ExecuteUbergraph_BP_WASD_Movement:6,ReceiveTick:24]
+    DataCount=3
+    Data SimpleConstructionScript: ObjectPropertyData = 31
+    Data UberGraphFramePointerProperty: ObjectPropertyData = 1
+    Data UberGraphFunction: ObjectPropertyData = 6
 E3: NormalExport name=Default__BP_WASD_Movement_C outer=0 class=2 super=0
+    DataCount=2
+    Data UberGraphFrame: StructPropertyData = System.Collections.Generic.List`1[UAssetAPI.PropertyTypes.Objects.PropertyData]
+    Data PrimaryActorTick: StructPropertyData = System.Collections.Generic.List`1[UAssetAPI.PropertyTypes.Objects.PropertyData]
 E4: PropertyExport name=DefaultSceneRoot outer=2 class=-10 super=0
+    DataCount=0
     PropertyType=UObjectProperty
     ArrayDim=TArray
     ElementSize=0
@@ -91,122 +108,144 @@ E4: PropertyExport name=DefaultSceneRoot outer=2 class=-10 super=0
     RepNotifyFunc=None
     PropertyClass=-22
 E5: PropertyExport name=EntryPoint outer=6 class=-8 super=0
+    DataCount=0
     PropertyType=UIntProperty
     ArrayDim=TArray
     ElementSize=0
     PropertyFlags=CPF_BlueprintVisible, CPF_BlueprintReadOnly, CPF_Parm
     RepNotifyFunc=None
 E6: FunctionExport name=ExecuteUbergraph_BP_WASD_Movement outer=2 class=-7 super=0
+    DataCount=0
 E7: PropertyExport name=CallFunc_Greater_FloatFloat_ReturnValue outer=6 class=-5 super=0
+    DataCount=0
     PropertyType=UBoolProperty
     ArrayDim=TArray
     ElementSize=1
     PropertyFlags=CPF_None
     RepNotifyFunc=None
 E8: PropertyExport name=CallFunc_IsInputKeyDown_ReturnValue outer=6 class=-5 super=0
+    DataCount=0
     PropertyType=UBoolProperty
     ArrayDim=TArray
     ElementSize=1
     PropertyFlags=CPF_None
     RepNotifyFunc=None
 E9: PropertyExport name=CallFunc_IsInputKeyDown_ReturnValue1 outer=6 class=-5 super=0
+    DataCount=0
     PropertyType=UBoolProperty
     ArrayDim=TArray
     ElementSize=1
     PropertyFlags=CPF_None
     RepNotifyFunc=None
 E10: PropertyExport name=CallFunc_IsInputKeyDown_ReturnValue2 outer=6 class=-5 super=0
+    DataCount=0
     PropertyType=UBoolProperty
     ArrayDim=TArray
     ElementSize=1
     PropertyFlags=CPF_None
     RepNotifyFunc=None
 E11: PropertyExport name=CallFunc_IsInputKeyDown_ReturnValue3 outer=6 class=-5 super=0
+    DataCount=0
     PropertyType=UBoolProperty
     ArrayDim=TArray
     ElementSize=1
     PropertyFlags=CPF_None
     RepNotifyFunc=None
 E12: PropertyExport name=K2Node_DynamicCast_bSuccess outer=6 class=-5 super=0
+    DataCount=0
     PropertyType=UBoolProperty
     ArrayDim=TArray
     ElementSize=1
     PropertyFlags=CPF_None
     RepNotifyFunc=None
 E13: PropertyExport name=CallFunc_BreakRotator_Pitch outer=6 class=-6 super=0
+    DataCount=0
     PropertyType=UFloatProperty
     ArrayDim=TArray
     ElementSize=0
     PropertyFlags=CPF_None
     RepNotifyFunc=None
 E14: PropertyExport name=CallFunc_BreakRotator_Roll outer=6 class=-6 super=0
+    DataCount=0
     PropertyType=UFloatProperty
     ArrayDim=TArray
     ElementSize=0
     PropertyFlags=CPF_None
     RepNotifyFunc=None
 E15: PropertyExport name=CallFunc_BreakRotator_Yaw outer=6 class=-6 super=0
+    DataCount=0
     PropertyType=UFloatProperty
     ArrayDim=TArray
     ElementSize=0
     PropertyFlags=CPF_None
     RepNotifyFunc=None
 E16: PropertyExport name=CallFunc_SelectFloat_ReturnValue outer=6 class=-6 super=0
+    DataCount=0
     PropertyType=UFloatProperty
     ArrayDim=TArray
     ElementSize=0
     PropertyFlags=CPF_None
     RepNotifyFunc=None
 E17: PropertyExport name=CallFunc_SelectFloat_ReturnValue1 outer=6 class=-6 super=0
+    DataCount=0
     PropertyType=UFloatProperty
     ArrayDim=TArray
     ElementSize=0
     PropertyFlags=CPF_None
     RepNotifyFunc=None
 E18: PropertyExport name=CallFunc_SelectFloat_ReturnValue2 outer=6 class=-6 super=0
+    DataCount=0
     PropertyType=UFloatProperty
     ArrayDim=TArray
     ElementSize=0
     PropertyFlags=CPF_None
     RepNotifyFunc=None
 E19: PropertyExport name=CallFunc_SelectFloat_ReturnValue3 outer=6 class=-6 super=0
+    DataCount=0
     PropertyType=UFloatProperty
     ArrayDim=TArray
     ElementSize=0
     PropertyFlags=CPF_None
     RepNotifyFunc=None
 E20: PropertyExport name=CallFunc_Subtract_FloatFloat_ReturnValue outer=6 class=-6 super=0
+    DataCount=0
     PropertyType=UFloatProperty
     ArrayDim=TArray
     ElementSize=0
     PropertyFlags=CPF_None
     RepNotifyFunc=None
 E21: PropertyExport name=CallFunc_Subtract_FloatFloat_ReturnValue1 outer=6 class=-6 super=0
+    DataCount=0
     PropertyType=UFloatProperty
     ArrayDim=TArray
     ElementSize=0
     PropertyFlags=CPF_None
     RepNotifyFunc=None
 E22: PropertyExport name=CallFunc_VSize_ReturnValue outer=6 class=-6 super=0
+    DataCount=0
     PropertyType=UFloatProperty
     ArrayDim=TArray
     ElementSize=0
     PropertyFlags=CPF_None
     RepNotifyFunc=None
 E23: PropertyExport name=K2Node_Event_DeltaSeconds outer=6 class=-6 super=0
+    DataCount=0
     PropertyType=UFloatProperty
     ArrayDim=TArray
     ElementSize=0
     PropertyFlags=CPF_None
     RepNotifyFunc=None
 E24: FunctionExport name=ReceiveTick outer=2 class=-7 super=-27
+    DataCount=0
 E25: PropertyExport name=DeltaSeconds outer=24 class=-6 super=0
+    DataCount=0
     PropertyType=UFloatProperty
     ArrayDim=TArray
     ElementSize=0
     PropertyFlags=CPF_BlueprintVisible, CPF_BlueprintReadOnly, CPF_Parm
     RepNotifyFunc=None
 E26: PropertyExport name=CallFunc_GetPlayerController_ReturnValue outer=6 class=-10 super=0
+    DataCount=0
     PropertyType=UObjectProperty
     ArrayDim=TArray
     ElementSize=0
@@ -214,6 +253,7 @@ E26: PropertyExport name=CallFunc_GetPlayerController_ReturnValue outer=6 class=
     RepNotifyFunc=None
     PropertyClass=-21
 E27: PropertyExport name=CallFunc_K2_GetPawn_ReturnValue outer=6 class=-10 super=0
+    DataCount=0
     PropertyType=UObjectProperty
     ArrayDim=TArray
     ElementSize=0
@@ -221,6 +261,7 @@ E27: PropertyExport name=CallFunc_K2_GetPawn_ReturnValue outer=6 class=-10 super
     RepNotifyFunc=None
     PropertyClass=-19
 E28: PropertyExport name=K2Node_DynamicCast_AsCharacter outer=6 class=-10 super=0
+    DataCount=0
     PropertyType=UObjectProperty
     ArrayDim=TArray
     ElementSize=0
@@ -228,9 +269,20 @@ E28: PropertyExport name=K2Node_DynamicCast_AsCharacter outer=6 class=-10 super=
     RepNotifyFunc=None
     PropertyClass=-14
 E29: NormalExport name=DefaultSceneRoot_GEN_VARIABLE outer=2 class=-22 super=0
+    DataCount=0
 E30: NormalExport name=SCS_Node_0 outer=31 class=-23 super=0
+    DataCount=4
+    Data ComponentClass: ObjectPropertyData = -22
+    Data ComponentTemplate: ObjectPropertyData = 29
+    Data VariableGuid: StructPropertyData = System.Collections.Generic.List`1[UAssetAPI.PropertyTypes.Objects.PropertyData]
+    Data InternalVariableName: NamePropertyData = DefaultSceneRoot
 E31: NormalExport name=SimpleConstructionScript_0 outer=2 class=-24 super=0
+    DataCount=3
+    Data RootNodes: ArrayPropertyData = UAssetAPI.PropertyTypes.Objects.PropertyData[]
+    Data AllNodes: ArrayPropertyData = UAssetAPI.PropertyTypes.Objects.PropertyData[]
+    Data DefaultSceneRootNode: ObjectPropertyData = 30
 E32: PropertyExport name=CallFunc_Add_VectorVector_ReturnValue outer=6 class=-11 super=0
+    DataCount=0
     PropertyType=UStructProperty
     ArrayDim=TArray
     ElementSize=0
@@ -238,6 +290,7 @@ E32: PropertyExport name=CallFunc_Add_VectorVector_ReturnValue outer=6 class=-11
     RepNotifyFunc=None
     Struct=-54
 E33: PropertyExport name=CallFunc_Conv_VectorToRotator_ReturnValue outer=6 class=-11 super=0
+    DataCount=0
     PropertyType=UStructProperty
     ArrayDim=TArray
     ElementSize=0
@@ -245,6 +298,7 @@ E33: PropertyExport name=CallFunc_Conv_VectorToRotator_ReturnValue outer=6 class
     RepNotifyFunc=None
     Struct=-53
 E34: PropertyExport name=CallFunc_GetCameraRotation_ReturnValue outer=6 class=-11 super=0
+    DataCount=0
     PropertyType=UStructProperty
     ArrayDim=TArray
     ElementSize=0
@@ -252,6 +306,7 @@ E34: PropertyExport name=CallFunc_GetCameraRotation_ReturnValue outer=6 class=-1
     RepNotifyFunc=None
     Struct=-53
 E35: PropertyExport name=CallFunc_GetForwardVector_ReturnValue outer=6 class=-11 super=0
+    DataCount=0
     PropertyType=UStructProperty
     ArrayDim=TArray
     ElementSize=0
@@ -259,6 +314,7 @@ E35: PropertyExport name=CallFunc_GetForwardVector_ReturnValue outer=6 class=-11
     RepNotifyFunc=None
     Struct=-54
 E36: PropertyExport name=CallFunc_GetRightVector_ReturnValue outer=6 class=-11 super=0
+    DataCount=0
     PropertyType=UStructProperty
     ArrayDim=TArray
     ElementSize=0
@@ -266,6 +322,7 @@ E36: PropertyExport name=CallFunc_GetRightVector_ReturnValue outer=6 class=-11 s
     RepNotifyFunc=None
     Struct=-54
 E37: PropertyExport name=CallFunc_MakeRotator_ReturnValue outer=6 class=-11 super=0
+    DataCount=0
     PropertyType=UStructProperty
     ArrayDim=TArray
     ElementSize=0
@@ -273,6 +330,7 @@ E37: PropertyExport name=CallFunc_MakeRotator_ReturnValue outer=6 class=-11 supe
     RepNotifyFunc=None
     Struct=-53
 E38: PropertyExport name=CallFunc_MakeRotator_ReturnValue1 outer=6 class=-11 super=0
+    DataCount=0
     PropertyType=UStructProperty
     ArrayDim=TArray
     ElementSize=0
@@ -280,6 +338,7 @@ E38: PropertyExport name=CallFunc_MakeRotator_ReturnValue1 outer=6 class=-11 sup
     RepNotifyFunc=None
     Struct=-53
 E39: PropertyExport name=CallFunc_Multiply_VectorFloat_ReturnValue outer=6 class=-11 super=0
+    DataCount=0
     PropertyType=UStructProperty
     ArrayDim=TArray
     ElementSize=0
@@ -287,6 +346,7 @@ E39: PropertyExport name=CallFunc_Multiply_VectorFloat_ReturnValue outer=6 class
     RepNotifyFunc=None
     Struct=-54
 E40: PropertyExport name=CallFunc_Multiply_VectorFloat_ReturnValue1 outer=6 class=-11 super=0
+    DataCount=0
     PropertyType=UStructProperty
     ArrayDim=TArray
     ElementSize=0
@@ -294,6 +354,7 @@ E40: PropertyExport name=CallFunc_Multiply_VectorFloat_ReturnValue1 outer=6 clas
     RepNotifyFunc=None
     Struct=-54
 E41: PropertyExport name=CallFunc_Normal_ReturnValue outer=6 class=-11 super=0
+    DataCount=0
     PropertyType=UStructProperty
     ArrayDim=TArray
     ElementSize=0
