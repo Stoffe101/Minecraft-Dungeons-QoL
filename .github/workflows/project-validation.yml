@@ -1,0 +1,49 @@
+name: Project Validation
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "scripts/**"
+      - "sdk/**"
+      - "config/**"
+      - "docs/**"
+      - "tools/UAssetProbe/**"
+      - ".github/workflows/project-validation.yml"
+  pull_request:
+    paths:
+      - "scripts/**"
+      - "sdk/**"
+      - "config/**"
+      - "docs/**"
+      - "tools/UAssetProbe/**"
+      - ".github/workflows/project-validation.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate repository structure and scripts
+        shell: pwsh
+        run: ./scripts/Validate-Repository.ps1
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Build cooked-asset inspection tool
+        shell: pwsh
+        run: dotnet build tools/UAssetProbe/UAssetProbe.csproj -c Release
+
+      - name: Confirm third-party reference notice
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "third_party/camera-coordinates-overlay/NOTICE.md")) {
+            throw "Third-party reference assets exist without their NOTICE.md."
+          }
+          Write-Host "[OK] Third-party reference notice present."
