@@ -1,6 +1,7 @@
 param(
     [Parameter(Mandatory=$true)][string]$DumperExe,
-    [Parameter(Mandatory=$true)][string]$GameRoot
+    [Parameter(Mandatory=$true)][string]$GameRoot,
+    [string]$AesKey
 )
 
 . (Join-Path $PSScriptRoot "Common.ps1")
@@ -29,8 +30,14 @@ foreach ($term in $terms) {
     $out = Join-Path $outRoot $term
     New-Item -ItemType Directory -Force -Path $out | Out-Null
 
+    $dumperArgs = @("--list")
+    if ($AesKey) {
+        $dumperArgs += @("--key", $AesKey)
+    }
+    $dumperArgs += @($GameRoot, "UE4_22", $term, $out)
+
     Write-Host "Listing assets matching '$term'..."
-    & $DumperExe --list $GameRoot "UE4_22" $term $out
+    & $DumperExe @dumperArgs
 
     if ($LASTEXITCODE -ne 0) {
         Write-Warning "Dumper returned exit code $LASTEXITCODE for '$term'."
