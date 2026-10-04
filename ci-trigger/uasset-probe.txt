@@ -1,1 +1,1 @@
-2026-10-04 inspect Dungeons Blueprint imports and exports
+2026-10-04 dump Kismet instruction tree
