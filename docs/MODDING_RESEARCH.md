@@ -2,462 +2,518 @@
 
 Last updated: 2026-10-04
 
-This document records the project-level research into how Minecraft Dungeons 1 mods are actually built and loaded, which tools are proven, which approaches are experimental, and which approach this project should prefer.
-
-The goal is to avoid designing the project around guesses or stale assumptions.
+This document records how Minecraft Dungeons 1 mods are actually built and loaded, which tools are reliable, which approaches are experimental, and why this project chooses its current workflow.
 
 ## Executive conclusion
 
-For a gameplay/UI mod such as Minecraft Dungeons QoL, the best-supported Dungeons 1 development path remains:
+For a gameplay/UI mod such as Minecraft Dungeons QoL, the primary route is:
 
-1. Unreal Engine 4.22.x
-2. Dokucraft Dungeons Mod Kit
-3. Blueprint Loader
-4. Project-owned Blueprint actor/widget assets
-5. Small loader levels under the Blueprint Loader trigger folders
-6. Cook through UE4.22
-7. Package the cooked files into a normal Dungeons .pak
-8. Install the .pak in the active game's Dungeons/Content/Paks/~mods folder
+1. Unreal Engine **4.22.x**
+2. Dokucraft **Dungeons Mod Kit**
+3. a small editor-only **mirror of verified Dungeons reflection APIs**
+4. normal Blueprint actor/widget authoring
+5. cook through UE4.22
+6. package through the Mod Kit
+7. load through **Blueprint Loader**
 
-This is not merely a historical 2021 workflow. Dungeons 1 mods targeting 1.10.3.0 were still being released or updated in 2026 and explicitly describe themselves as made using the Dungeons Mod Kit.
+Raw cooked-Blueprint bytecode rewriting remains a fallback/automation route, not the primary way to author the project.
 
-Primary references:
+## 1. Why a mirror API is the right Unreal workflow
 
-- Dungeons Mod Kit: https://github.com/Dokucraft/Dungeons-Mod-Kit
-- Blueprint Loader: https://www.nexusmods.com/minecraftdungeons/mods/111
-- Camera Coordinates Overlay example: https://github.com/EvenTorset/Camera-Coordinates-Overlay
-- Camera Coordinates Overlay permissions: https://www.nexusmods.com/minecraftdungeons/mods/112
-- LetMeMove: https://github.com/StainlessStasis/LetMeMove
-- Current Dungeons 1 Mod Kit example: https://www.nexusmods.com/minecraftdungeons/mods/186
-- UAssetAPI: https://github.com/atenfyr/UAssetAPI
+Mod authors do not have Mojang's complete Unreal project or headers.
 
-## 1. Dungeons Mod Kit is the canonical authoring environment
+The standard Unreal approach is to create editor-side dummy/mirror classes with the same reflected module/class/function names used by the shipping game.
 
-The Dungeons Mod Kit requires Windows, Python 3.8+, and Unreal Engine 4.22.x.
+The Dungeons Mod Kit already gives us the critical foundation: its UE module is named:
 
-The Mod Kit explicitly warns that using a different Unreal version can cause strange problems.
+```text
+Dungeons
+```
 
-The project contains a Dungeons UE4 project with editor binaries and stubs that allow mod authors to create and cook assets compatible with Minecraft Dungeons.
+If the editor project declares the verified class:
 
-### What its build scripts actually do
+```text
+UItemStashComponent
+```
 
-The Mod Kit cook script:
+Blueprints reference:
 
-1. reads the configured UE4 editor path
-2. removes old cooked Unreal assets from the staging directory
-3. runs UE4Editor-Cmd.exe with -run=cook -targetplatform=WindowsNoEditor
-4. copies cooked assets into the Dungeons staging tree
-5. copies project-provided precooked files into that same tree
+```text
+/Script/Dungeons.ItemStashComponent
+```
 
-The package script then calls u4pak.py to pack the staged Dungeons tree into the configured output .pak.
+At runtime, Minecraft Dungeons supplies the real `Dungeons` module and the Blueprint reference resolves to the real native class.
+
+The mirror implementation itself is only compile/editor scaffolding.
+
+### Mirror rules
+
+- Mirror only reflection-visible APIs we can substantiate.
+- Preserve names exactly.
+- Preserve enum values/order exactly.
+- Preserve function parameter/return types used by our Blueprints.
+- Give editor dummy implementations harmless defaults.
+- Do not recreate game logic in the mirror.
+- Runtime behavior must come from the real game classes.
+
+Primary final-build class research:
+
+https://github.com/Minecraforever/MCD-PE
+
+MCD-PE is Apache-2.0 and contains restored class/function architecture with final-binary verification work.
+
+## 2. Dungeons Mod Kit remains the authoring/build foundation
+
+Repository:
+
+https://github.com/Dokucraft/Dungeons-Mod-Kit
+
+License: MIT.
+
+Requirements include Windows, Python 3.8+, and Unreal Engine 4.22.x.
+
+The project:
+
+- uses UE4.22
+- uses a module named `Dungeons`
+- cooks `WindowsNoEditor` assets
+- stages a Dungeons-compatible asset tree
+- supports project-provided precooked assets
+- packages the staged tree into a `.pak`
 
 Project implication:
 
-Our normal release pipeline should produce assets the same way unless we have a specific reason not to. We should not invent a custom pak layout while the standard Mod Kit already matches the game's expected mount structure.
+Use its normal cook/package flow for releases instead of inventing a different mount layout.
 
-## 2. Blueprint Loader is the correct runtime entry point
+## 3. Blueprint Loader is the proven Dungeons 1 runtime entry point
 
-Blueprint Loader exists specifically to execute mod-created Blueprints inside existing Dungeons levels without replacing every level.
+Blueprint Loader exposes trigger locations:
 
-It exposes three trigger locations:
+```text
+/Game/BPLoader/Menu
+/Game/BPLoader/Lobby
+/Game/BPLoader/Ingame
+```
 
-    /Game/BPLoader/Menu
-    /Game/BPLoader/Lobby
-    /Game/BPLoader/Ingame
+A current 2026 Dungeons 1 mod, LetMeMove!, demonstrates that the Dungeons 1 loader still works with the current/final game.
 
-A level placed in one of these paths is loaded when its corresponding game state is entered.
+Reference:
+
+https://github.com/StainlessStasis/LetMeMove
 
 Recommended project structure:
 
-    BPLoader/Lobby/MCDQoL_Lobby.umap
-        -> contains BP_MCDQoL_Manager
+```text
+BPLoader/Lobby/MCDQoL_Lobby.umap
+  -> BP_MCDQoL_Manager
 
-    BPLoader/Ingame/MCDQoL_Ingame.umap
-        -> contains BP_MCDQoL_Manager
+BPLoader/Ingame/MCDQoL_Ingame.umap
+  -> BP_MCDQoL_Manager
+```
 
-The manager should then create and manage widgets and inventory services.
+Blueprint Loader stays a separate player-installed dependency because its published permissions do not allow us to simply redistribute it.
 
-This keeps loader integration tiny, gameplay logic in our own namespace, UI creation under our control, and Camp/missions supported independently.
+## 4. Proven Dungeons UI pattern: loader actor creates UMG widget
 
-## 3. Proven UI pattern: actor creates a widget
+Camera Coordinates Overlay is a particularly useful Dungeons 1 example.
 
-Camera Coordinates Overlay was created specifically as a Blueprint Loader example.
+Source:
 
-Its architecture is:
+https://github.com/EvenTorset/Camera-Coordinates-Overlay
 
-    Blueprint Loader level
-        -> WidgetAdder actor
-            -> creates CameraCoordsOverlay widget
-                -> Add To Viewport
+Its source project contains:
 
-It also checks whether the widget is already present before creating another copy.
+- a Blueprint Loader trigger map
+- a `WidgetAdder` actor
+- a working UMG widget
+- viewport-add logic
 
-This is a strong template for Minecraft Dungeons QoL.
+Its published Nexus permissions allow modification/use of its assets.
 
-Our equivalent:
+This gives Minecraft Dungeons QoL a proven widget/viewport integration template.
 
-    MCDQoL loader level
-        -> BP_MCDQoL_Manager
-            -> create WBP_MCDQoL_Overlay
-            -> add to viewport
-            -> bind/update inventory state
+Preferred UI architecture:
 
-The lock and mass-salvage interface therefore does not need to replace the entire vanilla inventory screen just to display controls.
+```text
+BPLoader level
+  -> BP_MCDQoL_Manager
+      -> WBP_MCDQoL_Overlay
+      -> Lock service
+      -> Salvage selection service
+      -> Loadout service
+```
 
-Replacing a full vanilla UI asset should remain a last resort because it is more likely to conflict with game updates, other UI mods, and internal widget changes.
+Replacing the complete vanilla inventory widget remains a last resort.
 
-## 4. Use Dungeons' native inventory and salvage functions
+## 5. Verified native inventory API
 
-Research against final-build Dungeons class reconstruction identified the real inventory backend.
+Final-build Dungeons research identifies the native backend needed by this project.
 
-Important classes:
+### UInventoryItemSlot
 
-    UItemStashComponent
-    UInventoryItemSlot
+Verified Blueprint-facing members include:
 
-Important Blueprint-facing methods include:
+```text
+Item
+SlotType
+GetChangeIndex()
+AcceptsItem(...)
+CanSwapWith(...)
+Swap(...)
+IsLocked()
+WasSelectedInUI()
+HasSlotChanged()
+FinishedSlotChanged()
+```
 
-    GetInventorySlots()
-    GetEquipmentSlots()
-    GetChangeIndex()
-    EnterInventoryUI()
-    ExitInventoryUI()
-    SalvageItemInSlot(...)
-    SalvageItemUndo(...)
-    GetSalvageInfo(...)
-    CompareItemPowerWithEquipped(...)
-    AvailableEnchantmentPoints()
+### UItemStashComponent
 
-Mass salvage should not implement salvage itself.
+Verified Blueprint-facing operations include:
+
+```text
+GetInventorySlots()
+GetEquipmentSlots()
+GetChangeIndex()
+EnterInventoryUI()
+ExitInventoryUI()
+RemoveItem(...)
+SalvageItemInSlot(...)
+SalvageItemUndo(...)
+GetSalvageInfo(...)
+CompareItemPowerWithEquipped(...)
+AvailableEnchantmentPoints()
+InventoryUIRequiresRefresh()
+```
+
+The core destructive operation is:
+
+```cpp
+FItemSalvageUndoInfo SalvageItemInSlot(
+    UInventoryItemSlot* slot,
+    bool& success
+);
+```
+
+It is BlueprintCallable.
+
+## 6. Correct mass-salvage implementation
+
+Do not duplicate Dungeons' salvage reward rules.
 
 Correct flow:
 
-    Selected UInventoryItemSlot
-        -> verify it still exists
-        -> verify not equipped
-        -> verify not user-locked
-        -> verify not loadout-protected
-        -> call native SalvageItemInSlot
-        -> inspect success/result
+```text
+selected native slot
+  -> still valid?
+  -> not equipped?
+  -> not QoL-locked?
+  -> not loadout-protected?
+  -> identity still matches?
+  -> SalvageItemInSlot(slot)
+  -> inspect success
+  -> retain result/undo metadata
+```
 
-This preserves the game's own emerald/gold reward calculation, returned enchantment points, item destruction flow, salvage state, and undo information where available.
+This preserves the game's own:
 
-Direct hero-save editing and custom currency changes are unnecessary and less safe.
+- item destruction
+- emerald/gold reward behavior
+- enchantment-point return
+- native state updates
+- undo data where usable
 
-## 5. Item identity is separate from item access
+Direct hero-save/currency mutation is unnecessary.
 
-Save-format research shows hero fields such as uniqueSaveId and playerId, and item fields such as inventoryIndex, equipmentSlot, type, power, rarity, enchantments, and gilded/netherite data.
+## 7. Gear-set switching should use native slot operations
 
-uniqueSaveId + inventoryIndex is a useful provisional locator, but it is not a proven permanent GUID.
+`UInventoryItemSlot` exposes:
 
-Storage movement can assign another inventory index and removed high indexes can eventually be reused.
+```text
+CanSwapWith(...)
+Swap(...)
+```
 
-Persistent locks/loadouts should prefer:
+The first loadout implementation should resolve the real inventory item slot plus the correct equipment slot, then use the native swap operation.
 
-1. native stable runtime item ID/GUID if available
-2. otherwise hero ID + inventory index + sanity fingerprint
-3. fail closed if identity becomes ambiguous
+This is preferable to constructing replacement item data because it preserves the actual gear instance, enchantments, gilded state, upgrades, and other native metadata.
 
-See INVENTORY_IDENTITY.md.
+## 8. Item identity is a separate problem
 
-## 6. UAssetAPI is valuable, but not the primary authoring tool
+Public save-format research confirms:
 
-Modern UAssetAPI supports cooked and uncooked Unreal assets, UE4-era assets, raw Kismet Blueprint bytecode, import/export inspection, and property inspection.
+- hero `uniqueSaveId`
+- hero `playerId`
+- item `inventoryIndex`
+- item `equipmentSlot`
+- item type/power/rarity/enchant/gilded data
 
-Our CI has already verified that UAssetAPI 1.1.0 successfully parses a known working Minecraft Dungeons 1 Blueprint asset.
+`uniqueSaveId + inventoryIndex` is useful as a fallback locator, not a permanent GUID.
 
-It correctly reads Unreal object version 517, name tables, imports, exports, and Blueprint function exports.
+Storage movement can change the index and removed high indexes can later be reused.
 
-Best project uses:
+Preferred persistent identity:
 
-- inspect working Dungeons mods
-- verify package/import/function assumptions
-- automated regression checks
-- modify precooked template assets where legally permitted
-- check that generated assets remain parseable
-- automate narrow Blueprint changes
+1. native stable runtime instance ID/GUID, if available
+2. other verified stable native identifier
+3. hero ID + inventory index + sanity fingerprint
+4. fail closed when ambiguous
 
-Why it is not the first-choice authoring environment:
+See `INVENTORY_IDENTITY.md`.
 
-Raw Blueprint packages contain more than runtime bytecode. They include import tables, generated-class metadata, exported functions/properties, graph/editor data, references, and package metadata.
+## 9. Cooked-asset research tools
 
-Creating a complex widget or actor by manually manufacturing all of that is more fragile than creating it in the matching Unreal Editor.
+### FModel
 
-Therefore UE4.22 editor authoring is primary. UAssetAPI patching is the automation/fallback route.
+Use for:
 
-## 7. KismetKompiler is experimental for this project
+- browsing cooked Unreal packages
+- locating asset paths
+- inspecting/exporting supported asset data
 
-KismetKompiler can decompile and compile Unreal Kismet scripts and is MIT licensed.
+Minecraft Dungeons is identified by Unreal tooling/community compatibility data as UE4.22.
 
-However:
+### repak
 
-- its pinned UAssetAPI dependency is old
-- that old dependency does not parse our working Dungeons template correctly
-- modern UAssetAPI does parse it
-- KismetKompiler expects APIs removed or refactored in newer UAssetAPI versions
+Repository:
 
-We are researching a compatible intermediate UAssetAPI version.
+https://github.com/trumank/repak
 
-Until that is proven, the release pipeline must not depend on KismetKompiler.
+Use for:
 
-## 8. Dungeons II tooling is architectural evidence, not drop-in code
+- listing pak contents
+- extracting pak files
+- repacking diagnostic/test paks
 
-Minecraft Dungeons II has newer tooling such as Blueprint Mod Template and NeoRune.
+The Dungeons Mod Kit remains the project's normal release packager.
 
-NeoRune demonstrates an important architecture:
+### UAssetAPI / UAssetGUI
 
-    game reflection data
-        -> generated API bindings
-        -> C# source
-        -> compiled into Unreal Kismet bytecode
-        -> cooked Blueprint package
-        -> Blueprint Loader
+Use for:
 
-This confirms programmatic Kismet generation is viable in principle.
+- cooked `.uasset` parsing
+- import/export inspection
+- property inspection
+- targeted binary modification
+- CI validation
 
-However Dungeons II uses another Unreal generation and toolchain. We can learn from the architecture but must not assume its packages or APIs work in Dungeons 1.
+Project CI verified that **UAssetAPI 1.1.0 successfully parses a known-working current Dungeons Blueprint**:
 
-## 9. Existing mod reuse policy
+- object version 517
+- 228 names
+- 67 imports
+- 83 exports
 
-Reusing proven implementation is encouraged when permission is clear.
+This makes UAssetAPI an excellent validation/research tool.
+
+## 10. KismetKompiler research result
+
+KismetKompiler is MIT licensed and can decompile/compile Kismet.
+
+Our tests found:
+
+- its bundled older UAssetAPI cannot parse the working Dungeons template
+- modern UAssetAPI can parse the template
+- modern UAssetAPI versions have breaking API changes relative to KismetKompiler
+- forcing that toolchain adds complexity before we have authored any gameplay feature
+
+Decision:
+
+**Do not block the mod on KismetKompiler.**
+
+Keep it as a fallback if a specific cooked Blueprint later needs bytecode-level modification.
+
+## 11. UE4SS research result
+
+UE4SS is powerful for many Unreal games and its general tooling/docs are valuable for understanding reflection dumps and mirror projects.
+
+However, recent public Minecraft Dungeons reports describe retail-build startup/crash problems.
+
+Decision:
+
+- do not require UE4SS at runtime
+- do not make the project depend on UE4SS header generation
+- use it only experimentally if a known compatible Dungeons build/config is demonstrated
+
+Blueprint Loader remains the runtime loader.
+
+## 12. Existing-mod reuse policy
+
+Reuse is encouraged when permissions are clear.
 
 ### Dungeons Mod Kit
 
-MIT licensed.
+MIT.
 
-Allowed for project use with license compliance.
+Safe to build on with normal license compliance.
 
-### LetMeMove
+### LetMeMove!
 
-MIT licensed.
+MIT.
 
-Useful for current Blueprint Loader compatibility evidence, working actor package structure, and working loader-level structure.
+Useful for:
+
+- current Dungeons 1 loader compatibility
+- loader map structure
+- working actor Blueprint structure
 
 ### Camera Coordinates Overlay
 
-Its published Nexus permissions explicitly allow modification and asset reuse.
+Published permissions allow reuse/modification of its assets.
 
-It is especially valuable as a working UI-widget + WidgetAdder template.
+Useful for:
 
-Even though the GitHub repository itself does not expose an obvious license file, the published mod permissions are explicit. Any reused asset should still be documented in THIRD_PARTY.md.
+- widget-adder pattern
+- UMG template
+- viewport integration
+- loader-map reference
 
-### Sources with no clear permission
+Credit/reuse details must be recorded in `THIRD_PARTY.md`.
 
-Do not copy source/assets from a GitHub repository merely because it is public.
+### No-license repositories
 
-If a repo has no license and no external permissions granting reuse:
+Public availability is not permission to copy.
 
-- inspect it for research
-- learn architecture/function names
-- do not copy its code/assets into our release
+For unclear/no-license source:
 
-## 10. Precooked assets are a legitimate path
+- research architecture
+- do not copy code/assets into the project unless separate permission exists
 
-The Dungeons Mod Kit build process supports a Precooked directory.
+## 13. Precooked assets are a legitimate fallback
 
-If we modify an already cooked Blueprint package with UAssetAPI or another compatible tool, it does not necessarily need to pass through UE4 cooking again.
+The Dungeons Mod Kit supports a `Precooked` staging route.
 
-A viable advanced pipeline is:
+If a permitted cooked template must be modified with UAssetAPI, a valid advanced pipeline is:
 
-    permitted working cooked template
-        -> UAssetAPI modification
-        -> binary-equality/parse validation
-        -> place under Precooked with correct package path
-        -> package with normal Dungeons Mod Kit pak pipeline
+```text
+permitted cooked template
+  -> targeted UAssetAPI change
+  -> parse/round-trip validation
+  -> project Precooked path
+  -> normal Mod Kit pak packaging
+```
 
-This is likely the best fallback when a particular asset cannot conveniently be recreated in the editor.
+Use this only where normal UE4.22 authoring is less practical.
 
-## 11. Package path matters
+## 14. Installation research correction
 
-Unreal asset references are package-path based.
+The launcher button used to start Dungeons does not necessarily identify the installation type.
 
-Moving a binary .uasset to another folder without updating internal references can break it.
+### Store/Xbox-managed copy launched from Minecraft Launcher
 
-Final project-owned assets should preferably be created directly under:
+If the Minecraft Launcher Dungeons installation field shows only a drive such as:
 
-    /Game/Mods/MinecraftDungeonsQoL/
+```text
+C:
+D:
+```
 
-rather than permanently shipping another mod's package names.
+Dungeons modding guidance says to follow the Microsoft Store/Xbox installation workflow.
 
-Existing binary templates may be used for experiments, but final release assets should ultimately use the project namespace to avoid collisions.
+Typical modern path:
 
-## 12. Installation model
+```text
+<drive>:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks
+```
 
-A player's license source is not the important part. The important part is the installation that actually launches.
+This copy can normally still be launched from Minecraft Launcher/Xbox/Store/Start after mod installation.
 
-Common Dungeons 1 Paks locations include:
+### Older standalone Launcher copy
 
-Minecraft Launcher:
+If Minecraft Launcher shows a real installation directory, the game lives below that directory, commonly:
 
-    %LOCALAPPDATA%\Mojang\products\dungeons\dungeons\Dungeons\Content\Paks
+```text
+<installation>\dungeons\dungeons\Dungeons\Content\Paks
+```
 
-Xbox app / Microsoft Store style:
+Older Launcher behavior may restore/remove modded files when the Launcher starts the game.
 
-    <drive>:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks
+For that install type, test by launching its `Dungeons.exe` directly after placing the mod.
 
-Mods are placed under:
+### Common rule
 
-    Paks\~mods
+The actual target is always:
 
-Blueprint Loader must be installed into the same active game installation.
+```text
+<active Dungeons install>\Dungeons\Content\Paks\~mods
+```
 
-## 13. Blueprint Loader must remain a separate dependency
+## 15. Destructive-feature testing
 
-Blueprint Loader's published permissions prohibit redistributing its assets without permission.
+A bulk-salvage feature needs a stricter safety bar than a cosmetic mod.
 
-Therefore our release should contain MinecraftDungeonsQoL.pak and project documentation, but not silently bundle Blueprint Loader.
+Initial destructive testing should use:
 
-Players install Blueprint Loader from its original page.
+- disposable/test hero
+- cheap Common gear
+- save backup
 
-## 14. Testing strategy for destructive inventory code
+Progression:
 
-A bulk-salvage mod has a higher safety requirement than a cosmetic mod.
-
-Initial destructive tests should use a disposable/test hero, cheap/common gear, and backed-up save data.
-
-Required progression:
-
-1. Mod loads in Camp.
-2. Mod loads in missions.
-3. Inventory slots enumerate correctly.
-4. Equipment slots are excluded.
-5. Select/deselect does not mutate items.
-6. Lock/protection does not mutate items.
-7. One-item native salvage works.
-8. Reward matches vanilla.
-9. Multi-item sequential salvage works.
-10. Cancel flow works.
-11. Item removed/reordered between selection and confirmation is handled.
-12. Lock changed after selection is handled.
-13. Controller input works.
-14. Restart persistence works.
-15. Multiple heroes work.
-16. Storage transfer works.
-17. Online co-op remains local-player-only.
-
-Never test the first destructive implementation against irreplaceable gear.
-
-## 15. Recommended architecture
-
-Runtime:
-
-    BPLoader Lobby/Ingame level
-        |
-        v
-    BP_MCDQoL_Manager
-        |
-        +-- locate local player
-        +-- find UItemStashComponent
-        +-- create WBP_MCDQoL_Overlay
-        |
-        +-- BP_MCDQoL_LockService
-        +-- BP_MCDQoL_SalvageService
-        +-- BP_MCDQoL_LoadoutService
-
-Salvage service:
-
-    selection set
-        -> preflight
-        -> protection check
-        -> equipment exclusion
-        -> slot re-resolution
-        -> SalvageItemInSlot
-        -> result logging
-
-Lock service:
-
-    runtime item identity
-        -> stable key if available
-        -> fallback identity reconciliation
-        -> separate QoL persistence
-
-Loadout service:
-
-Resolve real inventory/equipment slots and use native slot swap/equip APIs instead of rebuilding item data.
-
-## 16. Chosen development strategy
-
-### Path A: standard UE4.22 authoring
-
-Preferred.
-
-- extend the Dungeons Mod Kit editor-facing type stubs with only the Dungeons classes/functions needed by this mod
-- author project-owned actor/widget assets in UE4.22
-- cook normally
-- package normally
-
-Advantages:
-
-- robust Blueprint metadata
-- proper widget creation
-- easy UI iteration
-- project-owned package paths
-- least binary-format guesswork
-
-### Path B: permitted working-template reuse
-
-Use existing working Blueprint Loader mods where permissions allow it.
-
-Best current UI reference/template:
-
-- Camera Coordinates Overlay
-
-Best MIT actor/runtime reference:
-
-- LetMeMove
-
-Advantages:
-
-- starts from packages known to load in Dungeons
-- useful for validating automated tooling
-- can bootstrap before every editor-facing Dungeons type has been stubbed
-
-### Path C: UAssetAPI precooked modification
-
-Use modern UAssetAPI to modify allowed cooked templates and feed them through Precooked.
-
-Advantages:
-
-- CI friendly
-- avoids UE4 editor dependency for narrow changes
-
-Disadvantages:
-
-- package metadata/import management is more complex
-- structural widget edits can be painful
-
-### Path D: KismetKompiler automation
-
-Only after a compatible toolchain is proven.
-
-Do not block the mod on this path.
-
-## 17. Things we deliberately avoid
-
-- guessing function names when final-build information exists
-- direct modification of the player's hero save for locks
-- custom emerald/gold/enchantment-point reward code
-- treating inventoryIndex as an eternal unique ID
-- replacing the entire vanilla inventory screen unless necessary
-- copying unlicensed community assets
-- bundling Blueprint Loader against its permissions
-- relying on a different Unreal Engine version
-- claiming a build works before it has been launched in the real game
-
-## 18. Current direction after research
-
-The technology choice is now stable:
-
-Minecraft Dungeons QoL is a UE4.22 Blueprint Loader mod built and packaged using the established Dungeons Mod Kit workflow.
-
-UAssetAPI and Kismet tooling are supporting tools for inspection, validation, automation, and precooked modifications.
-
-Next implementation work:
-
-1. expose the verified Dungeons inventory classes/functions in the Mod Kit editor project
-2. create the project-owned manager actor
-3. create the project-owned UI overlay
-4. get a harmless diagnostic build loading in Camp/Ingame
-5. enumerate inventory/equipment slots
-6. implement non-destructive selection/lock state
-7. only then enable the native salvage call
+1. mod loads in camp
+2. mod loads in mission
+3. overlay opens/closes
+4. inventory slots enumerate
+5. equipment slots enumerate
+6. non-destructive select/deselect works
+7. lock state works without item mutation
+8. one cheap item salvages through native function
+9. reward matches vanilla
+10. multiple selected items salvage sequentially
+11. cancel works
+12. reordering/removing selected gear before confirmation is handled
+13. locking after selection is revalidated
+14. restart persistence
+15. multiple heroes
+16. storage transfer/reconciliation
+17. controller
+18. online co-op local-player-only behavior
+
+Never use irreplaceable equipment for the first destructive test.
+
+## 16. Release definition
+
+A generated `.pak` alone is not a finished mod.
+
+Minimum release gate:
+
+- pak loads
+- no launch/camp crash
+- lock works
+- mass selection works
+- locked/equipped gear cannot batch salvage
+- native salvage reward is correct
+- persistent lock works across restart
+- loadout save/switch works
+- missing/stale item references fail safely
+- keyboard/mouse works
+- controller works
+- Store/Xbox-managed install works
+- Launcher behavior documented
+- co-op sanity test passes
+
+## 17. Stable project direction
+
+Primary path:
+
+```text
+UE4.22
+  -> Dungeons Mod Kit
+  -> verified /Script/Dungeons mirror API
+  -> project-owned Blueprint UI/logic
+  -> cook
+  -> pak
+  -> Blueprint Loader
+  -> Minecraft Dungeons
+```
+
+Supporting tools:
+
+```text
+FModel / UAssetAPI / repak
+  -> inspect
+  -> validate
+  -> diagnose
+  -> targeted precooked modification when necessary
+```
+
+The next engineering task is the minimal verified mirror API required for the first non-destructive inventory diagnostic Blueprint.
