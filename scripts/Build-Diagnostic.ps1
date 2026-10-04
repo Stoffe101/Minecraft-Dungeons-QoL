@@ -83,6 +83,7 @@ $hash = (Get-FileHash $out -Algorithm SHA256).Hash.ToLowerInvariant()
     "SHA-256: $hash"
     "Native salvage: DISABLED (no call emitted)"
     "Runtime validation: NOT PERFORMED by this build"
+    "Includes cooked preload dependency repair and four-export SaveGame cleanup; game crash retry pending."
     ""
     "Input only while the actual inventory HUD reports open; missing/closed UI clears selection."
     "Six equipped gear items are excluded from selection and preview; unresolved equipment UI blocks candidates."

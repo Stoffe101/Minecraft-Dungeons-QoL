@@ -1,3 +1,5 @@
+> The earlier PR #7 diagnostic crashed at profile selection and should be removed. The replacement includes cooked preload repairs and SaveGame cleanup, but remains a candidate pending an in-game retry. See [current state](docs/CURRENT_STATE.md).
+
 # Minecraft Dungeons QoL
 
 A quality-of-life mod for **Minecraft Dungeons 1** focused on safer, faster inventory management.
