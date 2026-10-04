@@ -22,8 +22,11 @@ $issues = New-Object System.Collections.Generic.List[string]
 $pakFiles = @(Get-ChildItem $paks -File -Filter "*.pak")
 $sourceCommit = "unknown (repository ZIP or Git unavailable)"
 if (Get-Command git -ErrorAction SilentlyContinue) {
-    $gitHead = & git -C $root rev-parse HEAD 2>$null
-    if ($LASTEXITCODE -eq 0 -and $gitHead) { $sourceCommit = $gitHead.Trim() }
+    try {
+        $gitHead = & git -C $root rev-parse HEAD 2>$null
+        if ($LASTEXITCODE -eq 0 -and $gitHead) { $sourceCommit = $gitHead.Trim() }
+    } catch { # Repository ZIPs have no Git metadata.
+    }
 }
 if ($pakFiles.Count -eq 0) { $issues.Add("No root-level game pak archives found in the selected directory.") }
 $report = [ordered]@{
@@ -52,17 +55,17 @@ try {
         $toolDir = Join-Path $root ".tools/UeBlueprintDumper-1.2.0"
         $toolZip = Join-Path $root ".tools/UeBlueprintDumper-1.2.0.zip"
         New-Item -ItemType Directory -Force (Split-Path $toolDir -Parent) | Out-Null
-        if (-not (Test-Path $toolZip)) { Invoke-WebRequest $cfg.url -OutFile $toolZip }
+        if (-not (Test-Path $toolZip)) { Invoke-WebRequest $cfg.url -UseBasicParsing -OutFile $toolZip }
         if ((Get-FileHash $toolZip -Algorithm SHA256).Hash.ToLowerInvariant() -ne $cfg.sha256) { throw "Blueprint dumper checksum mismatch." }
         if (-not (Test-Path $toolDir)) { Expand-Archive $toolZip $toolDir }
         $dumper = @(Get-ChildItem $toolDir -Recurse -Filter "UeBlueprintDumper.dll")
         if ($dumper.Count -ne 1) { throw "Expected one dumper DLL in reviewed release." }
         $DumperExe = $dumper[0].FullName
-        $runtimeDir = Join-Path $root ".tools/dotnet-evidence-runtime"
+        $runtimeDir = Join-Path $root ".tools/dotnet-evidence-runtime-$($cfg.runtimeVersion)"
         $runner = Join-Path $runtimeDir "dotnet.exe"
         if (-not (Test-Path $runner)) {
-            $runtimeZip = Join-Path $root ".tools/dotnet-evidence-runtime.zip"
-            Invoke-WebRequest $cfg.runtimeUrl -OutFile $runtimeZip
+            $runtimeZip = "$runtimeDir.zip"
+            Invoke-WebRequest $cfg.runtimeUrl -UseBasicParsing -OutFile $runtimeZip
             $expected = $cfg.runtimeSha512
             if ($expected -notmatch '^[0-9a-f]{128}$' -or (Get-FileHash $runtimeZip -Algorithm SHA512).Hash.ToLowerInvariant() -ne $expected) { throw "Local .NET runtime checksum mismatch." }
             Expand-Archive $runtimeZip $runtimeDir -Force

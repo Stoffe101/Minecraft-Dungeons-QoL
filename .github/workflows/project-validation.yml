@@ -40,6 +40,10 @@ jobs:
         shell: pwsh
         run: ./scripts/Test-GameEvidence.ps1 -TestBootstrap
 
+      - name: Test Windows PowerShell 5.1 evidence command
+        shell: powershell
+        run: ./scripts/Test-GameEvidence.ps1 -TestBootstrap
+
       - name: Build cooked-asset inspection tool
         shell: pwsh
         run: dotnet build tools/UAssetProbe/UAssetProbe.csproj -c Release

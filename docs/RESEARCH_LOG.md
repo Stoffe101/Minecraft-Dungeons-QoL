@@ -191,13 +191,14 @@ Run the diagnostic/reflection check on actual Store/Xbox Dungeons 1; establish e
 
 Published the audited diagnostic through PR #1 and merged after exact-head Windows Project Validation and Cooked QoL Diagnostic Build passed (runs 37205700653 / 37205700636). This resolves the previous local MSBuild uncertainty. The diagnostic artifact is available from the build run; it remains non-destructive and untested in game.
 
-Reviewed UeBlueprintDumper source/argument parser and the old zMCDungeons-SDK inventory declarations. The latter's empty parameter metadata cannot establish current signatures. Choose read-only installed-game Blueprint evidence next; do not inject UE4SS or guess native ABI. Pin dumper 1.2.0 and Windows x64 .NET 8.0.18 runtime with official checksums.
+Reviewed UeBlueprintDumper source/argument parser and the old zMCDungeons-SDK inventory declarations. The latter's empty parameter metadata cannot establish current signatures. Choose read-only installed-game Blueprint evidence next; do not inject UE4SS or guess native ABI. Pin dumper 1.2.0 and Windows x64 .NET 8.0.31 runtime with official checksums.
 
 ### Applied changes / checks
 
 - Added `Collect-GameEvidence.ps1`, manifest/metadata ZIP and `GAME_EVIDENCE.md`; no hero-save access, no game-folder output, no input archive modifications.
 - Explicit nonexistent game paths now fail immediately; automatic selection refuses multiple installations.
 - Added collector regression checks for paths with spaces, six correctly ordered inspector invocations, preserved input hashes, metadata-only ZIP, overwrite/game-folder rejection and failed/empty inspection diagnostics. Local PowerShell 7.4.6 checks passed.
+- Initial Windows run proved real bootstrap/startup but exposed inherited exit code 1 from the expected-failure fixture. Fixed the test runner to return success only after its assertions.
 - Windows CI additionally exercises pinned downloads/checksums and actual dumper startup against an intentionally invalid fixture archive. This checks bootstrap/failure handling; it does not inspect a real game.
 - Actual Store/Xbox archives, native reflection, UE4.22 editor, item identity and in-game tests remain unavailable in this workspace. No agreed release feature is marked complete by this pass.
 

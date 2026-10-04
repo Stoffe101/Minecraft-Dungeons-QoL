@@ -60,3 +60,4 @@ exit 0
     $env:MCD_PAKS_PATH = $oldEnv
     Remove-Item $fixture -Recurse -Force
 }
+exit 0
