@@ -106,3 +106,14 @@ Additional runtime checks: F6–F10 do nothing with inventory closed; closing in
 ## Cooked load dependency regressions
 
 Validate every reflected child index/owner and preload edge, every field outer creation edge, array-inner serialization and dependency index ranges. Three additional negative tests remove each required edge while preserving the bytecode, bringing the suite to 16. Sidecar must re-open with exactly four exports and no retained actor functions/components. These static checks address discovered generation faults; they do not prove retail loading. Runtime retry starts at profile selection before testing inventory inputs.
+
+
+## Loading probe after the second crash
+
+1. Close the game. Remove every earlier `MinecraftDungeonsQoL*.pak` from the active `Paks\~mods`; keep `Blueprint-Loader.pak`.
+2. Install only `MinecraftDungeonsQoL-load-probe.pak` from the separate load-probe artifact.
+3. Restart, select the character and enter camp. No inventory hotkeys are active in this build.
+4. Record whether camp loads. If it crashes, retain the newly generated CrashContext and minidump; include a contemporaneous Dungeons gameplay log if available. `debug.log` from the launcher is not a substitute.
+5. Remove the probe before testing any full diagnostic. Do not install multiple QoL paks together, since their package paths collide.
+
+Automated archetype gates reject zero TemplateIndex, the wrong native property CDO, and missing class/archetype creation preload edges. Probe re-opening verifies that both manager functions contain only an empty return and EndOfScript and that reflected child indices/export count are preserved. These checks do not emulate the engine's loader.

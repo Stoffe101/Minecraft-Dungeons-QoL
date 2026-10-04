@@ -8,6 +8,7 @@ on:
       - "tools/CookedAssetRelocator/**"
       - "tools/CookedSaveGameSynth/**"
       - "tools/CookedGraphTests/**"
+      - "tools/CookedLoadProbe/**"
       - "scripts/Build-Diagnostic.ps1"
       - "config/cooked-template.json"
       - "ci-trigger/qol-navigation.txt"
@@ -44,4 +45,11 @@ jobs:
         with:
           name: MinecraftDungeonsQoL-diagnostic
           path: dist/diagnostic/*
+          if-no-files-found: error
+
+      - name: Upload loading isolation probe
+        uses: actions/upload-artifact@v4
+        with:
+          name: MinecraftDungeonsQoL-load-probe
+          path: dist/load-probe/*
           if-no-files-found: error

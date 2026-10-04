@@ -83,7 +83,7 @@ $hash = (Get-FileHash $out -Algorithm SHA256).Hash.ToLowerInvariant()
     "SHA-256: $hash"
     "Native salvage: DISABLED (no call emitted)"
     "Runtime validation: NOT PERFORMED by this build"
-    "Includes cooked preload dependency repair and four-export SaveGame cleanup; game crash retry pending."
+    "Includes property archetype and creation preloads; earlier PR #7/#8 builds crashed. Test load probe first."
     ""
     "Input only while the actual inventory HUD reports open; missing/closed UI clears selection."
     "Six equipped gear items are excluded from selection and preview; unresolved equipment UI blocks candidates."
@@ -93,4 +93,31 @@ $hash = (Get-FileHash $out -Algorithm SHA256).Hash.ToLowerInvariant()
     "Blueprint Loader must be installed separately."
 ) | Set-Content (Join-Path $dist "BUILD_INFO.md")
 Copy-Item (Join-Path $root "third_party/LetMeMove-LICENSE.txt") $dist -Force
+# Separate artifact: same reflected schema/dependencies, but no event code executes.
+$probeStage = Join-Path $work "probe-stage"
+if (Test-Path $probeStage) { Remove-Item $probeStage -Recurse -Force }
+Copy-Item $stage $probeStage -Recurse
+$probeManager = Join-Path $probeStage "Dungeons/Content/Mods/MinecraftDungeonsQoL/BP_MCDQoL_Manager.uasset"
+& dotnet run --project (Join-Path $root "tools/CookedLoadProbe") -- $manager $probeManager
+if ($LASTEXITCODE -ne 0) { throw "Load probe validation failed." }
+$probeDist = Join-Path $root "dist/load-probe"
+New-Item -ItemType Directory -Force $probeDist | Out-Null
+$probePak = Join-Path $probeDist "MinecraftDungeonsQoL-load-probe.pak"
+Push-Location $probeStage
+try {
+    & python $u4pak pack $probePak Dungeons -p
+    if ($LASTEXITCODE -ne 0) { throw "Load probe packing failed." }
+} finally { Pop-Location }
+@(
+    "# Minecraft Dungeons QoL loading isolation probe"
+    "Source commit: $sourceSha"
+    "SHA-256: $((Get-FileHash $probePak -Algorithm SHA256).Hash.ToLowerInvariant())"
+    "Every manager event immediately returns. No hotkeys, inventory calls, saves or salvage run."
+    "NOT a working mod or confirmed crash fix. Runtime test pending."
+    "Remove every other MinecraftDungeonsQoL pak first; keep Blueprint-Loader.pak."
+    "Install only this pak in Paks\~mods. Restart and select the character; reach camp."
+    "Remove this probe before installing any later QoL diagnostic. They use the same package paths."
+) | Set-Content (Join-Path $probeDist "BUILD_INFO.md")
+Copy-Item (Join-Path $root "third_party/LetMeMove-LICENSE.txt") $probeDist -Force
+
 Write-Host "[OK] Built non-destructive diagnostic: $out"

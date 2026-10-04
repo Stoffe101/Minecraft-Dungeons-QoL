@@ -92,6 +92,17 @@ var array = asset.Exports.OfType<PropertyExport>().First(x => x.Property is UAss
 var deps = array.SerializationBeforeSerializationDependencies.ToArray();
 Rejected(() => array.SerializationBeforeSerializationDependencies.Clear(),
     () => array.SerializationBeforeSerializationDependencies.AddRange(deps), "missing array inner preload", "Missing array inner");
+var addedField = asset.Exports.OfType<PropertyExport>().Single(x => x.ObjectName.ToString() == "MCDQoL_CurrentSlot");
+var template = addedField.TemplateIndex;
+Rejected(() => addedField.TemplateIndex = new FPackageIndex(0), () => addedField.TemplateIndex = template,
+    "missing field archetype", "Missing property archetype");
+var wrongTemplate = asset.Exports.OfType<PropertyExport>().First(x => x.Property is UAssetAPI.FieldTypes.UIntProperty).TemplateIndex;
+Rejected(() => addedField.TemplateIndex = wrongTemplate, () => addedField.TemplateIndex = template,
+    "wrong property archetype type", "Property archetype type mismatch");
+var creation = addedField.SerializationBeforeCreateDependencies.ToArray();
+Rejected(() => addedField.SerializationBeforeCreateDependencies.Clear(),
+    () => addedField.SerializationBeforeCreateDependencies.AddRange(creation),
+    "missing property class/archetype preload", "Missing property class/archetype preload");
 DiagnosticGraphValidator.Validate(asset, code);
-Console.WriteLine("[PASS] original diagnostic graph remains valid after 16 rejection tests");
+Console.WriteLine("[PASS] original diagnostic graph remains valid after 19 rejection tests");
 return 0;
