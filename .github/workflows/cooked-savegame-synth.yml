@@ -1,0 +1,94 @@
+name: Cooked SaveGame Synthesis
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "ci-trigger/savegame-synth.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  synth:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch known-good cooked Dungeons shell
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force .research/savegame | Out-Null
+          Invoke-WebRequest -Uri "https://github.com/StainlessStasis/LetMeMove/releases/download/1.1.0/LetMeMove.zip" -OutFile ".research/savegame/LetMeMove.zip"
+          Expand-Archive ".research/savegame/LetMeMove.zip" ".research/savegame/zip" -Force
+          git clone --depth 1 https://github.com/Dokucraft/Dungeons-Mod-Kit.git .tools/Dungeons-Mod-Kit
+
+          $pak = Get-ChildItem ".research/savegame/zip" -Recurse -Filter "*.pak" | Select-Object -First 1
+          if (-not $pak) { throw "LetMeMove release did not contain a pak." }
+
+          New-Item -ItemType Directory -Force ".research/savegame/unpacked" | Out-Null
+          python ".tools/Dungeons-Mod-Kit/Tools/py/u4pak.py" unpack -C ".research/savegame/unpacked" $pak.FullName
+
+      - name: Synthesize sidecar SaveGame class
+        shell: pwsh
+        run: |
+          $actor = Get-ChildItem ".research/savegame/unpacked" -Recurse -Filter "BP_WASD_Movement.uasset" | Select-Object -First 1
+          if (-not $actor) { throw "Cooked actor shell not found." }
+
+          $outDir = ".research/savegame/output"
+          New-Item -ItemType Directory -Force $outDir | Out-Null
+          $out = Join-Path $outDir "SG_MCDQoL.uasset"
+
+          dotnet run --project tools/CookedSaveGameSynth/CookedSaveGameSynth.csproj -- $actor.FullName $out
+
+          if (-not (Test-Path $out)) { throw "SaveGame uasset was not produced." }
+          $uexp = [System.IO.Path]::ChangeExtension($out, ".uexp")
+          if (-not (Test-Path $uexp)) { throw "SaveGame uexp was not produced." }
+
+          dotnet run --project tools/UAssetProbe/UAssetProbe.csproj -- $out | Out-File ".research/savegame/SAVEGAME_REPORT.txt"
+
+      - name: Stage synthesized assets
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force "generated/Content/Mods/MinecraftDungeonsQoL" | Out-Null
+          Copy-Item ".research/savegame/output/SG_MCDQoL.uasset" "generated/Content/Mods/MinecraftDungeonsQoL/SG_MCDQoL.uasset" -Force
+          Copy-Item ".research/savegame/output/SG_MCDQoL.uexp" "generated/Content/Mods/MinecraftDungeonsQoL/SG_MCDQoL.uexp" -Force
+
+          $hashA = (Get-FileHash "generated/Content/Mods/MinecraftDungeonsQoL/SG_MCDQoL.uasset" -Algorithm SHA256).Hash.ToLowerInvariant()
+          $hashE = (Get-FileHash "generated/Content/Mods/MinecraftDungeonsQoL/SG_MCDQoL.uexp" -Algorithm SHA256).Hash.ToLowerInvariant()
+          @(
+            "# Synthesized QoL SaveGame"
+            ""
+            "Class: SG_MCDQoL_C"
+            "Parent: /Script/Engine.SaveGame"
+            "Persistent field: Records : TArray<FName>"
+            "Records has CPF_SaveGame."
+            ""
+            "uasset SHA-256: $hashA"
+            "uexp SHA-256: $hashE"
+            ""
+            "Generated from the MIT LetMeMove cooked actor shell and transformed by project tooling."
+          ) | Set-Content "generated/Content/Mods/MinecraftDungeonsQoL/SG_MCDQoL.md"
+
+      - name: Commit synthesized class
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add generated/Content/Mods/MinecraftDungeonsQoL
+          if (-not (git diff --cached --quiet)) {
+            git commit -m "build: synthesize cooked QoL sidecar SaveGame"
+            git pull --rebase origin main
+            git push
+          }
