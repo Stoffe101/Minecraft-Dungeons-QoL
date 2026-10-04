@@ -19,8 +19,7 @@ Directory.CreateDirectory(Path.GetDirectoryName(output)!);
 var asset = new UAsset(input, EngineVersion.VER_UE4_22);
 KismetSerializer.asset = asset;
 
-Import FindPackage(string name) =>
-    asset.Imports.First(i => i.ClassName.ToString() == "Package" && i.ObjectName.ToString() == name);
+// ---------- import helpers ----------
 
 FPackageIndex EnsurePackage(string name)
 {
@@ -30,7 +29,6 @@ FPackageIndex EnsurePackage(string name)
         if (imp.ClassName.ToString() == "Package" && imp.ObjectName.ToString() == name)
             return FPackageIndex.FromImport(i);
     }
-
     return asset.AddImport(new Import("/Script/CoreUObject", "Package", new FPackageIndex(0), name, false, asset));
 }
 
@@ -43,8 +41,19 @@ FPackageIndex EnsureClass(string packageName, string className)
         if (imp.OuterIndex?.Index == pkg.Index && imp.ClassName.ToString() == "Class" && imp.ObjectName.ToString() == className)
             return FPackageIndex.FromImport(i);
     }
-
     return asset.AddImport(new Import("/Script/CoreUObject", "Class", pkg, className, false, asset));
+}
+
+FPackageIndex EnsureGeneratedClass(string packagePath, string className)
+{
+    var pkg = EnsurePackage(packagePath);
+    for (var i = 0; i < asset.Imports.Count; i++)
+    {
+        var imp = asset.Imports[i];
+        if (imp.OuterIndex?.Index == pkg.Index && imp.ClassName.ToString() == "BlueprintGeneratedClass" && imp.ObjectName.ToString() == className)
+            return FPackageIndex.FromImport(i);
+    }
+    return asset.AddImport(new Import("/Script/Engine", "BlueprintGeneratedClass", pkg, className, false, asset));
 }
 
 FPackageIndex EnsureDefault(string packageName, string className)
@@ -57,7 +66,6 @@ FPackageIndex EnsureDefault(string packageName, string className)
         if (imp.OuterIndex?.Index == pkg.Index && imp.ClassName.ToString() == className && imp.ObjectName.ToString() == objectName)
             return FPackageIndex.FromImport(i);
     }
-
     return asset.AddImport(new Import(packageName, className, pkg, objectName, false, asset));
 }
 
@@ -69,8 +77,18 @@ FPackageIndex EnsureFunction(FPackageIndex ownerClass, string name)
         if (imp.OuterIndex?.Index == ownerClass.Index && imp.ClassName.ToString() == "Function" && imp.ObjectName.ToString() == name)
             return FPackageIndex.FromImport(i);
     }
-
     return asset.AddImport(new Import("/Script/CoreUObject", "Function", ownerClass, name, false, asset));
+}
+
+FPackageIndex EnsureMember(FPackageIndex owner, string propertyClassName, string name)
+{
+    for (var i = 0; i < asset.Imports.Count; i++)
+    {
+        var imp = asset.Imports[i];
+        if (imp.OuterIndex?.Index == owner.Index && imp.ClassName.ToString() == propertyClassName && imp.ObjectName.ToString() == name)
+            return FPackageIndex.FromImport(i);
+    }
+    return asset.AddImport(new Import("/Script/CoreUObject", propertyClassName, owner, name, false, asset));
 }
 
 FPackageIndex EnsureScriptStruct(string packageName, string name)
@@ -82,28 +100,21 @@ FPackageIndex EnsureScriptStruct(string packageName, string name)
         if (imp.OuterIndex?.Index == pkg.Index && imp.ClassName.ToString() == "ScriptStruct" && imp.ObjectName.ToString() == name)
             return FPackageIndex.FromImport(i);
     }
-
     return asset.AddImport(new Import("/Script/CoreUObject", "ScriptStruct", pkg, name, false, asset));
 }
 
-FPackageIndex FindClassPropertyImport(string objectName)
+FPackageIndex FindImport(string objectName, string? className = null)
 {
     for (var i = 0; i < asset.Imports.Count; i++)
     {
         var imp = asset.Imports[i];
-        if (imp.ClassName.ToString() == "Class" && imp.ObjectName.ToString() == objectName)
+        if (imp.ObjectName.ToString() == objectName && (className == null || imp.ClassName.ToString() == className))
             return FPackageIndex.FromImport(i);
     }
-    return EnsureClass("/Script/CoreUObject", objectName);
+    throw new InvalidOperationException($"Import not found: {className ?? "*"} {objectName}");
 }
 
-FPackageIndex FindFunction(string name)
-{
-    for (var i = 0; i < asset.Imports.Count; i++)
-        if (asset.Imports[i].ClassName.ToString() == "Function" && asset.Imports[i].ObjectName.ToString() == name)
-            return FPackageIndex.FromImport(i);
-    throw new InvalidOperationException($"Function import not found: {name}");
-}
+// ---------- base exports ----------
 
 var generatedClass = asset.Exports.OfType<ClassExport>().Single(x => x.ObjectName.ToString() == "BP_WASD_Movement_C");
 var uber = asset.Exports.OfType<FunctionExport>().Single(x => x.ObjectName.ToString() == "ExecuteUbergraph_BP_WASD_Movement");
@@ -111,73 +122,217 @@ var playerControllerLocal = asset.Exports.OfType<PropertyExport>().Single(x => x
 var pawnLocal = asset.Exports.OfType<PropertyExport>().Single(x => x.ObjectName.ToString() == "CallFunc_K2_GetPawn_ReturnValue");
 var stashLocal = asset.Exports.OfType<PropertyExport>().Single(x => x.ObjectName.ToString() == "K2Node_DynamicCast_AsCharacter");
 
-var dungeonsPkg = EnsurePackage("/Script/Dungeons");
-var itemStashClass = EnsureClass("/Script/Dungeons", "ItemStashComponent");
+var intDonor = asset.Exports.OfType<PropertyExport>().First(x => x.Property is UIntProperty);
+var boolDonor = asset.Exports.OfType<PropertyExport>().First(x => x.Property is UBoolProperty);
+var objectDonor = asset.Exports.OfType<PropertyExport>().First(x => x.Property is UObjectProperty);
 
-// Retarget an existing object local to the stash return value.
+var intPropertyClass = EnsureClass("/Script/CoreUObject", "IntProperty");
+var boolPropertyClass = EnsureClass("/Script/CoreUObject", "BoolProperty");
+var objectPropertyClass = EnsureClass("/Script/CoreUObject", "ObjectProperty");
+var arrayPropertyClass = EnsureClass("/Script/CoreUObject", "ArrayProperty");
+var namePropertyClass = EnsureClass("/Script/CoreUObject", "NameProperty");
+
+// ---------- native Dungeons reflection imports ----------
+
+var itemStashClass = EnsureClass("/Script/Dungeons", "ItemStashComponent");
+var itemSlotClass = EnsureClass("/Script/Dungeons", "InventoryItemSlot");
+var inventoryItemClass = EnsureClass("/Script/Dungeons", "InventoryItem");
+var slotItemMember = EnsureMember(itemSlotClass, "ObjectProperty", "Item");
+
+// Retarget an existing object local to stash.
 stashLocal.ObjectName = new FName(asset, "CallFunc_GetComponentByClass_ReturnValue");
 if (stashLocal.Property is not UObjectProperty stashProp)
-    throw new InvalidDataException("Expected object property donor for stash local.");
+    throw new InvalidDataException("Expected UObjectProperty donor for stash local.");
 stashProp.PropertyClass = itemStashClass;
 
-// Add a real class-owned cursor property.
-var intPropertyClass = FindClassPropertyImport("IntProperty");
-var intDonor = asset.Exports.OfType<PropertyExport>().First(x => x.Property is UIntProperty);
-var cursor = (PropertyExport)intDonor.Clone();
-cursor.ObjectName = new FName(asset, "CursorIndex");
-cursor.OuterIndex = FPackageIndex.FromExport(asset.Exports.IndexOf(generatedClass));
-cursor.ClassIndex = intPropertyClass;
-cursor.SuperIndex = new FPackageIndex(0);
-cursor.TemplateIndex = new FPackageIndex(0);
-cursor.SerialOffset = 0;
-cursor.SerialSize = 0;
-cursor.SerializationBeforeSerializationDependencies.Clear();
-cursor.CreateBeforeSerializationDependencies.Clear();
-cursor.SerializationBeforeCreateDependencies.Clear();
-cursor.CreateBeforeCreateDependencies.Clear();
-cursor.Property = new UIntProperty
+// ---------- property creation ----------
+
+PropertyExport AddProperty(PropertyExport donor, string name, FPackageIndex outer, FPackageIndex propertyClass, UProperty reflected)
+{
+    var p = (PropertyExport)donor.Clone();
+    p.ObjectName = new FName(asset, name);
+    p.OuterIndex = outer;
+    p.ClassIndex = propertyClass;
+    p.SuperIndex = new FPackageIndex(0);
+    p.TemplateIndex = new FPackageIndex(0);
+    p.SerialOffset = 0;
+    p.SerialSize = 0;
+    p.SerializationBeforeSerializationDependencies.Clear();
+    p.CreateBeforeSerializationDependencies.Clear();
+    p.SerializationBeforeCreateDependencies.Clear();
+    p.CreateBeforeCreateDependencies.Clear();
+    p.Property = reflected;
+    asset.Exports.Add(p);
+    return p;
+}
+
+UIntProperty NewInt(EPropertyFlags flags = EPropertyFlags.CPF_BlueprintVisible) => new()
 {
     ArrayDim = intDonor.Property.ArrayDim,
     ElementSize = 0,
-    PropertyFlags = EPropertyFlags.CPF_BlueprintVisible,
+    PropertyFlags = flags,
     RepNotifyFunc = new FName(asset, "None"),
     BlueprintReplicationCondition = ELifetimeCondition.COND_None,
     Next = new FPackageIndex(0)
 };
-asset.Exports.Add(cursor);
-var cursorIndex = FPackageIndex.FromExport(asset.Exports.IndexOf(cursor));
-generatedClass.Children = generatedClass.Children.Concat(new[] { cursorIndex }).ToArray();
 
-// Input function has the same FKey -> bool signature as IsInputKeyDown.
-var inputFn = FindFunction("IsInputKeyDown");
-inputFn.ToImport(asset).ObjectName = new FName(asset, "WasInputKeyJustPressed");
+UBoolProperty NewBool(EPropertyFlags flags = EPropertyFlags.CPF_BlueprintVisible) => new()
+{
+    ArrayDim = boolDonor.Property.ArrayDim,
+    ElementSize = 1,
+    PropertyFlags = flags,
+    RepNotifyFunc = new FName(asset, "None"),
+    BlueprintReplicationCondition = ELifetimeCondition.COND_None,
+    Next = new FPackageIndex(0)
+};
 
-// Existing engine helpers.
-var gameplayDefault = asset.Imports.Select((x,i)=>(x,i)).First(x => x.x.ObjectName.ToString() == "Default__GameplayStatics").i;
-var gameplayDefaultIndex = FPackageIndex.FromImport(gameplayDefault);
-var getPlayerControllerFn = FindFunction("GetPlayerController");
-var getPawnFn = FindFunction("K2_GetPawn");
-var keyStruct = asset.Imports.Select((x,i)=>(x,i)).First(x => x.x.ObjectName.ToString() == "Key" && x.x.ClassName.ToString() == "ScriptStruct").i;
-var keyStructIndex = FPackageIndex.FromImport(keyStruct);
+UObjectProperty NewObject(FPackageIndex cls, EPropertyFlags flags = EPropertyFlags.CPF_BlueprintVisible) => new()
+{
+    ArrayDim = objectDonor.Property.ArrayDim,
+    ElementSize = 0,
+    PropertyFlags = flags,
+    RepNotifyFunc = new FName(asset, "None"),
+    BlueprintReplicationCondition = ELifetimeCondition.COND_None,
+    Next = new FPackageIndex(0),
+    PropertyClass = cls
+};
 
-// Math helpers.
+UNameProperty NewName(EPropertyFlags flags = EPropertyFlags.CPF_None) => new()
+{
+    ArrayDim = intDonor.Property.ArrayDim,
+    ElementSize = 0,
+    PropertyFlags = flags,
+    RepNotifyFunc = new FName(asset, "None"),
+    BlueprintReplicationCondition = ELifetimeCondition.COND_None,
+    Next = new FPackageIndex(0)
+};
+
+PropertyExport AddNameArray(string name, FPackageIndex outer, EPropertyFlags flags)
+{
+    var array = AddProperty(objectDonor, name, outer, arrayPropertyClass, new UArrayProperty
+    {
+        ArrayDim = objectDonor.Property.ArrayDim,
+        ElementSize = 0,
+        PropertyFlags = flags,
+        RepNotifyFunc = new FName(asset, "None"),
+        BlueprintReplicationCondition = ELifetimeCondition.COND_None,
+        Next = new FPackageIndex(0),
+        Inner = new FPackageIndex(0)
+    });
+    var inner = AddProperty(intDonor, name + "_Inner", FPackageIndex.FromExport(asset.Exports.IndexOf(array)), namePropertyClass, NewName());
+    ((UArrayProperty)array.Property).Inner = FPackageIndex.FromExport(asset.Exports.IndexOf(inner));
+    return array;
+}
+
+PropertyExport AddObjectArray(string name, FPackageIndex outer, FPackageIndex objectClass, EPropertyFlags flags)
+{
+    var array = AddProperty(objectDonor, name, outer, arrayPropertyClass, new UArrayProperty
+    {
+        ArrayDim = objectDonor.Property.ArrayDim,
+        ElementSize = 0,
+        PropertyFlags = flags,
+        RepNotifyFunc = new FName(asset, "None"),
+        BlueprintReplicationCondition = ELifetimeCondition.COND_None,
+        Next = new FPackageIndex(0),
+        Inner = new FPackageIndex(0)
+    });
+    var inner = AddProperty(objectDonor, name + "_Inner", FPackageIndex.FromExport(asset.Exports.IndexOf(array)), objectPropertyClass, NewObject(objectClass, EPropertyFlags.CPF_None));
+    ((UArrayProperty)array.Property).Inner = FPackageIndex.FromExport(asset.Exports.IndexOf(inner));
+    return array;
+}
+
+var classOuter = FPackageIndex.FromExport(asset.Exports.IndexOf(generatedClass));
+var functionOuter = FPackageIndex.FromExport(asset.Exports.IndexOf(uber));
+
+var cursor = AddProperty(intDonor, "CursorIndex", classOuter, intPropertyClass, NewInt());
+var confirmArmed = AddProperty(boolDonor, "ConfirmArmed", classOuter, boolPropertyClass, NewBool());
+var salvageRunning = AddProperty(boolDonor, "SalvageRunning", classOuter, boolPropertyClass, NewBool());
+var batchIndex = AddProperty(intDonor, "BatchIndex", classOuter, intPropertyClass, NewInt());
+
+var saveClass = EnsureGeneratedClass("/Game/Mods/MinecraftDungeonsQoL/SG_MCDQoL", "SG_MCDQoL_C");
+var saveState = AddProperty(objectDonor, "SaveState", classOuter, objectPropertyClass, NewObject(saveClass));
+var selectedSlots = AddObjectArray("SelectedSlots", classOuter, itemSlotClass, EPropertyFlags.CPF_BlueprintVisible);
+
+// Function scratch locals.
+var currentSlot = AddProperty(objectDonor, "MCDQoL_CurrentSlot", functionOuter, objectPropertyClass, NewObject(itemSlotClass, EPropertyFlags.CPF_None));
+var currentItem = AddProperty(objectDonor, "MCDQoL_CurrentItem", functionOuter, objectPropertyClass, NewObject(inventoryItemClass, EPropertyFlags.CPF_None));
+var currentKey = AddProperty(intDonor, "MCDQoL_CurrentKey", functionOuter, namePropertyClass, NewName());
+var salvageSuccess = AddProperty(boolDonor, "MCDQoL_SalvageSuccess", functionOuter, boolPropertyClass, NewBool(EPropertyFlags.CPF_None));
+
+// Register reflected fields with their owning structs/classes.
+generatedClass.Children = generatedClass.Children
+    .Concat(new[] {
+        FPackageIndex.FromExport(asset.Exports.IndexOf(cursor)),
+        FPackageIndex.FromExport(asset.Exports.IndexOf(confirmArmed)),
+        FPackageIndex.FromExport(asset.Exports.IndexOf(salvageRunning)),
+        FPackageIndex.FromExport(asset.Exports.IndexOf(batchIndex)),
+        FPackageIndex.FromExport(asset.Exports.IndexOf(saveState)),
+        FPackageIndex.FromExport(asset.Exports.IndexOf(selectedSlots))
+    }).ToArray();
+
+uber.Children = uber.Children
+    .Concat(new[] {
+        FPackageIndex.FromExport(asset.Exports.IndexOf(currentSlot)),
+        FPackageIndex.FromExport(asset.Exports.IndexOf(currentItem)),
+        FPackageIndex.FromExport(asset.Exports.IndexOf(currentKey)),
+        FPackageIndex.FromExport(asset.Exports.IndexOf(salvageSuccess))
+    }).ToArray();
+
+// External SaveGame Records field.
+var recordsMember = EnsureMember(saveClass, "ArrayProperty", "Records");
+
+// ---------- engine helper imports ----------
+
+var gameplayClass = EnsureClass("/Script/Engine", "GameplayStatics");
+var gameplayDefault = EnsureDefault("/Script/Engine", "GameplayStatics");
+var getPlayerControllerFn = EnsureFunction(gameplayClass, "GetPlayerController");
+var doesSaveExistFn = EnsureFunction(gameplayClass, "DoesSaveGameExist");
+var loadSaveFn = EnsureFunction(gameplayClass, "LoadGameFromSlot");
+var createSaveFn = EnsureFunction(gameplayClass, "CreateSaveGameObject");
+var saveToSlotFn = EnsureFunction(gameplayClass, "SaveGameToSlot");
+
+var playerControllerClass = EnsureClass("/Script/Engine", "PlayerController");
+var inputFn = EnsureFunction(playerControllerClass, "WasInputKeyJustPressed");
+var getPawnFn = EnsureFunction(EnsureClass("/Script/Engine", "Controller"), "K2_GetPawn");
+
 var mathClass = EnsureClass("/Script/Engine", "KismetMathLibrary");
 var addIntFn = EnsureFunction(mathClass, "Add_IntInt");
 var subIntFn = EnsureFunction(mathClass, "Subtract_IntInt");
 var greaterEqFn = EnsureFunction(mathClass, "GreaterEqual_IntInt");
 var lessFn = EnsureFunction(mathClass, "Less_IntInt");
 
-// Print helper.
 var systemClass = EnsureClass("/Script/Engine", "KismetSystemLibrary");
 var systemDefault = EnsureDefault("/Script/Engine", "KismetSystemLibrary");
 var printStringFn = EnsureFunction(systemClass, "PrintString");
+var isValidFn = EnsureFunction(systemClass, "IsValid");
+
 var stringClass = EnsureClass("/Script/Engine", "KismetStringLibrary");
+var stringDefault = EnsureDefault("/Script/Engine", "KismetStringLibrary");
 var buildStringIntFn = EnsureFunction(stringClass, "BuildString_Int");
+var convStringToNameFn = EnsureFunction(stringClass, "Conv_StringToName");
+
+var textClass = EnsureClass("/Script/Engine", "KismetTextLibrary");
+var textDefault = EnsureDefault("/Script/Engine", "KismetTextLibrary");
+var convTextToStringFn = EnsureFunction(textClass, "Conv_TextToString");
+
+var arrayClass = EnsureClass("/Script/Engine", "KismetArrayLibrary");
+var arrayDefault = EnsureDefault("/Script/Engine", "KismetArrayLibrary");
+var arrayLengthFn = EnsureFunction(arrayClass, "Array_Length");
+var arrayContainsFn = EnsureFunction(arrayClass, "Array_Contains");
+var arrayAddFn = EnsureFunction(arrayClass, "Array_Add");
+var arrayRemoveFn = EnsureFunction(arrayClass, "Array_Remove");
+var arrayClearFn = EnsureFunction(arrayClass, "Array_Clear");
+
+var keyStruct = EnsureScriptStruct("/Script/InputCore", "Key");
 var linearColorStruct = EnsureScriptStruct("/Script/CoreUObject", "LinearColor");
 
+// ---------- expression helpers ----------
+
 KismetPropertyPointer Ptr(FPackageIndex i) => new(i);
-EX_LocalVariable Local(PropertyExport p) => new() { Variable = Ptr(FPackageIndex.FromExport(asset.Exports.IndexOf(p))) };
-EX_InstanceVariable Inst(PropertyExport p) => new() { Variable = Ptr(FPackageIndex.FromExport(asset.Exports.IndexOf(p))) };
+FPackageIndex Exp(PropertyExport p) => FPackageIndex.FromExport(asset.Exports.IndexOf(p));
+EX_LocalVariable Local(PropertyExport p) => new() { Variable = Ptr(Exp(p)) };
+EX_InstanceVariable Inst(PropertyExport p) => new() { Variable = Ptr(Exp(p)) };
+EX_InstanceVariable ImportedVar(FPackageIndex p) => new() { Variable = Ptr(p) };
 EX_IntConst Int(int v) => new() { Value = v };
 EX_StringConst Str(string v) => new() { Value = v };
 EX_NameConst Name(string v) => new() { Value = new FName(asset, v) };
@@ -193,17 +348,14 @@ int ICode(KismetExpression expr)
     return UAssetAPI.Kismet.Bytecode.ExpressionSerializer.WriteExpression(expr, writer);
 }
 
-EX_Context Ctx(KismetExpression obj, KismetExpression expression, KismetPropertyPointer? result = null)
+EX_Context Ctx(KismetExpression obj, KismetExpression expression, KismetPropertyPointer? result = null) => new()
 {
-    return new EX_Context
-    {
-        ObjectExpression = obj,
-        ContextExpression = expression,
-        Offset = (uint)ICode(expression),
-        PropertyType = 0,
-        RValuePointer = result ?? Ptr(new FPackageIndex(0))
-    };
-}
+    ObjectExpression = obj,
+    ContextExpression = expression,
+    Offset = (uint)ICode(expression),
+    PropertyType = 0,
+    RValuePointer = result ?? Ptr(new FPackageIndex(0))
+};
 
 EX_FinalFunction Final(FPackageIndex fn, params KismetExpression[] pars) => new() { StackNode = fn, Parameters = pars };
 EX_VirtualFunction Virtual(string name, params KismetExpression[] pars) => new() { VirtualFunctionName = new FName(asset, name), Parameters = pars };
@@ -211,7 +363,7 @@ EX_CallMath Math(FPackageIndex fn, params KismetExpression[] pars) => new() { St
 
 EX_StructConst Key(string key) => new()
 {
-    Struct = keyStructIndex,
+    Struct = keyStruct,
     StructSize = 32,
     Value = new KismetExpression[] { Name(key) }
 };
@@ -229,35 +381,60 @@ EX_StructConst Yellow() => new()
     }
 };
 
-var cursorVar = Inst(cursor);
+KismetExpression Static(FPackageIndex defaultObject, FPackageIndex fn, params KismetExpression[] pars) =>
+    Ctx(Obj(defaultObject), Final(fn, pars));
+
+KismetExpression IsValid(KismetExpression obj) => Static(systemDefault, isValidFn, obj);
 KismetExpression InventorySize() => Ctx(Local(stashLocal), Virtual("InventorySize"));
 KismetExpression KeyPressed(string key) => Ctx(Local(playerControllerLocal), Final(inputFn, Key(key)));
+KismetExpression ArrayLength(KismetExpression array) => Static(arrayDefault, arrayLengthFn, array);
+KismetExpression ArrayContains(KismetExpression array, KismetExpression value) => Static(arrayDefault, arrayContainsFn, array, value);
+KismetExpression Records() => Ctx(Inst(saveState), ImportedVar(recordsMember), Ptr(recordsMember));
 
-KismetExpression SlotText() => Ctx(
-    Obj(EnsureDefault("/Script/Engine", "KismetStringLibrary")),
-    Final(buildStringIntFn,
-        Str("MCD QoL | inventory slot "),
-        Str(""),
-        Inst(cursor),
-        Str(" | F6 prev, F7 next")
-    )
+KismetExpression CurrentSlotExpr() => new EX_ArrayGetByRef
+{
+    ArrayVariable = Ctx(Local(stashLocal), Virtual("GetInventorySlots")),
+    ArrayIndex = Inst(cursor)
+};
+
+KismetExpression SlotItem(KismetExpression slot) => Ctx(slot, ImportedVar(slotItemMember), Ptr(slotItemMember));
+
+KismetExpression Fingerprint()
+{
+    var item = Local(currentItem);
+    var displayText = Ctx(item, Virtual("GetDisplayNameText"));
+    var displayString = Static(textDefault, convTextToStringFn, displayText);
+    var withPower = Static(stringDefault, buildStringIntFn,
+        displayString,
+        Str("|P"),
+        Ctx(item, Virtual("GetDisplayItemPowerInt")),
+        Str(""));
+    var withEnchant = Static(stringDefault, buildStringIntFn,
+        withPower,
+        Str("|E"),
+        Ctx(item, Virtual("GetTotalInvestedEnchantmentPoints")),
+        Str(""));
+    return Static(stringDefault, convStringToNameFn, withEnchant);
+}
+
+KismetExpression SlotText() => Static(stringDefault, buildStringIntFn,
+    Str("MCD QoL | slot "),
+    Str(""),
+    Inst(cursor),
+    Str(" | F6/F7 browse | F8 lock | F9 select | F10 salvage")
 );
 
-KismetExpression Print(KismetExpression text) => Ctx(
-    Obj(systemDefault),
-    Final(printStringFn,
-        Self(),
-        text,
-        True(),
-        False(),
-        Yellow(),
-        new EX_FloatConst { Value = 1.75f }
-    )
-);
+KismetExpression Print(KismetExpression text) => Static(systemDefault, printStringFn,
+    Self(), text, True(), False(), Yellow(), new EX_FloatConst { Value = 2.0f });
+
+KismetExpression SaveSidecar() => Static(gameplayDefault, saveToSlotFn,
+    Inst(saveState), Str("MinecraftDungeonsQoL_v1"), Int(0));
+
+// ---------- assembler ----------
 
 var code = new List<KismetExpression>();
 var labels = new Dictionary<string,int>(StringComparer.Ordinal);
-var jumps = new List<(KismetExpression jump,string target)>();
+var jumps = new List<(KismetExpression Jump,string Target)>();
 
 void Label(string name) => labels[name] = code.Count;
 void Add(KismetExpression expr) => code.Add(expr);
@@ -273,63 +450,157 @@ void Jump(string target)
     jumps.Add((j,target));
     Add(j);
 }
+void SetInt(PropertyExport p, KismetExpression value) => Add(new EX_Let { Value = Ptr(Exp(p)), Variable = Inst(p), Expression = value });
+void SetBool(PropertyExport p, KismetExpression value) => Add(new EX_LetBool { VariableExpression = Inst(p), AssignmentExpression = value });
+void SetObj(PropertyExport p, KismetExpression value) => Add(new EX_LetObj { VariableExpression = Inst(p), AssignmentExpression = value });
+void SetLocalObj(PropertyExport p, KismetExpression value) => Add(new EX_LetObj { VariableExpression = Local(p), AssignmentExpression = value });
+void SetLocalName(PropertyExport p, KismetExpression value) => Add(new EX_Let { Value = Ptr(Exp(p)), Variable = Local(p), Expression = value });
 
-// Resolve local player and stash every tick. Context calls fail harmlessly when their object is null.
-Add(new EX_LetObj
-{
-    VariableExpression = Local(playerControllerLocal),
-    AssignmentExpression = Ctx(Obj(gameplayDefaultIndex), Final(getPlayerControllerFn, Self(), Int(0)), Ptr(FPackageIndex.FromExport(asset.Exports.IndexOf(playerControllerLocal))))
-});
-Add(new EX_LetObj
-{
-    VariableExpression = Local(pawnLocal),
-    AssignmentExpression = Ctx(Local(playerControllerLocal), Final(getPawnFn), Ptr(FPackageIndex.FromExport(asset.Exports.IndexOf(pawnLocal))))
-});
-Add(new EX_LetObj
-{
-    VariableExpression = Local(stashLocal),
-    AssignmentExpression = Ctx(Local(pawnLocal), Virtual("GetComponentByClass", Obj(itemStashClass)), Ptr(FPackageIndex.FromExport(asset.Exports.IndexOf(stashLocal))))
-});
+// Resolve local player + stash.
+SetLocalObj(playerControllerLocal, Static(gameplayDefault, getPlayerControllerFn, Self(), Int(0)));
+SetLocalObj(pawnLocal, Ctx(Local(playerControllerLocal), Final(getPawnFn), Ptr(Exp(pawnLocal))));
+SetLocalObj(stashLocal, Ctx(Local(pawnLocal), Virtual("GetComponentByClass", Obj(itemStashClass)), Ptr(Exp(stashLocal))));
 
-// No inventory means no array access.
+// Load/create our separate sidecar save once.
+JumpIfNot(IsValid(Inst(saveState)), "INIT_SAVE");
+Jump("AFTER_SAVE");
+Label("INIT_SAVE");
+JumpIfNot(Static(gameplayDefault, doesSaveExistFn, Str("MinecraftDungeonsQoL_v1"), Int(0)), "CREATE_SAVE");
+SetObj(saveState, Static(gameplayDefault, loadSaveFn, Str("MinecraftDungeonsQoL_v1"), Int(0)));
+Jump("AFTER_SAVE");
+Label("CREATE_SAVE");
+SetObj(saveState, Static(gameplayDefault, createSaveFn, Obj(saveClass)));
+Add(SaveSidecar());
+Label("AFTER_SAVE");
+
+// Batch mode: one selected slot per tick, revalidated immediately before native salvage.
+JumpIfNot(Inst(salvageRunning), "NORMAL_MODE");
+JumpIfNot(Math(greaterEqFn, Inst(batchIndex), Int(0)), "FINISH_BATCH");
+
+SetLocalObj(currentSlot, new EX_ArrayGetByRef { ArrayVariable = Inst(selectedSlots), ArrayIndex = Inst(batchIndex) });
+SetLocalObj(currentItem, SlotItem(Local(currentSlot)));
+JumpIfNot(IsValid(Local(currentItem)), "BATCH_NEXT");
+SetLocalName(currentKey, Fingerprint());
+JumpIfNot(ArrayContains(Records(), Local(currentKey)), "BATCH_CAN_SALVAGE");
+Jump("BATCH_NEXT");
+
+Label("BATCH_CAN_SALVAGE");
+JumpIfNot(Ctx(Local(currentItem), Virtual("CanSalvage")), "BATCH_NEXT");
+// SalvageItemInSlot is the game's real transaction. SelectedSlots only contains inventory slots.
+Add(Ctx(Local(stashLocal), Virtual("SalvageItemInSlot", Local(currentSlot), Local(salvageSuccess))));
+
+Label("BATCH_NEXT");
+SetInt(batchIndex, Math(subIntFn, Inst(batchIndex), Int(1)));
+Jump("END");
+
+Label("FINISH_BATCH");
+Add(Static(arrayDefault, arrayClearFn, Inst(selectedSlots)));
+SetBool(salvageRunning, False());
+SetBool(confirmArmed, False());
+Add(Print(Str("MCD QoL | batch salvage complete")));
+Jump("END");
+
+Label("NORMAL_MODE");
+// Do not touch inventory arrays until the native stash exists and contains at least one slot.
+JumpIfNot(IsValid(Local(stashLocal)), "END");
 JumpIfNot(Math(greaterEqFn, InventorySize(), Int(1)), "END");
 
-// F7: next.
+// Keep cursor in range if the game changed inventory size.
+JumpIfNot(Math(greaterEqFn, Inst(cursor), InventorySize()), "CURSOR_OK");
+SetInt(cursor, Int(0));
+Label("CURSOR_OK");
+
+// F7 next, cancels destructive confirmation.
 JumpIfNot(KeyPressed("F7"), "PREV");
-Add(new EX_Let
-{
-    Value = Ptr(cursorIndex),
-    Variable = cursorVar,
-    Expression = Math(addIntFn, Inst(cursor), Int(1))
-});
+SetBool(confirmArmed, False());
+SetInt(cursor, Math(addIntFn, Inst(cursor), Int(1)));
 JumpIfNot(Math(greaterEqFn, Inst(cursor), InventorySize()), "NEXT_PRINT");
-Add(new EX_Let { Value = Ptr(cursorIndex), Variable = Inst(cursor), Expression = Int(0) });
+SetInt(cursor, Int(0));
 Label("NEXT_PRINT");
 Add(Print(SlotText()));
 
 Label("PREV");
-JumpIfNot(KeyPressed("F6"), "END");
-Add(new EX_Let
-{
-    Value = Ptr(cursorIndex),
-    Variable = Inst(cursor),
-    Expression = Math(subIntFn, Inst(cursor), Int(1))
-});
+JumpIfNot(KeyPressed("F6"), "RESOLVE_CURRENT");
+SetBool(confirmArmed, False());
+SetInt(cursor, Math(subIntFn, Inst(cursor), Int(1)));
 JumpIfNot(Math(lessFn, Inst(cursor), Int(0)), "PREV_PRINT");
-Add(new EX_Let
-{
-    Value = Ptr(cursorIndex),
-    Variable = Inst(cursor),
-    Expression = Math(subIntFn, InventorySize(), Int(1))
-});
+SetInt(cursor, Math(subIntFn, InventorySize(), Int(1)));
 Label("PREV_PRINT");
 Add(Print(SlotText()));
+
+Label("RESOLVE_CURRENT");
+// Resolve native slot/item for lock/select actions.
+SetLocalObj(currentSlot, CurrentSlotExpr());
+SetLocalObj(currentItem, SlotItem(Local(currentSlot)));
+
+// F8 persistent lock toggle.
+JumpIfNot(KeyPressed("F8"), "SELECT");
+SetBool(confirmArmed, False());
+JumpIfNot(IsValid(Local(currentItem)), "LOCK_EMPTY");
+SetLocalName(currentKey, Fingerprint());
+JumpIfNot(ArrayContains(Records(), Local(currentKey)), "LOCK_ADD");
+Add(Static(arrayDefault, arrayRemoveFn, Records(), Local(currentKey)));
+Add(SaveSidecar());
+Add(Print(Str("MCD QoL | item unlocked")));
+Jump("SELECT");
+Label("LOCK_ADD");
+Add(Static(arrayDefault, arrayAddFn, Records(), Local(currentKey)));
+Add(SaveSidecar());
+Add(Print(Str("MCD QoL | item LOCKED")));
+Jump("SELECT");
+Label("LOCK_EMPTY");
+Add(Print(Str("MCD QoL | empty slot, nothing to lock")));
+
+Label("SELECT");
+// F9 in-session multi-select. Locked and unsalvageable items cannot enter the batch.
+JumpIfNot(KeyPressed("F9"), "CONFIRM");
+SetBool(confirmArmed, False());
+JumpIfNot(IsValid(Local(currentItem)), "SELECT_EMPTY");
+SetLocalName(currentKey, Fingerprint());
+JumpIfNot(ArrayContains(Records(), Local(currentKey)), "SELECT_NOT_LOCKED");
+Add(Print(Str("MCD QoL | locked item cannot be selected")));
+Jump("CONFIRM");
+Label("SELECT_NOT_LOCKED");
+JumpIfNot(Ctx(Local(currentItem), Virtual("CanSalvage")), "SELECT_BLOCKED");
+JumpIfNot(ArrayContains(Inst(selectedSlots), Local(currentSlot)), "SELECT_ADD");
+Add(Static(arrayDefault, arrayRemoveFn, Inst(selectedSlots), Local(currentSlot)));
+Add(Print(Str("MCD QoL | item removed from salvage batch")));
+Jump("CONFIRM");
+Label("SELECT_ADD");
+Add(Static(arrayDefault, arrayAddFn, Inst(selectedSlots), Local(currentSlot)));
+Add(Print(Str("MCD QoL | item added to salvage batch")));
+Jump("CONFIRM");
+Label("SELECT_BLOCKED");
+Add(Print(Str("MCD QoL | game reports this item cannot be salvaged")));
+Jump("CONFIRM");
+Label("SELECT_EMPTY");
+Add(Print(Str("MCD QoL | empty slot, nothing to select")));
+
+Label("CONFIRM");
+// F10 requires two presses. The second starts one-native-salvage-per-tick processing.
+JumpIfNot(KeyPressed("F10"), "END");
+JumpIfNot(Math(greaterEqFn, ArrayLength(Inst(selectedSlots)), Int(1)), "NO_SELECTION");
+JumpIfNot(Inst(confirmArmed), "ARM_BATCH");
+SetInt(batchIndex, Math(subIntFn, ArrayLength(Inst(selectedSlots)), Int(1)));
+SetBool(salvageRunning, True());
+SetBool(confirmArmed, False());
+Add(Print(Str("MCD QoL | batch salvage started")));
+Jump("END");
+
+Label("ARM_BATCH");
+SetBool(confirmArmed, True());
+Add(Print(Str("MCD QoL | press F10 again to CONFIRM salvage")));
+Jump("END");
+
+Label("NO_SELECTION");
+SetBool(confirmArmed, False());
+Add(Print(Str("MCD QoL | no items selected")));
 
 Label("END");
 Add(new EX_Return { ReturnExpression = new EX_Nothing() });
 Add(new EX_EndOfScript());
 
-// Resolve absolute iCode jump offsets.
+// Resolve absolute iCode jump targets.
 var starts = new uint[code.Count + 1];
 uint total = 0;
 for (var i = 0; i < code.Count; i++)
@@ -338,17 +609,13 @@ for (var i = 0; i < code.Count; i++)
     total += (uint)ICode(code[i]);
 }
 starts[code.Count] = total;
-
 foreach (var (jump,target) in jumps)
 {
     if (!labels.TryGetValue(target, out var idx))
-        throw new InvalidOperationException($"Unknown label {target}");
+        throw new InvalidOperationException($"Unknown assembler label: {target}");
     var targetOffset = starts[idx];
-    switch (jump)
-    {
-        case EX_JumpIfNot jn: jn.CodeOffset = targetOffset; break;
-        case EX_Jump j: j.CodeOffset = targetOffset; break;
-    }
+    if (jump is EX_JumpIfNot jn) jn.CodeOffset = targetOffset;
+    else if (jump is EX_Jump j) j.CodeOffset = targetOffset;
 }
 
 uber.ScriptBytecode = code.ToArray();
@@ -357,29 +624,38 @@ uber.ScriptBytecodeSize = (int)total;
 
 asset.Write(output);
 
-// Re-open and make sure the custom reflected field + key calls survived.
+// ---------- structural re-open validation ----------
+
 var reopened = new UAsset(output, EngineVersion.VER_UE4_22);
 KismetSerializer.asset = reopened;
 var outClass = reopened.Exports.OfType<ClassExport>().Single(x => x.ObjectName.ToString() == "BP_WASD_Movement_C");
-if (!outClass.Children.Any(x => x.IsExport() && x.ToExport(reopened).ObjectName.ToString() == "CursorIndex"))
-    throw new InvalidDataException("CursorIndex class property did not survive.");
+foreach (var required in new[] { "CursorIndex", "ConfirmArmed", "SalvageRunning", "BatchIndex", "SaveState", "SelectedSlots" })
+{
+    if (!outClass.Children.Any(x => x.IsExport() && x.ToExport(reopened).ObjectName.ToString() == required))
+        throw new InvalidDataException($"Missing class field after re-open: {required}");
+}
 
 var outUber = reopened.Exports.OfType<FunctionExport>().Single(x => x.ObjectName.ToString() == "ExecuteUbergraph_BP_WASD_Movement");
-if (outUber.ScriptBytecode is not { Length: > 5 })
-    throw new InvalidDataException("Custom QoL bytecode did not survive re-open.");
+if (outUber.ScriptBytecode is not { Length: > 20 })
+    throw new InvalidDataException("QoL Kismet graph did not survive serialization.");
 
 var keys = new HashSet<string>();
+var virtualCalls = new HashSet<string>();
 foreach (var root in outUber.ScriptBytecode)
 {
     uint o = 0;
     root.Visit(reopened, ref o, (expr, _) =>
     {
         if (expr is EX_NameConst nc && nc.Value != null) keys.Add(nc.Value.ToString());
+        if (expr is EX_VirtualFunction vf && vf.VirtualFunctionName != null) virtualCalls.Add(vf.VirtualFunctionName.ToString());
     });
 }
-if (!keys.Contains("F6") || !keys.Contains("F7"))
-    throw new InvalidDataException("Navigation hotkeys missing after re-open.");
+foreach (var key in new[] { "F6", "F7", "F8", "F9", "F10" })
+    if (!keys.Contains(key)) throw new InvalidDataException($"Missing input hotkey after re-open: {key}");
 
-Console.WriteLine("[OK] Cooked QoL runtime navigation patch survived write/re-open.");
+foreach (var call in new[] { "GetComponentByClass", "InventorySize", "GetInventorySlots", "CanSalvage", "SalvageItemInSlot" })
+    if (!virtualCalls.Contains(call)) throw new InvalidDataException($"Missing native runtime call after re-open: {call}");
+
+Console.WriteLine("[OK] Cooked QoL lock/select/native-salvage graph survived write/re-open.");
 Console.WriteLine($"     iCode={total}, statements={code.Count}, imports={reopened.Imports.Count}, exports={reopened.Exports.Count}");
 return 0;
