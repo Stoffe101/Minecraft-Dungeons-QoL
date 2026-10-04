@@ -123,14 +123,26 @@ Immediate priorities: visible read-only inventory probe, stable hero/item identi
 
 - [x] Archetype-repaired event-free probe: character selection and camp load on the user's Microsoft Store installation.
 - [x] Generate a visible inventory-read probe with native UMG feedback and seven negative regression tests.
-- [ ] Verify its inventory count, item name/power, F6/F7 browsing and inventory-close hiding in-game.
+- [x] User confirmed visible inventory count, correct item names/power and F6/F7 browsing on PR #14.
+- [ ] Verify inventory-close hiding, repeated use and mission transitions.
 - [ ] Integrate confirmed feedback into lock/select/preview runtime and validate it before native salvage.
 
 The loading milestone does not mark Phase 2 launch/features complete. Mission transitions, full event graph, persistence and all production lock/loadout/salvage behavior remain open.
 
 ## Immediate blocking work: online and co-op
 
-- [ ] Retail confirmation of inventory-open crash repair and visible text/input.
+- [x] Retail inventory-open/text/F6/F7 confirmation on PR #14 (session role not recorded).
 - [ ] Project-owned client bootstrap independent of server-only GetGameMode, with no unlicensed dependency modifications.
 - [ ] Host and joining-client camp/mission/travel/rejoin matrix, including friends without the mod.
 - [ ] Complete and validate the planned production features after the read-only probe works.
+
+## Next feature increment after confirmed read-only UI
+
+- [ ] Per-item in-session lock/favorite state and visible indicator, distinguishing duplicate items.
+- [ ] Multi-selection toggle, selected count, clear and batch review preview.
+- [ ] Verify native equipment exclusions and lock-based selection exclusion in retail.
+- [ ] Stable per-hero/item identity and restart persistence.
+- [ ] Native salvage execution with explicit confirmation and per-item revalidation.
+- [ ] Separate vanilla-salvage lock guard.
+
+Do not ship the old diagnostic fingerprint as persistent item identity or enable its full graph as though this read-only confirmation tested it. Online friends remain the required multiplayer target.

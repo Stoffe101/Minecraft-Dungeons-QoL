@@ -1,4 +1,4 @@
-> Runtime status: PR #13 also crashed opening inventory online and is withdrawn. A UE4.22.3 source investigation identified unsafe nested calls into native reference parameters. The new generators store text/string results in typed locals before reuse, matching the supplied game graph. Retail crash repair remains unverified. Online host and joining-friend play are required; splitscreen is outside the current requirement. Production features remain unfinished.
+> Runtime status: the user confirmed PR #14 opens inventory, shows correct item names/power and responds to F6/F7. The screenshot shows 216 slots and Ghostly Armor, power 163. This verifies the read-only UI/input foundation on the user’s Store installation. Locks, favorites, multi-selection, persistent identity and native salvage remain unfinished. Online host/join-friend compatibility remains required and not established by this report.
 
 # Minecraft Dungeons QoL
 

@@ -1,8 +1,8 @@
-> Runtime status: PR #13 also crashed opening inventory online and is withdrawn. A UE4.22.3 source investigation identified unsafe nested calls into native reference parameters. The new generators store text/string results in typed locals before reuse, matching the supplied game graph. Retail crash repair remains unverified. Online host and joining-friend play are required; splitscreen is outside the current requirement. Production features remain unfinished.
+> Runtime status: the user confirmed PR #14 opens inventory, shows correct item names/power and responds to F6/F7. The screenshot shows 216 slots and Ghostly Armor, power 163. This verifies the read-only UI/input foundation on the user’s Store installation. Locks, favorites, multi-selection, persistent identity and native salvage remain unfinished. Online host/join-friend compatibility remains required and not established by this report.
 
 # Current State
 
-Last updated: 2026-10-04 (successful game metadata and inventory/equipment guards)
+Last updated: 2026-10-05 (user-confirmed inventory overlay and native reads)
 
 ## Actual implementation
 
@@ -133,3 +133,9 @@ Inventory probe artifact 11317231607: https://github.com/Stoffe101/Minecraft-Dun
 Inventory pak SHA-256: `776295667ee229670b882c5c85dd3d07ad1fe969fb2375667d238063f691efa9`. Diagnostic pak SHA-256: `59315a06a8c529a840cd7bc8b6cdc990db7aadf41a74a0741b260d6fd8142e56`. BUILD_INFO records CI synthetic merge 62e799811c567f082aca7e3e591414a353082c94. The offered inventory probe must replace all older QoL paks; Blueprint Loader remains external.
 
 Packaging/structural results do not establish a runtime crash fix. Online hosting, joining friends and the production feature set remain unverified or incomplete.
+
+## 2026-10-05: inventory-read foundation confirmed in retail
+
+After PR #14, the user reports that text appears, F6/F7 browsing works and armor/weapon names are correct. The supplied screenshot was successfully viewed: the overlay reads 216 slots, slot 0 Ghostly Armor, power 163. No new inventory-open crash was reported in this test. This confirms the current read-only path on their Store build; it does not verify long sessions, inventory-close hiding, mission travel or joining a friend. Their stated usage is online with friends, and the specific test role was not recorded.
+
+Next feature increment: build lock/favorite indicators and multi-selection with a review preview on this confirmed UI foundation. Use actual live item references for per-session state; the older name/power/enchantment fingerprint groups duplicates and is not suitable for persistent item locks. Verify native equipment exclusions and per-item revalidation before enabling any salvage execution. Persistent locks need stable hero/item identity; preventing vanilla salvage requires a separate hook. No feature code was enabled by this documentation pass.

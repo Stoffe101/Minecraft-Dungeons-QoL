@@ -162,3 +162,7 @@ Run mission travel, return to camp, character change, friend join/leave, disconn
 ## Typed-reference repair gate (PR #13 withdrawn)
 
 PR #13 also crashes when pressing I online. The replacement materializes string/text values before native reference calls. Verify initial text before F6/F7, repeated inventory opens, item names/power and close hiding. Use online host and join-friend cases; splitscreen does not substitute for these. If it still crashes, retain the new dump and record whether any overlay appeared before the failure. Do not claim all planned features work because this read-only probe passes.
+
+## 2026-10-05 user-confirmed PR #14 result
+
+Passed by user report: inventory opens, visible text, F6/F7 browsing, correct armor/weapon names. Screenshot confirms 216 slots and Ghostly Armor power 163. Not recorded: hosting versus joining a friend, simultaneous friends, inventory-close hiding, repeated use/mission travel. Do not generalize this to persistent locks, full feature graph or network client bootstrap.

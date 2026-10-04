@@ -364,3 +364,9 @@ This validates packaging and structure only. Inventory-open crash repair, visibl
 PR #13 still crashes opening inventory online and is withdrawn. See INVENTORY_CRASH_INVESTIGATION.md for the new dump, UE4.22.3 source trace and typed-local repair. Both generators had unsafe nested native reference arguments. Their new scalar locals and result properties match compiler-style game/mod output; the shared validator now rejects the actual old package. Local generation and 47 regression checks pass. Runtime confirmation is pending.
 
 MODDING_OPTIONS_REVIEW.md records the expanded project/license review, existing MIT reuse and UE4SS as a potential live diagnostic/client bootstrap route with unverified Store compatibility. Required multiplayer is online hosting/joining friends, not splitscreen. No ready-made licensed complete implementation was established.
+
+## 2026-10-05: PR #14 retail read-only milestone
+
+The user confirmed visible text and working F6/F7 browsing with correct armor/weapon names. Viewed the supplied screenshot successfully: 216 slots, slot 0 Ghostly Armor, power 163. The typed-local repair now has user-reported runtime success for the inventory-read path. This strengthens the VM defect diagnosis but does not prove the precise earlier crash site.
+
+Documented the next feature increment: individual session locks/favorites, multi-selection and review preview, followed by stable persistent identity and audited native salvage. Duplicate name/power fingerprints must not become per-item persistent keys. No runtime code changed or tests rerun for this documentation-only pass. Host/join-friend role and travel/close behavior remain unverified.
