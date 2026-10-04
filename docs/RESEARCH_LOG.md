@@ -348,3 +348,13 @@ Primary references:
 - https://www.nexusmods.com/minecraftdungeons/mods/111?tab=description (modification and asset use require author permission; uploads to other sites forbidden).
 
 Local verification: 19 diagnostic plus 23 inventory-probe rejection tests passed after generating both cooked graphs. Runtime crash repair, visible text, native item reads and all online/co-op paths remain unverified.
+
+## PR #13 packaged validation (2026-10-04)
+
+Implementation head: 845fece40161c1e3b371b2026d069663f4d907ac. Windows Cooked QoL Diagnostic Build run 37238191986 passed all 19 diagnostic and 23 probe regression checks; Project Validation run 37238191980 passed.
+
+Downloaded artifact 11315778743, verified pak SHA-256 `db2e73dc8bf2cfb9634b1f0765a87c7a9c8d6563f56ab3e8a664ead05e715efb`, integrity-unpacked it and reran all 23 probe rejection tests against the packaged manager. Inspected its CDO: bReplicates=false; bCanEverTick, bStartWithTickEnabled and bTickEvenWhenPaused=true; TickInterval=0. BUILD_INFO records CI synthetic merge dc726c4c6d973cce03e5ba9909b4ff7e63202bcf.
+
+Candidate download: https://github.com/Stoffe101/Minecraft-Dungeons-QoL/actions/runs/37238191986/artifacts/11315778743
+
+This validates packaging and structure only. Inventory-open crash repair, visible overlay/input and online host/join compatibility require retail tests. PR #12 remains withdrawn.

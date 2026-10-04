@@ -107,3 +107,13 @@ The user confirmed online play and reported an inventory-open crash with PR #12.
 The replacement removes SetJustification and SetAutoWrapText imports previously assigned to TextLayoutWidget without a verified UE4.22 reflection contract. Native item name/power calls now use explicit FinalFunction imports supported by supplied game metadata. Validators require native UI owners and arities. Both generators require Controller.IsLocalPlayerController before input, inventory reads or UI construction and serialize bReplicates=false on their manager. Six new rejection tests raise coverage to 42 total. This is structural verification, not runtime success.
 
 See COOP_COMPATIBILITY.md: the external Blueprint Loader branches on GetGameMode, which is normally null on joining clients. Client bootstrap needs a project-owned solution and retail tests. The dependency's permissions do not authorize modifying or redistributing it.
+
+## PR #13 packaged validation (2026-10-04)
+
+Implementation head: 845fece40161c1e3b371b2026d069663f4d907ac. Windows Cooked QoL Diagnostic Build run 37238191986 passed all 19 diagnostic and 23 probe regression checks; Project Validation run 37238191980 passed.
+
+Downloaded artifact 11315778743, verified pak SHA-256 `db2e73dc8bf2cfb9634b1f0765a87c7a9c8d6563f56ab3e8a664ead05e715efb`, integrity-unpacked it and reran all 23 probe rejection tests against the packaged manager. Inspected its CDO: bReplicates=false; bCanEverTick, bStartWithTickEnabled and bTickEvenWhenPaused=true; TickInterval=0. BUILD_INFO records CI synthetic merge dc726c4c6d973cce03e5ba9909b4ff7e63202bcf.
+
+Candidate download: https://github.com/Stoffe101/Minecraft-Dungeons-QoL/actions/runs/37238191986/artifacts/11315778743
+
+This validates packaging and structure only. Inventory-open crash repair, visible overlay/input and online host/join compatibility require retail tests. PR #12 remains withdrawn.
