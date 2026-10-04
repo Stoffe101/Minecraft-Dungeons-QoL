@@ -29,4 +29,4 @@ mod/Content/
         WBP_MCDQoL_SalvageReview.uasset
 ```
 
-The binary Unreal assets do not exist yet. Their exact implementation depends on current-build inventory API research.
+Editable project runtime/UI Blueprints do not exist under this source tree yet. Cooked diagnostic assets are instead generated from the permitted template by `scripts/Build-Diagnostic.ps1`, using the C# tools. `Build.ps1` remains the future editor authoring route. Do not copy cooked diagnostic packages into this editable source tree as though they were uncooked assets.

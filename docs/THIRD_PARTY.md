@@ -137,3 +137,10 @@ If a project has no license and no separately published permission:
 Game assets belong to their respective rights holders.
 
 Do not commit extracted proprietary game assets merely because they are technically useful. Raw extraction/research output belongs under ignored local research folders. Commit only project-owned assets, permitted third-party assets with correct attribution, and documentation of necessary technical findings.
+
+
+## Actual template derivative build (2026-10-04)
+
+`Build-Diagnostic.ps1` directly adapts the LetMeMove 1.1.0 release actor and Lobby/Ingame maps. Its full MIT text is retained at `third_party/LetMeMove-LICENSE.txt` and copied alongside the diagnostic pak. Template release checksum and packager commit live in `config/cooked-template.json`. The derived packages use MinecraftDungeonsQoL paths, so they do not deliberately replace the original mod. Blueprint Loader is still downloaded/installed separately.
+
+The editor mirror also retains the complete Apache-2.0 license at `sdk/Apache-2.0-LICENSE.txt`, alongside the existing SDK attribution notice.

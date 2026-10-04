@@ -116,3 +116,11 @@ We still need to confirm:
 - what happens to identity after Blacksmith upgrades or enchant rerolls
 
 Until those are tested, this document describes the safest provisional design rather than a final implementation contract.
+
+## Audit of the implemented prototype (2026-10-04)
+
+`CookedQoLPatcher` currently persists an `FName[]` of display-name/power/invested-enchantment fingerprints in `MinecraftDungeonsQoL_v1`. It does **not** implement the hero-scoped locator strategy above. The fingerprint is mutable, localized, collision-prone and shared across heroes. Unlocking one match removes group protection. This is a diagnostic prototype and cannot establish persistent physical-item locks.
+
+Selection now snapshots both slot and item UObject and verifies object equality/current inventory membership before preview. This helps prevent selecting a replacement occupant in the same slot **within a session**; it is not restart identity. Clearing selection on stash changes also does not solve persisted multi-hero identity.
+
+Production requires a new versioned sidecar schema, verified hero/item identifiers, migration of legacy fingerprint records as unresolved protection, equipment/loadout checks and reconciliation after storage/upgrades. Native salvage is absent from the diagnostic build until these gates are resolved.

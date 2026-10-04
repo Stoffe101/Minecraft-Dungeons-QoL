@@ -64,11 +64,20 @@ foreach ($doc in @(
     "docs\MODDING_RESEARCH.md",
     "docs\ROADMAP.md",
     "docs\RESEARCH_LOG.md",
-    "docs\TEST_PLAN.md"
+    "docs\TEST_PLAN.md",
+    "docs\REPO_AUDIT.md"
 )) {
     if (-not (Test-Path (Join-Path $root $doc))) {
         $errors.Add("Missing canonical doc: $doc")
     }
+}
+
+$template = Get-Content (Join-Path $root "config/cooked-template.json") -Raw | ConvertFrom-Json
+if ($template.nativeSalvageEnabled -ne $false -or $template.buildKind -ne "diagnostic-no-destruction") {
+    $errors.Add("Cooked diagnostic configuration must disable native salvage.")
+}
+if (-not (Test-Path (Join-Path $root "third_party/LetMeMove-LICENSE.txt"))) {
+    $errors.Add("Cooked template reuse requires the LetMeMove MIT license.")
 }
 
 if ($errors.Count -gt 0) {
