@@ -1,5 +1,15 @@
 # Inventory UI redesign — 2026-10-05
 
+## v5 follow-up: spacing and native salvage
+
+User's new screenshot shows v4 selecting five items and improved appearance, but “Done selecting” and “Select All” spill outside their bounds. v5 uses Select items / Done, 14-point button text, widths 124/104/104/80 and 12-unit gaps at x=50/186/302/418. Count moves to x=518. Favorite labels also use 14 points. This supersedes the sizes/captions in the historical v4 table below.
+
+The reported non-working salvage comes from the v4 download's deliberate nativeBatchEnabled=false setting. The new private CombinedNative v5 pak is built with --enable-salvage; the default source tool remains non-destructive unless explicitly enabled. Yes now starts the existing guarded one-item-per-tick worker; No still retains selection. Completion reports salvaged/skipped counts. Clear/Escape/close clear counters and stop remaining work.
+
+Rechecked original retail SalvageSlot, CanSalavage and GetItemStash metadata: stash comes from the owning player, native mutation has slot + success-out parameters and a typed undo return, and success broadcasts the original OnItemSalvaged delegate. Native eligibility includes mission salvage availability. Added a declaring-owner regression for Dungeons.ItemStashComponent.SalvageItemInSlot. All original UI data/function bodies remain preserved except established prefixes. Native deletion, refunds, online clients and the new button spacing still require retail verification; source/mocks are not an in-game test.
+
+For v5 install ONLY the CombinedNative pak, replacing the old QoL variant. First test No and then Yes with two expendable, unequipped items and a separate favorite: only the two approved items should disappear, rewards should match native salvage, the favorite must remain. Test Select All separately after that. Original undo restores only the last item; there is no full-batch undo. Favorites remain inspector-instance scoped, not restart/travel/rejoin persistent.
+
 ## Evidence and status
 
 The user confirmed v3 favorites work well and the combined pak supports Select All. Their two cropped screenshots show default text spilling out of buttons and a three-line diagnostic wall covering gear. Batch deletion was disabled; this report does not establish deletion, restart persistence or joining-player compatibility. v4 is a private UI test candidate. Original-derived packages remain private; source, tests and docs go in GitHub.

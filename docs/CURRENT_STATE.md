@@ -2,7 +2,7 @@
 
 # Current State
 
-Latest status: v3 mouse controls are user-confirmed working. The v4 UI candidate replaces diagnostic text with a compact footer, uses the retail inventory font, adds cyan selection frames and gold favorite markers, and replaces double-click Review with a Yes/No modal. v4 has source/graph/packaging validation, not retail runtime confirmation. See [INVENTORY_UI_DESIGN.md](INVENTORY_UI_DESIGN.md).
+Latest status: the user confirms v4 looks better and shows its working selection count, but supplies a cropped screenshot with overlapping toolbar captions. v5 shortens the mode caption to Done, uses 14-point button labels, widens controls and increases gaps. Its private CombinedNative download enables the previously implemented native batch worker after explicit Yes; v4 was deliberately non-destructive. Native deletion/refunds remain unverified in retail. See [INVENTORY_UI_DESIGN.md](INVENTORY_UI_DESIGN.md).
 
 Last updated: 2026-10-05 (v3 favorites/selection confirmation; v4 UI redesign)
 

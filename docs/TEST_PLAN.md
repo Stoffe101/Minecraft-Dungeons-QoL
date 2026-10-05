@@ -1,5 +1,9 @@
 # Test Plan
 
+## v5 native batch acceptance
+
+The private CombinedNative v5 replaces v4's preview. First select two cheap unequipped items and keep another item favorited. Check shorter labels and 12-unit button gaps. Salvage must open the correct count; No retains selections and removes nothing. Reopen and click Yes: exactly the two items should disappear, native currency/enchantment refunds should apply, the favorite and equipment must remain, and completion must report the correct totals. A stale/replaced or newly ineligible item must be skipped. Escape/close/Clear stops remaining work. Test Select All only after the small batch, then host/join separately. Vanilla undo restores the last item only. Native runtime success is not established by source/mocks/CI.
+
 ## UI v4 acceptance (2026-10-05)
 
 v3 favorites and selection/Select All are user-confirmed. Check the v4 reserved toolbar against the existing navigation footer, font sizing and all button clicks; four cyan edges must follow each selected physical slot/item across scrolling, filtering and grid rebuilds. Favorite gold markers and Unlock caption must agree with synchronous vanilla salvage refusal. Selected favorites/equipment must be excluded. Salvage opens a count-specific modal, No retains selection, preview Yes deletes nothing, and Escape/close/Clear reset pending confirmation. Test host and joining-player sessions independently. See [INVENTORY_UI_DESIGN.md](INVENTORY_UI_DESIGN.md) for detailed checks and unverified limits.

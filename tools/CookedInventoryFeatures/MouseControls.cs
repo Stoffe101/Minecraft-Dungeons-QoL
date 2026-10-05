@@ -45,8 +45,8 @@ sealed class MouseControls
             handler.Finish();
             return new Control(button, request, title, handler.Function, slot, item, resolver);
         }
-        Favorite = Create("Favorite", "Favorite"); Mode = Create("Mode", "Multi salvage");
-        Select = Create("Select", "Select item"); AllItems = Create("All", "Select All");
+        Favorite = Create("Favorite", "Favorite"); Mode = Create("Mode", "Select items");
+        Select = Create("Select", "Select item"); AllItems = Create("All", "Select all");
         Review = Create("Review", "Salvage"); Cancel = Create("Cancel", "Clear");
         Yes = Create("Yes", "Yes"); No = Create("No", "No");
         All = new[] { Favorite, Mode, Select, AllItems, Review, Cancel, Yes, No };
@@ -81,7 +81,7 @@ sealed class MouseControls
             g.Branch(g.Valid(g.I(control.Button)), "END");
             g.Obj(label, new EX_DynamicCast { ClassPtr = textClass, Target = g.Static("GameplayStatics", "SpawnObject", g.O(textClass), new EX_Self()) });
             g.Branch(g.Valid(g.L(label)), "END");
-            appearance.Font(g.L(label)); appearance.Caption(g.L(label), g.S(control.Label));
+            appearance.Font(g.L(label), 14); appearance.Caption(g.L(label), g.S(control.Label));
             g.Add(g.C(g.I(control.Button), g.F(g.Fn(g.Class("/Script/UMG", "ContentWidget"), "SetContent"), g.L(label))));
             g.Add(new EX_BindDelegate { FunctionName = control.Handler.ObjectName, Delegate = g.L(binding), ObjectTerm = new EX_Self() });
             var onClicked = g.Member(buttonClass, "MulticastDelegateProperty", "OnClicked");
@@ -93,7 +93,7 @@ sealed class MouseControls
             else if (control == Favorite)
                 appearance.Attach(g.I(g.Field("WholeCanvas")), g.I(control.Button), -50, -72, 156, 36, 1, 1, 1, 1, 101);
             else {
-                var (x, width) = control == Mode ? (50, 116) : control == AllItems ? (174, 88) : control == Review ? (270, 100) : (378, 72);
+                var (x, width) = control == Mode ? (50, 124) : control == AllItems ? (186, 104) : control == Review ? (302, 104) : (418, 80);
                 appearance.Attach(g.I(g.Field("WholeCanvas")), g.I(control.Button), x, -72, width, 36, 0, 1, 0, 1, 101);
             }
             g.Label(ready);
@@ -123,8 +123,8 @@ sealed class MouseControls
             appearance.Visibility(g.I(modal!), 1); g.Branch(g.I(armed), "MODAL_HIDDEN"); appearance.Visibility(g.I(modal!), 0);
             var message = g.Count(g.S("Are you sure you want to salvage these "), g.Array("Array_Length", g.I(snapshot)), " items?");
             appearance.Caption(g.I(question!), message); g.Label("MODAL_HIDDEN");
-            var modeCaption = g.String("ModeCaption"); g.Set(modeCaption, g.S("Multi salvage"));
-            g.Branch(g.I(mode), "MODE_CAPTION_READY"); g.Set(modeCaption, g.S("Done selecting")); g.Label("MODE_CAPTION_READY");
+            var modeCaption = g.String("ModeCaption"); g.Set(modeCaption, g.S("Select items"));
+            g.Branch(g.I(mode), "MODE_CAPTION_READY"); g.Set(modeCaption, g.S("Done")); g.Label("MODE_CAPTION_READY");
             SetCaption(Mode, g.L(modeCaption));
         }
         var title = g.String("FavoriteCaption"); g.Set(title, g.S("Favorite"));
