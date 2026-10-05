@@ -8,14 +8,15 @@ using UAssetAPI.UnrealTypes;
 // player and current inventory state, never an actor/host-global controller.
 sealed class MouseControls
 {
-    public sealed record Control(PropertyExport Button, PropertyExport Request, string Label, FunctionExport Handler);
+    public sealed record Control(PropertyExport Button, PropertyExport Request, string Label, FunctionExport Handler,
+        PropertyExport? TargetSlot, PropertyExport? TargetItem, FunctionExport? Resolver);
     readonly Graph g;
     readonly FPackageIndex buttonClass, textClass, widgetClass, canvasClass;
     readonly PropertyExport label, binding;
     public readonly Control Favorite, Mode, Select, AllItems, Review, Cancel;
     public readonly Control[] All;
     readonly HashSet<Control> visible;
-    public MouseControls(Graph graph, bool favoritesOnly)
+    public MouseControls(Graph graph, bool favoritesOnly, PropertyExport clickedSlot, PropertyExport clickedItem)
     {
         g = graph;
         buttonClass = g.Class("/Script/UMG", "Button"); textClass = g.Class("/Script/UMG", "TextBlock");
@@ -27,8 +28,19 @@ sealed class MouseControls
             var button = g.Object("MCDQoL_Button_" + name, buttonClass, true);
             var request = g.Boolean("MCDQoL_Request_" + name, true);
             var handler = new Graph(g.Asset, "MCDQoL_Click_" + name);
-            handler.Bool(request, true, true); handler.Finish();
-            return new Control(button, request, title, handler.Function);
+            PropertyExport? slot = null, item = null;
+            FunctionExport? resolver = null;
+            if (name is "Favorite" or "Select") {
+                var slotClass = g.Existing("InventoryItemSlot", "Class");
+                var itemClass = g.Existing("InventoryItem", "Class");
+                slot = name == "Select" ? clickedSlot : g.Object("MCDQoL_FavoriteTargetSlot", slotClass, true);
+                item = name == "Select" ? clickedItem : g.Object("MCDQoL_FavoriteTargetItem", itemClass, true);
+                InventoryActions.Capture(handler, request, slot, item, handler.I(handler.Field("SelectedSlot")),
+                    g.Existing("UMG_InventorySlotBase_C"), slotClass);
+                resolver = InventoryActions.Resolver(g, "MCDQoL_Resolve_" + name, slot, item, slotClass, itemClass);
+            } else handler.Bool(request, true, true);
+            handler.Finish();
+            return new Control(button, request, title, handler.Function, slot, item, resolver);
         }
         Favorite = Create("Favorite", "Favorite / Lock"); Mode = Create("Mode", "Multi salvage");
         Select = Create("Select", "Select item"); AllItems = Create("All", "Select All");

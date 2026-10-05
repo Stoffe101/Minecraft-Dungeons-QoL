@@ -1,5 +1,7 @@
 # Favorites and batch salvage implementation
 
+Latest audit (2026-10-05): the mouse candidate is not runtime-confirmed. Requests now capture slot **and item** at the click and reject replacements before applying favorite/select actions. Leaving selection mode retains the queue for Review. New functions initialize native locals through `FUNC_HasDefaults` and validate parameter/return ordering. Twenty action/layout checks supplement the earlier structural tests; they use mocked native predicates, not the game. See CURRENT_STATE.md and RESEARCH_LOG.md. The updated candidate supersedes v2; batch deletion remains disabled in test downloads.
+
 ## Inventory feature crash response and mouse controls (2026-10-05)
 
 The private `InventoryFeaturesTest-v1` crashed when opening inventory; it is withdrawn as a usable feature build. Both supplied crash reports have the same leading stack and both dumps fault at `Dungeons.exe+0x1237080`, reading address `0x98`. Captured machine code executes `testl $0x400,0x98(%r9)` with `r9=0`: a null function pointer at Blueprint dispatch, not the earlier FText ABI crash.
