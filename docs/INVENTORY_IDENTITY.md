@@ -1,5 +1,7 @@
 # Inventory Identity Strategy
 
+The supplied 88-package collection did not establish stable hero/item IDs. See [FAVORITES_PERSISTENCE_INVESTIGATION.md](FAVORITES_PERSISTENCE_INVESTIGATION.md): storage serialization returns no records; unreferenced native fields require runtime reflection. A reversible probe is prepared, with no changes to favorite semantics until reliable identity is established.
+
 Last updated: 2026-10-04
 
 ## Reproduced mission-travel loss — 2026-10-06

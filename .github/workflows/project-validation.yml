@@ -48,6 +48,10 @@ jobs:
         shell: powershell
         run: ./scripts/Test-LegacyGameEvidence.ps1
 
+      - name: Verify reversible reflection probe in Windows PowerShell 5.1
+        shell: powershell
+        run: ./scripts/Test-FavoritesReflectionProbe.ps1
+
       - name: Build cooked-asset inspection tool
         shell: pwsh
         run: dotnet build tools/UAssetProbe/UAssetProbe.csproj -c Release

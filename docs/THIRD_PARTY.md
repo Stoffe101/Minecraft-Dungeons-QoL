@@ -1,5 +1,7 @@
 # Third-Party Components and Licensing
 
+Native reflection evidence probe: UE4SS 3.0.1 (MIT, copyright 2022 Narknon), pinned commit d935b5b23bac03b65c14ae38382b02007204cc2e. Installer downloads the official release with checksum verification, copies only UE4SS.dll/dwmapi.dll and our diagnostic config/script, and includes third_party/UE4SS-LICENSE.txt. No upstream gameplay mods enabled. Store compatibility is not verified. See FAVORITES_PERSISTENCE_INVESTIGATION.md.
+
 ## Dungeons Mod Kit
 
 Repository:

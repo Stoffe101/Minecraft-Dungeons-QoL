@@ -1,5 +1,7 @@
 # Test Plan
 
+Native identity evidence gate: Test-FavoritesReflectionProbe.ps1 verifies the pinned release, collision/checksum rejection, metadata allowlist, incomplete capture reporting and hash-owned removal against a fake installation. Retail: install closed, enter camp/open inventory, Ctrl+H once, quit, collect and remove. Upload the private printed ZIP even if startup fails. Inspect native identity before implementing persistence; do not repeat the exhausted broad archive export or treat SDK generation as feature validation. See FAVORITES_PERSISTENCE_INVESTIGATION.md.
+
 ## v8 and persistent-favorite acceptance
 
 v8 visual check: selected tiles have 6-unit red borders without covering power/count; favorited melee/ranged/armor/artifacts show stars in equipped slots. Equip/unequip, scroll/filter/rebuild, unfavorite and reopen: markers must follow current physical items, deduplicate widgets and stay hit-test invisible. Equipped items remain excluded from Select All/native salvage.

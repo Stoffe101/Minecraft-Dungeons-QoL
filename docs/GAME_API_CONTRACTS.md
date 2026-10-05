@@ -1,5 +1,7 @@
 # Installed-game API contracts
 
+Persistence evidence (2026-10-05): storage chest ExecuteUbergraph statement 1370 calls /Script/Dungeons.ItemStashComponent.SerializeSaveState with zero parameters and no assigned return. It is a save writer, not an FString/JSON getter. The new 88-package collection imports user-manager/controller APIs but establishes no stable hero/item-instance identifier. See FAVORITES_PERSISTENCE_INVESTIGATION.md.
+
 Evidence: user `game-evidence-legacy.zip`, SHA-256 `20b5f51b085b3c8b80f285e14896d26e7c677e4b43a82ca917f431e35de31545`, collected 2026-10-04. All 31 targeted packages completed, containing 5,298 legacy properties and 824 Blueprint functions, with zero reported export errors. Raw metadata/Kismet stays under ignored research; this document records only necessary technical findings.
 
 These are observed vanilla Blueprint call shapes, not a complete native SDK, native memory layout, or an in-game test of our emitted graph. Native function flags and unreferenced fields cannot be recovered from imported function names alone. Null/zero RValue pointers in void contexts may display as `#Pointer Error#`; zero export errors does not certify every printed pointer as a native ABI.

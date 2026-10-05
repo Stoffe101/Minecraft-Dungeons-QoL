@@ -1,5 +1,11 @@
 # Research Log
 
+## 2026-10-05: supplied persistence evidence and native reflection gate
+
+Inspected private persistence-evidence-20261005-234040.zip: 88/88 completed, no export errors/raw sources. Game-instance/storage/blacksmith metadata establishes no permanent hero/physical-item identifier. Character/profile/UserManager/SaveGame filters matched no packages; they do not enumerate native classes. Storage SerializeSaveState is a zero-parameter writer with no assigned result, consistent with the reconstructed void declaration.
+
+Rechecked MIT UE4SS 3.0.1, independently hashed official release (4b47d4bc…46c57ec), inspected pinned d935b5b source/config/keybinds. Prepared temporary reflection probe with only our diagnostic, no forced loading or save/item mutation calls, hash-owned removal and failed-capture reporting. Fixed PowerShell 7 auto-DateTime freshness conversion by preserving UTC kind; 5.1 strings parse with RoundtripKind. Actual-release fixture, parser/JSON and diff checks pass locally; Windows 5.1 CI test added. Game compatibility/persistent favorites remain unfinished. Details/commands/primary sources: FAVORITES_PERSISTENCE_INVESTIGATION.md.
+
 ## 2026-10-06: confirmed UI, travel-loss investigation and v8 visual follow-up
 
 User confirms v7 features/layout work, requests thicker red selection and equipped stars, and reproduces lost favorites after a mission. Workspace maintenance removed scratch inputs; recovered original source/evidence ZIPs from their saved identities and re-cloned source. Inspector-owned UObject favorites explain the lifecycle limitation. Existing game metadata and fresh MCD-PE item/save/caching inspection still expose no verified stable per-item/hero ID. Item type, localized fingerprints, transient object names and serialized gameplay flags are unsuitable. No guessed persistence path implemented.
