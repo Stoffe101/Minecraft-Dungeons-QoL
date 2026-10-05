@@ -110,6 +110,20 @@ static class InventoryActionTests
         Check((bool)vm.Run(resolve)!, "negative control detects removed identity comparison");
         assignment.AssignmentExpression = old;
         Check(!(bool)vm.Run(resolve)!, "restored identity comparison rejects replacement again");
+        var presentation = new Graph(asset, "MCDQoL_TestVisibility");
+        var ui = new InventoryAppearance(presentation, "TestPresentation");
+        ui.VisibilityWhen(presentation.I(source), presentation.I(mode), 3);
+        presentation.Label("END"); presentation.Finish();
+        widget["Visibility"] = (byte)1; widget["VisibilityWrites"] = 0;
+        state[source.ObjectName.ToString()] = widget; state[mode.ObjectName.ToString()] = false;
+        vm.Run(presentation.Function);
+        Check((int)widget["VisibilityWrites"]! == 0, "unchanged hidden mark avoids a visibility setter");
+        state[mode.ObjectName.ToString()] = true; vm.Run(presentation.Function);
+        Check((byte)widget["Visibility"]! == 3 && (int)widget["VisibilityWrites"]! == 1, "selected mark becomes hit-test invisible with one setter");
+        vm.Run(presentation.Function); vm.Run(presentation.Function);
+        Check((int)widget["VisibilityWrites"]! == 1, "unchanged selected mark never hides and shows again");
+        state[mode.ObjectName.ToString()] = false; vm.Run(presentation.Function);
+        Check((byte)widget["Visibility"]! == 1 && (int)widget["VisibilityWrites"]! == 2, "deselection collapses the mark once");
         FunctionLayoutContracts.Validate(asset, resolve);
         void RejectLayout(Action mutate, Action restore, string expected) {
             mutate();
@@ -153,6 +167,7 @@ static class InventoryActionTests
                 case EX_Self: return instance;
                 case EX_ObjectConst x: return x.Value;
                 case EX_IntConst x: return x.Value;
+                case EX_ByteConst x: return x.Value;
                 case EX_LocalVariable: case EX_LocalOutVariable: case EX_InstanceVariable: return Get(e, target);
                 case EX_Context x:
                     var obj = Eval(x.ObjectExpression, target);
@@ -164,6 +179,12 @@ static class InventoryActionTests
                     // UE evaluates function arguments in Stack.Object (the caller),
                     // not the function's EX_Context receiver such as a library CDO.
                     var args = x.Parameters.Select(p => Eval(p, instance)).ToArray();
+                    if (Name(x.StackNode) == "GetVisibility") return ((Dictionary<string, object?>)target!)["Visibility"];
+                    if (Name(x.StackNode) == "SetVisibility") {
+                        var values = (Dictionary<string, object?>)target!;
+                        values["Visibility"] = args[0]; values["VisibilityWrites"] = (int)values["VisibilityWrites"]! + 1;
+                        return null;
+                    }
                     return Name(x.StackNode) switch {
                         "IsValid" => args[0] != null,
                         "EqualEqual_ObjectObject" => ReferenceEquals(args[0], args[1]),
@@ -171,6 +192,7 @@ static class InventoryActionTests
                         "Array_Length" => ((List<object?>)args[0]!).Count,
                         "Greater_IntInt" => (int)args[0]! > (int)args[1]!,
                         "EqualEqual_IntInt" => (int)args[0]! == (int)args[1]!,
+                        "NotEqual_ByteByte" => (byte)args[0]! != (byte)args[1]!,
                         _ => throw new NotSupportedException(Name(x.StackNode))
                     };
                 default: throw new NotSupportedException(e.GetType().Name);

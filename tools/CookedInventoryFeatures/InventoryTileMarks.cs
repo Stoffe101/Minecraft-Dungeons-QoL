@@ -65,9 +65,7 @@ static class InventoryTileMarks
         g.Set(queued, g.Math("EqualEqual_ObjectObject", g.At(g.I(selectedSlots), g.L(itemIndex)), g.L(slot)));
         g.Label("MARK_STATE");
         for (var i = 0; i < marks.Length; i++) {
-            ui.Visibility(g.At(g.I(marks[i]), g.L(markIndex)), 1);
-            g.Branch(g.L(i == 4 ? locked : queued), "MARK_HIDDEN_" + i);
-            ui.Visibility(g.At(g.I(marks[i]), g.L(markIndex)), 3); g.Label("MARK_HIDDEN_" + i);
+            ui.VisibilityWhen(g.At(g.I(marks[i]), g.L(markIndex)), g.L(i == 4 ? locked : queued), 3);
         }
         g.Label("MARK_NEXT"); g.Set(loop, g.Math("Add_IntInt", g.L(loop), g.N(1))); g.Jump("MARK_LOOP"); g.Label("MARK_DONE");
     }

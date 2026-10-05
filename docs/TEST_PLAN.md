@@ -1,5 +1,16 @@
 # Test Plan
 
+## v6 retail follow-up
+
+User-confirmed v5: actual multi-item salvage works. Still open: Select All then salvage, reward/refund totals and online joining-player tests.
+
+1. Replace the older QoL pak with the single v6 CombinedNative pak. Hover/select the last item and bottom row; Favorite/Unlock favorite must remain beside the left controls, without covering the right item name or power. Check count spacing at normal UI scaling.
+2. Select two expendable unequipped items and keep a third favorited. Review count; No preserves selection, Yes removes only reviewed eligible items. Select All must exclude favorites/equipment before a confirmed batch. Vanilla undo restores only the last item.
+3. Repeat the inventory-open alt-tab/return sequence. Watch for a GPU crash or visible flicker; unchanged selection borders must remain stable. If a crash recurs, preserve the new XML/minidump and compare a run without the QoL pak. Current evidence does not establish the v6 mitigation fixes device hangs.
+4. Repeat scrolling/filtering/clear/reopen and host/join sessions. Marker identity must follow physical items across widget reuse.
+
+Automated v6 coverage executes generated visibility branches with mock widgets: hidden no-op, visible transition, repeated visible no-op, and collapsed transition. Owner contracts reject GetVisibility/SetVisibility on the wrong declaring class. These tests do not execute Slate or a GPU.
+
 ## v5 native batch acceptance
 
 The private CombinedNative v5 replaces v4's preview. First select two cheap unequipped items and keep another item favorited. Check shorter labels and 12-unit button gaps. Salvage must open the correct count; No retains selections and removes nothing. Reopen and click Yes: exactly the two items should disappear, native currency/enchantment refunds should apply, the favorite and equipment must remain, and completion must report the correct totals. A stale/replaced or newly ineligible item must be skipped. Escape/close/Clear stops remaining work. Test Select All only after the small batch, then host/join separately. Vanilla undo restores the last item only. Native runtime success is not established by source/mocks/CI.

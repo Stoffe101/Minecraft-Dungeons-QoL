@@ -1,5 +1,13 @@
 # Research Log
 
+## 2026-10-05: v5 multi-salvage confirmation and v6 GPU-hang mitigation
+
+User confirms multi-salvage works; Select All followed by salvage and refund totals remain unverified. Screenshot shows bottom item's details obscured by Favorite. Relocated Favorite to the left toolbar, shifted count after it. Private crash XML/minidump identify a D3D11 DEVICE_HUNG GPU assertion after alt-tab, rather than the historical Blueprint access violation. Its trigger remains unknown.
+
+Inspected pinned Epic UE4.22 Widget/TextBlock implementations and reflected GetVisibility/byte comparison declarations, and Microsoft's DXGI error reference (links in INVENTORY_CRASH_INVESTIGATION.md). Removed repeated collapse/show cycles for unchanged marks/buttons/modal and cached dynamic captions. GetVisibility uses a typed enum byte local; setter declaring-owner contracts cover Widget. No copied engine code or private assets committed.
+
+Local generated graph tests pass on both fixtures: 34 action/layout checks and 23 declaring-owner cases each, plus 28 probe and 19 diagnostic rejection cases. Three build modes serialize/reopen with all 11,152 original exports preserved; native mode retains the guarded one-item-per-tick salvage worker. Private pak packing must round-trip all four files before delivery. Runtime layout, alt-tab stability and Select All batch execution remain user checks; no claim that GPU hang is fixed.
+
 ## 2026-10-05 — v5 overlap correction and enabled native batch
 
 Inspected the user's cropped v4 toolbar screenshot: selection count reads five; Done selecting/Select All overflow. Reduced captions/14-point button font, widened controls, increased gaps, and moved count. Actual salvage was absent because the previous download deliberately disabled it, not because the native worker had been tested and failed. New private CombinedNative v5 explicitly enables the worker after Yes, with existing identity/favorite/equipment/membership/mission eligibility guards and original native undo/delegate behavior. Completion shows salvaged/skipped counts.
