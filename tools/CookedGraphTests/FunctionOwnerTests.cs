@@ -24,6 +24,8 @@ static class FunctionOwnerTests
         Check("SetIsEnabled", "UserWidget", "/Script/UMG", false);
         Check("SetContent", "ContentWidget", "/Script/UMG", true);
         Check("SetContent", "Button", "/Script/UMG", false);
+        Check("SalvageItemInSlot", "ItemStashComponent", "/Script/Dungeons", true);
+        Check("SalvageItemInSlot", "InventoryItemSlot", "/Script/Dungeons", false);
         foreach (var (method, owner) in new[] { ("GetContent", "ContentWidget"), ("SetFont", "TextBlock"), ("SetBrushColor", "Border"), ("SetBackgroundColor", "Button"), ("SetOffsets", "CanvasPanelSlot") }) {
             Check(method, owner, "/Script/UMG", true);
             Check(method, "UserWidget", "/Script/UMG", false);

@@ -13,6 +13,7 @@ static class FunctionImportContracts
         ["SetBrushColor"] = ("/Script/UMG", "Border"),
         ["SetBackgroundColor"] = ("/Script/UMG", "Button"),
         ["SetOffsets"] = ("/Script/UMG", "CanvasPanelSlot"),
+        ["SalvageItemInSlot"] = ("/Script/Dungeons", "ItemStashComponent"),
     };
     public static void Validate(UAsset asset)
     {

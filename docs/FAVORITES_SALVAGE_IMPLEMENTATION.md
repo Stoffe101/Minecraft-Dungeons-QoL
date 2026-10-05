@@ -1,5 +1,7 @@
 # Favorites and batch salvage implementation
 
+v5 update (2026-10-05): new CombinedNative private download enables the existing guarded native worker after Yes. v4 was a non-destructive preview and could not delete batches. Button labels/spacing are corrected from the user's screenshot. Native source/graph contracts are checked; actual deletion/refunds and client co-op still await retail verification. See INVENTORY_UI_DESIGN.md, including last-item-only undo and session-scoped favorites.
+
 Latest status (2026-10-05): the user confirms v3 favorites and combined selection/Select All work. v4 redesigns the UI with a compact reserved toolbar, retail fonts, cyan selection frames, gold favorite markers and a count-specific Yes/No modal. Click-time physical identity and synchronous favorite guards remain. Thirty action/layout mock cases supplement structural validation, including non-destructive preview approval and No retaining selection. v4 rendering remains unverified in retail; batch deletion stays disabled in downloads. See [INVENTORY_UI_DESIGN.md](INVENTORY_UI_DESIGN.md).
 
 ## Inventory feature crash response and mouse controls (2026-10-05)

@@ -123,6 +123,7 @@ if (!favoritesOnly) Prepend(g, hud.Exports.OfType<FunctionExport>().Single(x => 
 var key = g.Import("/Script/CoreUObject", "ScriptStruct", "Key", g.Package("/Script/InputCore"));
 var cancel = new Graph(hud, "MCDQoL_CancelBatch");
 cancel.Bool(armed, false, true); cancel.Bool(running, false, true); cancel.Bool(mode, false, true);
+cancel.Set(completed, cancel.N(0), true); cancel.Set(skipped, cancel.N(0), true);
 foreach (var control in controls.All) cancel.Bool(control.Request, false, true);
 cancel.Obj(clickedSlot, new EX_NoObject(), true);
 cancel.Obj(clickedItem, new EX_NoObject(), true);
@@ -256,7 +257,7 @@ KismetExpression Vec(float x, float y) => new EX_StructConst { Struct = vector, 
 var anchors = g.Import("/Script/CoreUObject", "ScriptStruct", "Anchors", g.Package("/Script/Slate"));
 g.Add(g.C(g.L(canvasSlot), g.F(g.Fn(canvasSlotClass, "SetAnchors"), new EX_StructConst { Struct = anchors, StructSize = 16, Value = new[] { Vec(0, 1f), Vec(0, 1f) } })));
 g.Add(g.C(g.L(canvasSlot), g.F(g.Fn(canvasSlotClass, "SetAlignment"), Vec(0, 1f))));
-g.Add(g.C(g.L(canvasSlot), g.F(g.Fn(canvasSlotClass, "SetPosition"), Vec(favoritesOnly ? 50 : 470, -76))));
+g.Add(g.C(g.L(canvasSlot), g.F(g.Fn(canvasSlotClass, "SetPosition"), Vec(favoritesOnly ? 50 : 518, -76))));
 g.Add(g.C(g.L(canvasSlot), g.F(g.Fn(canvasSlotClass, "SetSize"), Vec(260, 28))));
 g.Add(g.C(g.L(canvasSlot), g.F(g.Fn(canvasSlotClass, "SetZOrder"), g.N(100))));
 var appearance = new InventoryAppearance(g); appearance.ReserveFooter(); appearance.Font(g.I(text), 14); appearance.Caption(g.I(text), g.S(""));
@@ -267,7 +268,14 @@ g.Add(g.C(g.C(g.I(hudInspector), g.V(toggleMember), toggleMember), g.F(g.Fn(widg
 g.Obj(current, g.C(g.I(g.Field("SelectedSlot")), g.V(g.Member(widgetSlotClass, "ObjectProperty", "InventoryItemSlot")), g.Index(current)));
 g.Obj(currentItem, SlotItem(g.L(current), currentItem));
 g.Set(status, favoritesOnly ? g.S("") : g.Count(g.S(""), Length(g.I(selectedItems)), destructive ? " items selected" : " items selected (preview)"));
-g.Branch(g.I(running), "WRITE"); g.Set(status, g.Count(g.S("Salvaging: "), g.I(completed), " complete"));
+g.Branch(g.I(running), "BATCH_RESULT"); g.Set(status, g.Count(g.S("Salvaging: "), g.I(completed), " complete")); g.Jump("WRITE");
+g.Label("BATCH_RESULT");
+if (destructive) {
+    g.Branch(g.Math("EqualEqual_IntInt", Length(g.I(selectedItems)), g.N(0)), "WRITE");
+    g.Branch(g.Math("Greater_IntInt", g.Math("Add_IntInt", g.I(completed), g.I(skipped)), g.N(0)), "WRITE");
+    g.Set(status, g.Count(g.S("Salvaged "), g.I(completed), ", skipped "));
+    g.Set(status, g.Count(g.L(status), g.I(skipped)));
+}
 g.Label("WRITE"); controls.UpdateEnabled(currentItem, running, selectedItems, armed, mode, IsFavorite(), snapshotItems);
 InventoryTileMarks.Update(g, selectedSlots, selectedItems, FavoriteArray(), widgetSlotClass, hudSlot, hudItem);
 g.Branch(g.Static("KismetStringLibrary", "EqualEqual_StrStr", g.L(status), g.I(cachedText)), "CHANGED"); g.Jump("END");

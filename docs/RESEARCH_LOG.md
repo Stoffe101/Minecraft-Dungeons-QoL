@@ -1,5 +1,11 @@
 # Research Log
 
+## 2026-10-05 — v5 overlap correction and enabled native batch
+
+Inspected the user's cropped v4 toolbar screenshot: selection count reads five; Done selecting/Select All overflow. Reduced captions/14-point button font, widened controls, increased gaps, and moved count. Actual salvage was absent because the previous download deliberately disabled it, not because the native worker had been tested and failed. New private CombinedNative v5 explicitly enables the worker after Yes, with existing identity/favorite/equipment/membership/mission eligibility guards and original native undo/delegate behavior. Completion shows salvaged/skipped counts.
+
+Rechecked original CanSalavage/GetItemStash/SalvageSlot metadata, including owning-player stash, native slot + success-out ABI and typed undo return. Added reflected mutation-owner regression cases (19 owner checks per fixture; existing 30 action/layout cases, 28 probe and 19 diagnostic rejection tests). All three source modes must compile/write/reopen and preserve 11,152 original exports; delivered native pak must unpack to exactly four matching staged files. Runtime deletion/refunds, joining-player compatibility and persistent favorites remain unverified. See INVENTORY_UI_DESIGN.md for native retail checks and distinction from the old preview.
+
 ## 2026-10-05 — Working v3 and UI v4
 
 User confirms favorites work well and combined selection/Select All works. Actual batch deletion remains disabled and untested. Inspected both local screenshots, original HUD font/content margins and embedded slot CanvasPanel roots. Checked UE4.22 Font/WidgetTree/Border/CanvasPanelSlot contracts against the pinned Epic mirror. Implemented a compact footer, retail font sizing, separate favorite button, cyan physical-item selection frames, gold markers and a real Yes/No modal. No guessed offsets/native font or brush struct layouts.
