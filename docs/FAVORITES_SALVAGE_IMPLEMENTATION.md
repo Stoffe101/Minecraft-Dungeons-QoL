@@ -1,6 +1,24 @@
 # Favorites and batch salvage implementation
 
-## Current private test increment (2026-10-05)
+## Inventory feature crash response and mouse controls (2026-10-05)
+
+The private `InventoryFeaturesTest-v1` crashed when opening inventory; it is withdrawn as a usable feature build. Both supplied crash reports have the same leading stack and both dumps fault at `Dungeons.exe+0x1237080`, reading address `0x98`. Captured machine code executes `testl $0x400,0x98(%r9)` with `r9=0`: a null function pointer at Blueprint dispatch, not the earlier FText ABI crash.
+
+A concrete invalid import was found in both new helpers: `/Script/UMG.UserWidget.GetOwningPlayer`. In the pinned UE 4.22.3 headers the reflected declaration belongs to **Widget**; the original game HUD calls the function by name rather than importing it from UserWidget. The patch now uses `/Script/UMG.Widget.GetOwningPlayer`. Inspector Blueprint calls use the game's observed local virtual dispatch pattern. This corrects a demonstrated import error consistent with the crash; the dump does not contain enough heap memory to identify the exact failing script expression. Runtime repair remains unconfirmed.
+
+The new UI uses clickable **Favorite / Lock**, **Multi salvage**, **Select item**, **Select All**, **Review / Confirm**, and **Cancel / Clear** buttons. Multi salvage toggles selection mode; in that mode the original HUD `SlotClicked(Source)` event records the physical clicked slot, and the next HUD Tick checks eligibility and toggles its queue membership. Click an item again to deselect. Select item toggles the normally highlighted item without enabling the mode. Favorite toggles protection; favoriting removes the item from selection. The status area distinguishes the highlighted favorite/selected item and shows counts and mode. Buttons bind their native `Button.OnClicked` delegates to zero-parameter functions on the same HUD. Favorite/edit controls are disabled during a running batch; Cancel remains enabled. Closing inventory or Escape clears all pending requests, selection, snapshots and confirmation.
+
+### Packaging decision
+
+Do not install independent favorites and salvage paks that both replace the same HUD/inspector: the later-mounted asset replaces the entire earlier asset, including its guard. Use a **shared protected inventory core with selectable features** instead. The build supports `-FavoritesOnly` (one visible button and no slot-click interception) and the combined selection build. They are alternative packages: install exactly one. Both guard vanilla salvage using the same physical-item favorites, and combined/native salvage shares that protection. Future unrelated features can be separate paks if their assets do not conflict. A standalone salvage module without favorites protection is deliberately not provided.
+
+The two downloadable test alternatives disable batch deletion. The native implementation is built/validated separately with `-EnableNativeSalvage`; it is not certified by these checks and is not included in the next test download. First verify inventory opening, mouse interaction, normal salvage refusal for favorites, duplicate-item independence, reopen and Select All. Then verify native salvage and online host/join behavior. Favorites remain inspector-lifetime state; restart/travel/rejoin persistence and full loadouts are unfinished.
+
+### Verification
+
+Compiled all three variants against pinned UAssetAPI 1.1.0 and UE 4.22 parsing. Each was written and reopened, all 11,152 original exports preserved, with original function changes limited to guard/callback prefixes and relocated jumps. Favorites-only leaves `SlotClicked` unchanged. Added declaring-owner regression coverage (seven cases, including the rejected UserWidget import and inherited Button.SetContent import). Existing 28 inventory-probe and 19 diagnostic negative tests pass. Button delegate handlers must exist in the owner function map and take zero parameters; native vs preview salvage call/delegate counts are checked. Repository/PowerShell syntax validation passes. These are structural/source checks; no game or Unreal Editor is available here.
+
+## Historical v1 private test increment (crashes; replaced) (2026-10-05)
 
 The seven-package source ZIP has been received and all fourteen manifest hashes verified (ZIP SHA-256 `1e7b7a4595afb4d3e2ba8869f81ab3b07d68ad32990c90c36c2d2c3aa0ea9d82`). The user confirms keyboard/mouse only and a hosted successful read-only test, wants joining players supported, and intends personal use.
 

@@ -10,7 +10,7 @@ static class FeatureValidation
     public static void VerifyPreserved(UAsset original, UAsset patched)
     {
         var hud = original.Exports.OfType<ClassExport>().Single().ObjectName.ToString() == "UMG_InventoryHUD_C";
-        var prefixes = hud ? new Dictionary<string, int> { ["Tick"] = 1, ["OpenCloseInventory"] = 1 }
+        var prefixes = hud ? new Dictionary<string, int> { ["Tick"] = 1, ["OpenCloseInventory"] = 1, ["SlotClicked"] = patched.Exports.OfType<FunctionExport>().Single(f => f.ObjectName.ToString() == "SlotClicked").ScriptBytecode.Length == 5 ? 1 : 0 }
             : new Dictionary<string, int> { ["CanSalavage"] = 3, ["SalvageSlot"] = 2 };
         byte[] Code(UAsset a, IEnumerable<KismetExpression> expressions) {
             using var stream = new MemoryStream(); using var writer = new AssetBinaryWriter(stream, a);
@@ -64,6 +64,7 @@ static class FeatureValidation
                 if (p.Property is UObjectProperty o) Add(e.CreateBeforeSerializationDependencies, o.PropertyClass);
                 if (p.Property is UArrayProperty a) Add(e.SerializationBeforeSerializationDependencies, a.Inner);
                 if (p.Property is UStructProperty s) Add(e.SerializationBeforeSerializationDependencies, s.Struct);
+                if (p.Property is UDelegateProperty d) Add(e.SerializationBeforeSerializationDependencies, d.SignatureFunction);
             }
         }
         // Keep the game's preload graph intact. Only append dependencies for new children
@@ -71,7 +72,7 @@ static class FeatureValidation
         foreach (var e in asset.Exports.OfType<StructExport>())
             foreach (var child in e.Children.Where(x => x.Index > originalCount))
                 Add(e.SerializationBeforeSerializationDependencies, child);
-        foreach (var fn in asset.Exports.OfType<FunctionExport>().Where(x => x.ObjectName.ToString().StartsWith("MCDQoL_") || x.ObjectName.ToString() is "Tick" or "OpenCloseInventory" or "CanSalavage" or "SalvageSlot"))
+        foreach (var fn in asset.Exports.OfType<FunctionExport>().Where(x => x.ObjectName.ToString().StartsWith("MCDQoL_") || x.ObjectName.ToString() is "Tick" or "OpenCloseInventory" or "CanSalavage" or "SalvageSlot" or "SlotClicked"))
             foreach (var root in fn.ScriptBytecode)
             {
                 uint offset = 0;
@@ -94,7 +95,18 @@ static class FeatureValidation
 
     public static void Validate(UAsset asset, bool nativeBatch)
     {
-        foreach (var fn in asset.Exports.OfType<FunctionExport>().Where(x => x.ObjectName.ToString().StartsWith("MCDQoL_") || x.ObjectName.ToString() is "Tick" or "OpenCloseInventory" or "CanSalavage" or "SalvageSlot"))
+        FunctionImportContracts.Validate(asset);
+        foreach (var function in asset.Exports.OfType<FunctionExport>().Where(x => x.ObjectName.ToString().StartsWith("MCDQoL_")))
+            foreach (var root in function.ScriptBytecode) {
+                uint position = 0; root.Visit(asset, ref position, (expression, _) => {
+                    if (expression is not EX_BindDelegate binding) return;
+                    var handler = asset.Exports.OfType<FunctionExport>().SingleOrDefault(x => x.ObjectName == binding.FunctionName);
+                    if (handler == null || !asset.Exports.OfType<ClassExport>().Single().FuncMap.Keys.Any(x => x == handler.ObjectName)
+                        || handler.Children.Any(x => ((PropertyExport)x.ToExport(asset)).Property.PropertyFlags.HasFlag(EPropertyFlags.CPF_Parm)))
+                        throw new InvalidDataException("Button click requires an owned, registered, zero-parameter handler: " + binding.FunctionName);
+                });
+            }
+        foreach (var fn in asset.Exports.OfType<FunctionExport>().Where(x => x.ObjectName.ToString().StartsWith("MCDQoL_") || x.ObjectName.ToString() is "Tick" or "OpenCloseInventory" or "CanSalavage" or "SalvageSlot" or "SlotClicked"))
         {
             var offsets = new HashSet<uint>(); uint offset = 0;
             foreach (var root in fn.ScriptBytecode) { offsets.Add(offset); offset += (uint)root.GetSize(asset); }

@@ -166,3 +166,7 @@ PR #13 also crashes when pressing I online. The replacement materializes string/
 ## 2026-10-05 user-confirmed PR #14 result
 
 Passed by user report: inventory opens, visible text, F6/F7 browsing, correct armor/weapon names. Screenshot confirms 216 slots and Ghostly Armor power 163. Not recorded: hosting versus joining a friend, simultaneous friends, inventory-close hiding, repeated use/mission travel. Do not generalize this to persistent locks, full feature graph or network client bootstrap.
+
+## Mouse-control feature crash follow-up
+
+Remove v1/older inventory QoL paks; install exactly one new variant. Test favorites-only first: inventory open/close, mouse button, lock/unlock, ordinary salvage refusal while locked, two identical items, reopen. Then replace it with the combined preview: mode on/off, repeated clicks toggling selection, Select item, Select All exclusions, favorite a selected item, review/cancel, closing while armed, filtering, and no action from old F5/F8/F9/F10 controls. Preview confirmation must not delete anything. Check readability and click targets at the user's resolution. Test hosted and joined online sessions separately; the patch has no GameMode/loader bootstrap but that alone does not prove client support. Native deletion, undo, stale-item revalidation and travel/identity persistence are later runtime gates.

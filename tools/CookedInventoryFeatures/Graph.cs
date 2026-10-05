@@ -21,6 +21,7 @@ sealed class Graph
         Function = (FunctionExport)asset.Exports.OfType<FunctionExport>().First(x => x.Children.Length == 0).Clone();
         Function.ObjectName = new FName(asset, functionName); Function.OuterIndex = Index(Owner);
         Function.SuperIndex = Function.SuperStruct = new FPackageIndex(0);
+        Function.SerialOffset = Function.SerialSize = 0;
         Function.Children = System.Array.Empty<FPackageIndex>();
         Function.FunctionFlags = EFunctionFlags.FUNC_Public | EFunctionFlags.FUNC_BlueprintCallable | EFunctionFlags.FUNC_BlueprintEvent;
         ClearDependencies(Function); asset.Exports.Add(Function);
@@ -74,6 +75,7 @@ sealed class Graph
     public KismetExpression N(int n) => new EX_IntConst { Value = n };
     public KismetExpression S(string s) => new EX_StringConst { Value = s };
     public KismetExpression F(FPackageIndex f, params KismetExpression[] p) => new EX_FinalFunction { StackNode = f, Parameters = p };
+    public KismetExpression Virtual(string name, params KismetExpression[] p) => new EX_LocalVirtualFunction { VirtualFunctionName = new FName(Asset, name), Parameters = p };
     public KismetExpression Local(FunctionExport f, params KismetExpression[] p) => new EX_LocalFinalFunction { StackNode = Index(f), Parameters = p };
     public KismetExpression C(KismetExpression obj, KismetExpression expression, FPackageIndex? result = null) => new EX_Context { ObjectExpression = obj, ContextExpression = expression, Offset = (uint)Size(expression), RValuePointer = Ptr(result ?? new FPackageIndex(0)) };
     public KismetExpression Static(string cls, string fn, params KismetExpression[] p) => C(O(Import("/Script/Engine", cls, "Default__" + cls, Package("/Script/Engine"))), F(Fn(Class("/Script/Engine", cls), fn), p));
