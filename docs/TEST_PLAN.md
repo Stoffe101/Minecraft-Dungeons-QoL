@@ -1,5 +1,14 @@
 # Test Plan
 
+## v7 favorite marker acceptance
+
+1. Favorite an unequipped item: a gold star appears top-right on its grid tile, and FAVORITE appears after the existing rarity/gilded/custom tags when inspecting it. Check an item with all three native badges present; the label must not cover the item name or power.
+2. Switch to another physically distinct item, including one with identical name/power. Neither marker may transfer. Unfavorite the original: star and badge disappear; normal salvage becomes available only if vanilla eligibility permits it.
+3. Scroll/filter/rebuild the grid, reopen inventory and change inspection rapidly. Marks must follow current physical items and remain non-interactive; no duplicate badges or accumulated historical widgets. Check normal/narrow/wide UI scaling.
+4. Recheck selecting/favoriting, native multi-salvage and Select All exclusions. These presentation changes must not bypass favorites protection. Repeat alt-tab and host/join checks; no GPU crash fix or persistence claim is established.
+
+Automated favorite-state graph checks cover inspected favorite, unchanged no-op, changed physical item, unfavorite, and null inspector. Existing visibility/action/layout/owner checks remain. Mock/parser/package checks are not retail execution.
+
 ## v6 retail follow-up
 
 User-confirmed v5: actual multi-item salvage works. Still open: Select All then salvage, reward/refund totals and online joining-player tests.

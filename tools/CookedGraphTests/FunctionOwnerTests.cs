@@ -26,6 +26,10 @@ static class FunctionOwnerTests
             Check(method, "Widget", "/Script/UMG", true);
             Check(method, "UserWidget", "/Script/UMG", false);
         }
+        Check("GetParent", "Widget", "/Script/UMG", true);
+        Check("GetParent", "UserWidget", "/Script/UMG", false);
+        Check("AddChildToHorizontalBox", "HorizontalBox", "/Script/UMG", true);
+        Check("AddChildToHorizontalBox", "PanelWidget", "/Script/UMG", false);
         Check("SetContent", "ContentWidget", "/Script/UMG", true);
         Check("SetContent", "Button", "/Script/UMG", false);
         Check("SalvageItemInSlot", "ItemStashComponent", "/Script/Dungeons", true);

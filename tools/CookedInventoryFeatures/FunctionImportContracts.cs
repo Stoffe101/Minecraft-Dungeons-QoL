@@ -8,6 +8,8 @@ static class FunctionImportContracts
         ["GetOwningPlayer"] = ("/Script/UMG", "Widget"),
         ["SetIsEnabled"] = ("/Script/UMG", "Widget"),
         ["GetVisibility"] = ("/Script/UMG", "Widget"),
+        ["GetParent"] = ("/Script/UMG", "Widget"),
+        ["AddChildToHorizontalBox"] = ("/Script/UMG", "HorizontalBox"),
         ["SetVisibility"] = ("/Script/UMG", "Widget"),
         ["SetContent"] = ("/Script/UMG", "ContentWidget"),
         ["GetContent"] = ("/Script/UMG", "ContentWidget"),

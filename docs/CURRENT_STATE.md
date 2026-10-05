@@ -2,9 +2,9 @@
 
 # Current State
 
-Latest status: v5 native multi-salvage works in the user's game. Favorite overlaps the bottom item's details, so v6 moves it to the left toolbar and moves the count after it. An alt-tab crash is a D3D11 GPU device-hung assertion, not the previous Blueprint access violation. v6 avoids repeated hide/show cycles for unchanged marks/buttons/modal and caches dynamic captions. This reduces unnecessary UI work; the crash's trigger is unknown and a crash fix is NOT established. See [INVENTORY_UI_DESIGN.md](INVENTORY_UI_DESIGN.md) and [INVENTORY_CRASH_INVESTIGATION.md](INVENTORY_CRASH_INVESTIGATION.md).
+Latest status: v7 replaces the tiny favorite square with a gold pixel star at the grid tile's top-right, and appends a FAVORITE badge to the inspector's existing rarity/gilded/custom row. Badge visibility resolves the actual inspected physical item, not a pending HUD highlight. Native salvage and v6 left toolbar/redraw suppression remain. Layout/loading of the new markers still require retail verification. The prior alt-tab crash's GPU-hang trigger remains unknown; no crash fix is established. See [INVENTORY_UI_DESIGN.md](INVENTORY_UI_DESIGN.md) and [INVENTORY_CRASH_INVESTIGATION.md](INVENTORY_CRASH_INVESTIGATION.md).
 
-Last updated: 2026-10-05 (v5 native salvage confirmation; v6 toolbar and redraw changes)
+Last updated: 2026-10-05 (v7 favorite star and inspector badge)
 
 ## Actual implementation
 

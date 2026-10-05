@@ -66,9 +66,9 @@ sealed class InventoryAppearance
             Value = new KismetExpression[] { new EX_FloatConst { Value = x }, new EX_FloatConst { Value = y }, new EX_FloatConst { Value = width }, new EX_FloatConst { Value = height } } })));
         g.Add(g.C(g.L(slot), g.F(g.Fn(canvasClass, "SetZOrder"), g.N(z))));
     }
-    public void Font(KismetExpression label, int size = 16)
+    public void Font(KismetExpression label, int size = 16, KismetExpression? source = null)
     {
-        g.Set(font, g.C(g.I(g.Field("InventorySpaceIndicator")), g.V(g.Member(textClass, "StructProperty", "Font")), g.Index(font)));
+        g.Set(font, g.C(source ?? g.I(g.Field("InventorySpaceIndicator")), g.V(g.Member(textClass, "StructProperty", "Font")), g.Index(font)));
         var member = g.Member(((UStructProperty)font.Property).Struct, "IntProperty", "Size");
         g.Add(new EX_Let { Value = g.Ptr(member), Variable = new EX_StructMemberContext { StructMemberExpression = g.Ptr(member), StructExpression = g.L(font) }, Expression = g.N(size) });
         g.Add(g.C(label, g.F(g.Fn(textClass, "SetFont"), g.L(font))));
@@ -114,5 +114,23 @@ sealed class InventoryAppearance
         var obj = instance ? g.I(p) : g.L(p);
         g.Add(g.C(obj, g.F(g.Fn(borderClass, "SetBrushColor"), tint))); Visibility(obj, 3);
         Attach(parent, obj, x, y, width, height, ax, ay, z: z, maxX: maxX, maxY: maxY); return p;
+    }
+    public PropertyExport FavoriteStar(KismetExpression parent)
+    {
+        var cls = g.Class("/Script/UMG", "CanvasPanel");
+        var icon = g.Object("FavoriteStar", cls); Spawn(icon, cls, false);
+        Visibility(g.L(icon), 3);
+        Attach(parent, g.L(icon), -30, 5, 25, 25, ax: 1, z: 200);
+        Fill("StarBackground", g.L(icon), 0, 0, 25, 25, Color(.025f, .025f, .035f, .92f), instance: false);
+        // Pixel geometry avoids font-dependent star glyphs and external textures.
+        var rows = new[] { "...#...", "...#...", "#######", ".#####.", "..###..", ".##.##.", "##...##" };
+        for (var y = 0; y < rows.Length; y++)
+            for (var x = 0; x < rows[y].Length; x++) {
+                if (rows[y][x] != '#') continue;
+                var start = x; while (x + 1 < rows[y].Length && rows[y][x + 1] == '#') x++;
+                Fill("StarPixel", g.L(icon), 2 + start * 3, 2 + y * 3, (x - start + 1) * 3, 3,
+                    Color(1, .72f, .12f), instance: false, z: 2);
+            }
+        return icon;
     }
 }

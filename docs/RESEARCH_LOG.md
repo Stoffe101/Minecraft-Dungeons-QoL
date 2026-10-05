@@ -1,5 +1,11 @@
 # Research Log
 
+## 2026-10-05: v7 favorite icon and inspector tag
+
+Inspected the user's two local crops and private InspectInfo/tag widget layout. The observed native rarity/gilded/custom tags share a HorizontalBox; UMG_ItemTagIconName and inspected-item fields are reflected. Checked GetParent/AddChildToHorizontalBox/padding/alignment in pinned Epic UE4.22 headers, with current official docs corroboration. Replaced tiny gold square with a native pixel star and appended a FAVORITE badge to the native row, resolving the physical inspected item. Dynamic row replacement detaches the old badge; unsupported rows hide it. Native selection/salvage safeguards, session-scoped favorites and v6 redraw suppression remain.
+
+39 action/layout checks and 27 declaring-owner checks pass on each actor fixture, with existing 28 probe and 19 diagnostic rejection cases. All three modes write/reopen preserving original exports; package round-trip must compare the four staged files before delivery. Private assets remain excluded from git/CI. Retail marker placement, badge flow under UI scaling and host/join still need user tests; the GPU-hang trigger remains unknown. See INVENTORY_UI_DESIGN.md for geometry, native contracts and limits.
+
 ## 2026-10-05: v5 multi-salvage confirmation and v6 GPU-hang mitigation
 
 User confirms multi-salvage works; Select All followed by salvage and refund totals remain unverified. Screenshot shows bottom item's details obscured by Favorite. Relocated Favorite to the left toolbar, shifted count after it. Private crash XML/minidump identify a D3D11 DEVICE_HUNG GPU assertion after alt-tab, rather than the historical Blueprint access violation. Its trigger remains unknown.
