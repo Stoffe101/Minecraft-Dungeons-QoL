@@ -2,7 +2,7 @@
 
 # Current State
 
-Latest status: the v1 private inventory feature test crashes. The corrected mouse-control alternatives below are structurally validated but await retail runtime verification. The older read-only probe remains the user-confirmed working milestone.
+Latest status: the v1 private inventory feature test crashes. The mouse-control candidate is still not runtime-confirmed. The subsequent audit fixes click-time identity, retained selection when leaving multi-select mode, and native-local initialization flags; see the latest section below. The older read-only probe remains the user-confirmed working milestone.
 
 Last updated: 2026-10-05 (user-confirmed inventory overlay and native reads)
 
@@ -169,3 +169,13 @@ The two downloadable test alternatives disable batch deletion. The native implem
 ### Verification
 
 Compiled all three variants against pinned UAssetAPI 1.1.0 and UE 4.22 parsing. Each was written and reopened, all 11,152 original exports preserved, with original function changes limited to guard/callback prefixes and relocated jumps. Favorites-only leaves `SlotClicked` unchanged. Added declaring-owner regression coverage (seven cases, including the rejected UserWidget import and inherited Button.SetContent import). Existing 28 inventory-probe and 19 diagnostic negative tests pass. Button delegate handlers must exist in the owner function map and take zero parameters; native vs preview salvage call/delegate counts are checked. Repository/PowerShell syntax validation passes. These are structural/source checks; no game or Unreal Editor is available here.
+
+## Follow-up confidence audit (2026-10-05)
+
+The user asked whether the mouse build is certain to work and directed further fixes if not. It is **not certain**: retail asset loading, inventory opening, mouse delegate behavior and online host/join remain untested. This pass found and fixed additional source-level issues instead of treating CI as runtime proof:
+
+- Favorite/Select requests now capture both the native slot and its physical item at the click. A shared resolver refuses requests if the slot is missing, empty or contains a replacement. Highlight changes cannot redirect a pending action to another item. Consumed captures are cleared.
+- Leaving Multi salvage mode retains the selection for Review; only Cancel/Escape/inventory close explicitly clear it. Mode changes cancel an armed confirmation and are refused during native salvage.
+- New functions with locals now set `FUNC_HasDefaults`, enabling UE 4.22 initialization of non-zero-constructible values such as FText/native structs. Parameters and return values must form a contiguous prefix before locals; new validation checks this and out-parameter flags before writing and after reopening.
+
+Added 20 action/layout checks using a restricted expression interpreter on synthetic objects. It executes the shared generated capture/resolver/mode code, rejects stale slots and missing expected items, and includes an intentionally broken identity comparison as a negative control. Three layout mutations are rejected. Native predicates are mocked: these tests **do not execute Unreal, verify its reflection/ABI, or prove the crash is repaired**. Both original graph suites and all three private variants pass compilation, structural preservation and repository checks. No destructive runtime execution occurred. The newer candidate supersedes v2, but remains a batch-disabled test build, not a finished release.

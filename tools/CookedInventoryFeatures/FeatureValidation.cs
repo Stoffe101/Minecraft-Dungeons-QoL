@@ -96,6 +96,8 @@ static class FeatureValidation
     public static void Validate(UAsset asset, bool nativeBatch)
     {
         FunctionImportContracts.Validate(asset);
+        foreach (var fn in asset.Exports.OfType<FunctionExport>().Where(x => x.ObjectName.ToString().StartsWith("MCDQoL_")))
+            FunctionLayoutContracts.Validate(asset, fn);
         foreach (var function in asset.Exports.OfType<FunctionExport>().Where(x => x.ObjectName.ToString().StartsWith("MCDQoL_")))
             foreach (var root in function.ScriptBytecode) {
                 uint position = 0; root.Visit(asset, ref position, (expression, _) => {

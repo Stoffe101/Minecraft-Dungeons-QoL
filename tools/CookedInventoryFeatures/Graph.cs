@@ -48,6 +48,9 @@ sealed class Graph
         property.ArrayDim = p.Property.ArrayDim; property.PropertyFlags = flags; property.RepNotifyFunc = new FName(Asset, "None"); property.Next = new FPackageIndex(0);
         p.Property = property; Asset.Exports.Add(p);
         if (!instance && flags.HasFlag(EPropertyFlags.CPF_OutParm)) Function.FunctionFlags |= EFunctionFlags.FUNC_HasOutParms;
+        // UE uses this flag to initialize non-zero-constructible local values
+        // (notably FText/native structs); zeroing a stack frame is not a constructor.
+        if (!instance && !flags.HasFlag(EPropertyFlags.CPF_Parm)) Function.FunctionFlags |= EFunctionFlags.FUNC_HasDefaults;
         var parent = (StructExport)(instance ? Owner : Function); parent.Children = parent.Children.Append(Index(p)).ToArray(); return p;
     }
     public PropertyExport Object(string name, FPackageIndex cls, bool instance = false, EPropertyFlags flags = EPropertyFlags.CPF_None) => Property(name, new UObjectProperty { PropertyClass = cls }, "ObjectProperty", instance, flags);
@@ -110,6 +113,7 @@ sealed class Graph
         uint offset = 0; var offsets = Code.Select(e => { var current = offset; offset += (uint)Size(e); return current; }).ToArray();
         foreach (var (j, label) in jumps) { var target = offsets[labels[label]]; if (j is EX_Jump jump) jump.CodeOffset = target; else ((EX_JumpIfNot)j).CodeOffset = target; }
         Function.ScriptBytecode = Code.ToArray(); Function.ScriptBytecodeRaw = null; Function.ScriptBytecodeSize = (int)offset;
+        FunctionLayoutContracts.Validate(Asset, Function);
         DiagnosticGraphValidator.ValidateReferenceArguments(Asset, Code);
     }
 }
