@@ -1,6 +1,6 @@
 # Favorites and batch salvage implementation
 
-Latest audit (2026-10-05): the mouse candidate is not runtime-confirmed. Requests now capture slot **and item** at the click and reject replacements before applying favorite/select actions. Leaving selection mode retains the queue for Review. New functions initialize native locals through `FUNC_HasDefaults` and validate parameter/return ordering. Twenty action/layout checks supplement the earlier structural tests; they use mocked native predicates, not the game. See CURRENT_STATE.md and RESEARCH_LOG.md. The updated candidate supersedes v2; batch deletion remains disabled in test downloads.
+Latest status (2026-10-05): the user confirms v3 favorites and combined selection/Select All work. v4 redesigns the UI with a compact reserved toolbar, retail fonts, cyan selection frames, gold favorite markers and a count-specific Yes/No modal. Click-time physical identity and synchronous favorite guards remain. Thirty action/layout mock cases supplement structural validation, including non-destructive preview approval and No retaining selection. v4 rendering remains unverified in retail; batch deletion stays disabled in downloads. See [INVENTORY_UI_DESIGN.md](INVENTORY_UI_DESIGN.md).
 
 ## Inventory feature crash response and mouse controls (2026-10-05)
 

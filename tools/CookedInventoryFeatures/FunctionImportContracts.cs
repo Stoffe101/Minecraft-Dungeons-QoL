@@ -8,6 +8,11 @@ static class FunctionImportContracts
         ["GetOwningPlayer"] = ("/Script/UMG", "Widget"),
         ["SetIsEnabled"] = ("/Script/UMG", "Widget"),
         ["SetContent"] = ("/Script/UMG", "ContentWidget"),
+        ["GetContent"] = ("/Script/UMG", "ContentWidget"),
+        ["SetFont"] = ("/Script/UMG", "TextBlock"),
+        ["SetBrushColor"] = ("/Script/UMG", "Border"),
+        ["SetBackgroundColor"] = ("/Script/UMG", "Button"),
+        ["SetOffsets"] = ("/Script/UMG", "CanvasPanelSlot"),
     };
     public static void Validate(UAsset asset)
     {

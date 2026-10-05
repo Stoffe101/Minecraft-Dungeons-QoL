@@ -1,5 +1,11 @@
 # Research Log
 
+## 2026-10-05 — Working v3 and UI v4
+
+User confirms favorites work well and combined selection/Select All works. Actual batch deletion remains disabled and untested. Inspected both local screenshots, original HUD font/content margins and embedded slot CanvasPanel roots. Checked UE4.22 Font/WidgetTree/Border/CanvasPanelSlot contracts against the pinned Epic mirror. Implemented a compact footer, retail font sizing, separate favorite button, cyan physical-item selection frames, gold markers and a real Yes/No modal. No guessed offsets/native font or brush struct layouts.
+
+Three private modes pass compile/write/reopen/original-export preservation. 30 action/layout mock cases and 17 owner cases pass per fixture, alongside 28 probe/19 diagnostic rejection tests. New cases cover retained selection on No, stale requests and malformed/repeated/preview approvals. Rendering, performance, native deletion and joining-player runtime behavior remain unverified. See [INVENTORY_UI_DESIGN.md](INVENTORY_UI_DESIGN.md) for exact layout, researched contracts and retail checks. Private game-derived output stays out of GitHub/CI artifacts.
+
 ## 2026-10-04 — Project bootstrap
 
 ### Goal
