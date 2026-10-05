@@ -13,6 +13,7 @@
     <Compile Include="../CookedInventoryFeatures/FunctionImportContracts.cs" Link="FunctionImportContracts.cs" />
     <Compile Include="../CookedInventoryFeatures/Graph.cs" Link="Graph.cs" />
     <Compile Include="../CookedInventoryFeatures/InventoryActions.cs" Link="InventoryActions.cs" />
+    <Compile Include="../CookedInventoryFeatures/InventoryAppearance.cs" Link="InventoryAppearance.cs" />
     <Compile Include="../CookedInventoryFeatures/FunctionLayoutContracts.cs" Link="FunctionLayoutContracts.cs" />
   </ItemGroup>
 </Project>

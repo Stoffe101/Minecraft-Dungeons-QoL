@@ -1,10 +1,10 @@
-> Runtime status: on 2026-10-05 the user confirmed the v3 favorites variant works well and the combined variant supports selection, including Select All. Actual batch salvage was disabled in those packages and remains untested. Persistent locks, loadouts and online joining-player compatibility remain unfinished/unverified.
+> Runtime status: on 2026-10-05 the user confirmed v5 native multi-item salvage works. Select All selection previously worked, but Select All followed by salvage, refund totals and joining-player compatibility remain unverified. Favorites remain session scoped; persistent locks and loadouts remain unfinished.
 
 # Current State
 
-Latest status: the user confirms v4 looks better and shows its working selection count, but supplies a cropped screenshot with overlapping toolbar captions. v5 shortens the mode caption to Done, uses 14-point button labels, widens controls and increases gaps. Its private CombinedNative download enables the previously implemented native batch worker after explicit Yes; v4 was deliberately non-destructive. Native deletion/refunds remain unverified in retail. See [INVENTORY_UI_DESIGN.md](INVENTORY_UI_DESIGN.md).
+Latest status: v5 native multi-salvage works in the user's game. Favorite overlaps the bottom item's details, so v6 moves it to the left toolbar and moves the count after it. An alt-tab crash is a D3D11 GPU device-hung assertion, not the previous Blueprint access violation. v6 avoids repeated hide/show cycles for unchanged marks/buttons/modal and caches dynamic captions. This reduces unnecessary UI work; the crash's trigger is unknown and a crash fix is NOT established. See [INVENTORY_UI_DESIGN.md](INVENTORY_UI_DESIGN.md) and [INVENTORY_CRASH_INVESTIGATION.md](INVENTORY_CRASH_INVESTIGATION.md).
 
-Last updated: 2026-10-05 (v3 favorites/selection confirmation; v4 UI redesign)
+Last updated: 2026-10-05 (v5 native salvage confirmation; v6 toolbar and redraw changes)
 
 ## Actual implementation
 

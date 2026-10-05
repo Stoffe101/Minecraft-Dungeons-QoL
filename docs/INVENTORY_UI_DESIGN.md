@@ -1,5 +1,13 @@
 # Inventory UI redesign — 2026-10-05
 
+## v6: relocate Favorite and avoid unchanged UI writes
+
+The user confirms native multi-salvage in v5 works. The bottom-item screenshot shows Unlock favorite covering item details. Favorite now shares the left toolbar: combined x=510, width=156; count x=686. Favorites-only uses x=50 and an empty status at x=218. Bottom anchor, y=-72, height=36 and content/footer reservation remain. This supersedes the historical right-side Favorite location below; full-screen/scaling validation still needs the game.
+
+Previously every tick collapsed each mark before showing selected/favorite marks again. All/Salvage/Clear and the modal did the same. They now choose one final visibility and read Widget.GetVisibility into a typed byte/ESlateVisibility local, invoking SetVisibility only on change. Visible marks remain HitTestInvisible. Mode/Favorite captions and the confirmation question cache their strings, avoiding unchanged SetText calls. Physical selection and native salvage behavior remain the v5 implementation.
+
+34 generated action/layout checks include repeated visibility updates: unchanged hidden/selected marks perform zero writes, selection and deselection each perform one. 23 declaring-owner checks include GetVisibility/SetVisibility accepted on Widget and rejected on UserWidget. These mock checks and the three-mode write/reopen checks do not prove rendering, performance or a GPU crash fix.
+
 ## v5 follow-up: spacing and native salvage
 
 User's new screenshot shows v4 selecting five items and improved appearance, but “Done selecting” and “Select All” spill outside their bounds. v5 uses Select items / Done, 14-point button text, widths 124/104/104/80 and 12-unit gaps at x=50/186/302/418. Count moves to x=518. Favorite labels also use 14 points. This supersedes the sizes/captions in the historical v4 table below.

@@ -11,10 +11,13 @@ sealed class InventoryAppearance
     readonly Graph g;
     readonly FPackageIndex vector, anchors, margin, color, canvasClass, textClass, widgetClass, borderClass;
     readonly PropertyExport slot, font;
+    readonly PropertyExport visibility;
+    readonly string prefix;
+    int visibilitySerial;
     int serial;
     public InventoryAppearance(Graph graph, string prefix = "Presentation")
     {
-        g = graph;
+        g = graph; this.prefix = prefix;
         vector = g.Import("/Script/CoreUObject", "ScriptStruct", "Vector2D", g.Package("/Script/CoreUObject"));
         anchors = g.Import("/Script/CoreUObject", "ScriptStruct", "Anchors", g.Package("/Script/Slate"));
         margin = g.Import("/Script/CoreUObject", "ScriptStruct", "Margin", g.Package("/Script/SlateCore"));
@@ -23,6 +26,8 @@ sealed class InventoryAppearance
         textClass = g.Class("/Script/UMG", "TextBlock"); widgetClass = g.Class("/Script/UMG", "Widget");
         borderClass = g.Class("/Script/UMG", "Border");
         slot = g.Object(prefix + "Slot", canvasClass);
+        visibility = g.Property(prefix + "Visibility", new UByteProperty { Enum = g.Import("/Script/CoreUObject", "Enum", "ESlateVisibility", g.Package("/Script/UMG")) }, "ByteProperty");
+        visibility.Property.ElementSize = 1;
         var fontStruct = g.Import("/Script/CoreUObject", "ScriptStruct", "SlateFontInfo", g.Package("/Script/SlateCore"));
         font = g.Property(prefix + "Font", new UStructProperty { Struct = fontStruct }, "StructProperty");
     }
@@ -30,7 +35,20 @@ sealed class InventoryAppearance
         Value = new KismetExpression[] { new EX_FloatConst { Value = x }, new EX_FloatConst { Value = y } } };
     public KismetExpression Color(float r, float green, float b, float a = 1) => new EX_StructConst { Struct = color, StructSize = 16,
         Value = new KismetExpression[] { new EX_FloatConst { Value = r }, new EX_FloatConst { Value = green }, new EX_FloatConst { Value = b }, new EX_FloatConst { Value = a } } };
-    public void Visibility(KismetExpression widget, byte value) => g.Add(g.C(widget, g.F(g.Fn(widgetClass, "SetVisibility"), new EX_ByteConst { Value = value })));
+    public void Visibility(KismetExpression widget, byte value)
+    {
+        var done = prefix + "_VISIBILITY_UNCHANGED_" + visibilitySerial++;
+        g.Set(visibility, g.C(widget, g.F(g.Fn(widgetClass, "GetVisibility")), g.Index(visibility)));
+        g.Branch(g.Math("NotEqual_ByteByte", g.L(visibility), new EX_ByteConst { Value = value }), done);
+        g.Add(g.C(widget, g.F(g.Fn(widgetClass, "SetVisibility"), new EX_ByteConst { Value = value })));
+        g.Label(done);
+    }
+    public void VisibilityWhen(KismetExpression widget, KismetExpression condition, byte shown = 0)
+    {
+        var id = prefix + "_VISIBILITY_CHOICE_" + visibilitySerial++;
+        g.Branch(condition, id + "_HIDE"); Visibility(widget, shown); g.Jump(id + "_DONE");
+        g.Label(id + "_HIDE"); Visibility(widget, 1); g.Label(id + "_DONE");
+    }
     public void Spawn(PropertyExport property, FPackageIndex cls, bool instance = true)
     {
         g.Obj(property, new EX_DynamicCast { ClassPtr = cls, Target = g.Static("GameplayStatics", "SpawnObject", g.O(cls), new EX_Self()) }, instance);

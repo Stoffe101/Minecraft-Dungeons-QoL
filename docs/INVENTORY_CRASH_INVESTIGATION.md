@@ -36,6 +36,18 @@ The target is network multiplayer, including hosting and joining friends, not sp
 
 ## Sources
 
+## 2026-10-05 v5 alt-tab GPU crash
+
+Private CrashContext(6).runtime-xml reports GPUCrash, D3D11 device loss 0x887A0006 HUNG, engine 4.22.3, 206 seconds after start. The minidump exception is 0x8000 in KERNELBASE (assertion/raise path), with Dungeons+0x10cc867 and +0x1092fba on the stack. This differs from the earlier Blueprint null-function/FText access violations; no symbolized call stack proves its trigger. No out-of-memory indication is reported. Raw dumps and machine/user identifiers are not committed.
+
+Microsoft's [DXGI error reference](https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/dxgi-error) identifies DEVICE_HUNG as a GPU command/device failure; this does not identify which operation caused this particular crash. Do not infer that the mod is cleared or responsible from the code alone.
+
+Source inspection found unnecessary per-tick collapse/show of selected borders and modal/buttons plus unchanged text reassignment. v6 removes this UI churn as a targeted mitigation, not a proven GPU fix. Reproduce inventory-open alt-tab/return and compare a clean no-QoL-pak run if it recurs. Native batch salvage itself was confirmed working by the user before this report. Select All followed by salvage remains untested.
+
+Epic-authored UE4.22 sources inspected at 99a530d4ccbe6bea1e8f49df20acfeb294006962: UMG Public/Components/Widget.h declares reflected GetVisibility; Private/Components/Widget.cpp forwards SetVisibility to Slate; Private/Components/TextBlock.cpp forwards SetText without a UObject equality check. KismetMathLibrary.h declares NotEqual_ByteByte. No engine code was copied, no guessed foreground-window API imported, and no driver/TDR changes made.
+
+## Earlier investigation sources
+
 - https://github.com/folgerwang/UnrealEngine/tree/99a530d4ccbe6bea1e8f49df20acfeb294006962/Engine/Source/Runtime/CoreUObject
 - https://github.com/folgerwang/UnrealEngine/blob/99a530d4ccbe6bea1e8f49df20acfeb294006962/Engine/Build/Build.version
 - https://dev.epicgames.com/documentation/unreal-engine/API/Runtime/CoreUObject/FFrame/StepCompiledInRef (current API corroborates the reference stepping concept; it is not the version-specific proof).

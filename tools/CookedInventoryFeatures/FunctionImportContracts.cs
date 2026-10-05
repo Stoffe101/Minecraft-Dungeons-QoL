@@ -7,6 +7,8 @@ static class FunctionImportContracts
     static readonly Dictionary<string, (string package, string owner)> Owners = new() {
         ["GetOwningPlayer"] = ("/Script/UMG", "Widget"),
         ["SetIsEnabled"] = ("/Script/UMG", "Widget"),
+        ["GetVisibility"] = ("/Script/UMG", "Widget"),
+        ["SetVisibility"] = ("/Script/UMG", "Widget"),
         ["SetContent"] = ("/Script/UMG", "ContentWidget"),
         ["GetContent"] = ("/Script/UMG", "ContentWidget"),
         ["SetFont"] = ("/Script/UMG", "TextBlock"),

@@ -16,6 +16,7 @@ sealed class MouseControls
     readonly InventoryAppearance appearance;
     readonly bool favoritesOnly, destructive;
     PropertyExport? modal, question;
+    readonly Dictionary<Control, PropertyExport> captions = new();
     public readonly Control Favorite, Mode, Select, AllItems, Review, Cancel, Yes, No;
     public readonly Control[] All;
     readonly HashSet<Control> visible;
@@ -91,7 +92,7 @@ sealed class MouseControls
             if (control == Yes || control == No)
                 appearance.Attach(g.I(modal!), g.I(control.Button), control == No ? -82 : 82, 74, 140, 40, .5f, .5f, .5f, .5f, 3);
             else if (control == Favorite)
-                appearance.Attach(g.I(g.Field("WholeCanvas")), g.I(control.Button), -50, -72, 156, 36, 1, 1, 1, 1, 101);
+                appearance.Attach(g.I(g.Field("WholeCanvas")), g.I(control.Button), favoritesOnly ? 50 : 510, -72, 156, 36, 0, 1, 0, 1, 101);
             else {
                 var (x, width) = control == Mode ? (50, 124) : control == AllItems ? (186, 104) : control == Review ? (302, 104) : (418, 80);
                 appearance.Attach(g.I(g.Field("WholeCanvas")), g.I(control.Button), x, -72, width, 36, 0, 1, 0, 1, 101);
@@ -114,15 +115,14 @@ sealed class MouseControls
         Enable(Yes, g.I(armed)); Enable(No, g.I(armed));
         if (!favoritesOnly) {
             void Show(Control c, KismetExpression condition) {
-                var next = "VISIBILITY_" + c.Label.Replace(" ", "_");
-                appearance.Visibility(g.I(c.Button), 1); g.Branch(condition, next); appearance.Visibility(g.I(c.Button), 0); g.Label(next);
+                appearance.VisibilityWhen(g.I(c.Button), condition);
             }
             Show(AllItems, g.I(mode));
             Show(Review, g.Math("Greater_IntInt", g.Array("Array_Length", g.I(selected)), g.N(0)));
             Show(Cancel, g.Math("BooleanOR", g.I(mode), g.Math("Greater_IntInt", g.Array("Array_Length", g.I(selected)), g.N(0))));
-            appearance.Visibility(g.I(modal!), 1); g.Branch(g.I(armed), "MODAL_HIDDEN"); appearance.Visibility(g.I(modal!), 0);
+            appearance.VisibilityWhen(g.I(modal!), g.I(armed)); g.Branch(g.I(armed), "MODAL_HIDDEN");
             var message = g.Count(g.S("Are you sure you want to salvage these "), g.Array("Array_Length", g.I(snapshot)), " items?");
-            appearance.Caption(g.I(question!), message); g.Label("MODAL_HIDDEN");
+            CachedCaption(g.I(question!), message, g.String("MCDQoL_QuestionCaption", true), "QUESTION"); g.Label("MODAL_HIDDEN");
             var modeCaption = g.String("ModeCaption"); g.Set(modeCaption, g.S("Select items"));
             g.Branch(g.I(mode), "MODE_CAPTION_READY"); g.Set(modeCaption, g.S("Done")); g.Label("MODE_CAPTION_READY");
             SetCaption(Mode, g.L(modeCaption));
@@ -133,7 +133,17 @@ sealed class MouseControls
     }
     void SetCaption(Control control, KismetExpression message)
     {
+        if (!captions.TryGetValue(control, out var cache)) captions[control] = cache = g.String("MCDQoL_Caption_" + control.Button.ObjectName, true);
+        var done = "CAPTION_UNCHANGED_" + control.Button.ObjectName;
+        var value = g.String("CaptionValue_" + control.Button.ObjectName); g.Set(value, message);
+        g.Branch(g.Static("KismetStringLibrary", "NotEqual_StrStr", g.I(cache), g.L(value)), done);
         g.Obj(label, new EX_DynamicCast { ClassPtr = textClass, Target = g.C(g.I(control.Button), g.F(g.Fn(g.Class("/Script/UMG", "ContentWidget"), "GetContent")), g.Index(label)) });
-        appearance.Caption(g.L(label), message);
+        appearance.Caption(g.L(label), g.L(value)); g.Set(cache, g.L(value), true); g.Label(done);
+    }
+    void CachedCaption(KismetExpression target, KismetExpression message, PropertyExport cache, string name)
+    {
+        var value = g.String(name + "CaptionValue"); g.Set(value, message);
+        g.Branch(g.Static("KismetStringLibrary", "NotEqual_StrStr", g.I(cache), g.L(value)), name + "_UNCHANGED");
+        appearance.Caption(target, g.L(value)); g.Set(cache, g.L(value), true); g.Label(name + "_UNCHANGED");
     }
 }

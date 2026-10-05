@@ -22,6 +22,10 @@ static class FunctionOwnerTests
         Check("GetOwningPlayer", "Widget", "/Script/Engine", false);
         Check("SetIsEnabled", "Widget", "/Script/UMG", true);
         Check("SetIsEnabled", "UserWidget", "/Script/UMG", false);
+        foreach (var method in new[] { "GetVisibility", "SetVisibility" }) {
+            Check(method, "Widget", "/Script/UMG", true);
+            Check(method, "UserWidget", "/Script/UMG", false);
+        }
         Check("SetContent", "ContentWidget", "/Script/UMG", true);
         Check("SetContent", "Button", "/Script/UMG", false);
         Check("SalvageItemInSlot", "ItemStashComponent", "/Script/Dungeons", true);
