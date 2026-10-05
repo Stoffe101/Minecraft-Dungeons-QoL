@@ -47,7 +47,7 @@ Inspect native InventoryItem, InventoryItemSlot, ItemStashComponent, DungeonsGam
 
 Acceptance requires independent duplicates, explicit unfavorite, travel, restart, hero switch, equipment, storage, upgrades/rerolls and online host/join. Unresolved protection must not be silently discarded or transferred to similar items. Reflection alone cannot prove these behaviors.
 
-Local PowerShell 7.4.6 tests use the actual pinned release against a fake game directory: checksum rejection, collision refusal, only our diagnostic enabled, missing capture reported incomplete, allowlisted ZIP roundtrip, native object-line filtering, edited config retained, unchanged loader removed, original executable/unrelated files preserved. Repository parser/JSON checks and diff checks pass. Windows PowerShell 5.1 runs the same fixture in Project Validation. None proves game compatibility/persistence.
+Local PowerShell 7.4.6 tests use the actual pinned release against a fake game directory: checksum rejection, collision refusal, only our diagnostic enabled, missing capture reported incomplete, allowlisted ZIP roundtrip, native object-line filtering, edited config retained, unchanged loader removed, original executable/unrelated files preserved. UTF-16 without a BOM is tested because pinned UE4SS object output uses wchar_t; UTF-8/BOM variants are also accepted. Lua mock tests verify the key binding, reentrancy guard, call order and recovery after a capture error. Repository parser/JSON checks and diff checks pass. Windows PowerShell 5.1 runs the fixture in Project Validation. None proves game compatibility/persistence.
 
 ## Primary references
 

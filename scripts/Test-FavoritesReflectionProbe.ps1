@@ -48,9 +48,10 @@ try {
     New-Item -ItemType Directory $headers | Out-Null
     [IO.File]::WriteAllText((Join-Path $game 'UE4SS.log'), '[MCDQoLReflection] Capture completed')
     $declarations = @('UInventoryItem','UInventoryItemSlot','UItemStashComponent','UDungeonsGameInstance','UDungeonsUserManager') | ForEach-Object { "class $_ {};" }
-    [IO.File]::WriteAllText((Join-Path $headers 'Dungeons.hpp'), ($declarations -join "`n"))
+    $wide = New-Object Text.UnicodeEncoding($false, $false)
+    [IO.File]::WriteAllText((Join-Path $headers 'Dungeons.hpp'), ($declarations -join "`n"), $wide)
     foreach ($name in @('Dungeons_enums.hpp','CoreUObject.hpp','Engine.hpp')) { [IO.File]::WriteAllText((Join-Path $headers $name), '// metadata') }
-    [IO.File]::WriteAllText((Join-Path $game 'UE4SS_ObjectDump.txt'), "Class /Script/Dungeons.InventoryItem`nPrivate /Game/HeroName.Secret`n")
+    [IO.File]::WriteAllText((Join-Path $game 'UE4SS_ObjectDump.txt'), "Class /Script/Dungeons.InventoryItem`nPrivate /Game/HeroName.Secret`n", $wide)
     [IO.File]::WriteAllText((Join-Path $headers 'private-save.dat'), 'must not collect')
     $complete = Join-Path $temp 'complete'
     & $invoke -Action Collect -Win64Path $game -OutputRoot $complete

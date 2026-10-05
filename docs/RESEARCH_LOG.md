@@ -2,6 +2,8 @@
 
 ## 2026-10-05: supplied persistence evidence and native reflection gate
 
+Follow-up before release: inspected v3.0.1 wchar_t object-dump output and added BOM/UTF-16 detection plus streaming native-line filtering. Tested headers/object dump encoded UTF-16 without a BOM, avoiding Windows PowerShell's ANSI fallback. Lua mock checks pass binding, reentrancy, call order and error recovery.
+
 Inspected private persistence-evidence-20261005-234040.zip: 88/88 completed, no export errors/raw sources. Game-instance/storage/blacksmith metadata establishes no permanent hero/physical-item identifier. Character/profile/UserManager/SaveGame filters matched no packages; they do not enumerate native classes. Storage SerializeSaveState is a zero-parameter writer with no assigned result, consistent with the reconstructed void declaration.
 
 Rechecked MIT UE4SS 3.0.1, independently hashed official release (4b47d4bc…46c57ec), inspected pinned d935b5b source/config/keybinds. Prepared temporary reflection probe with only our diagnostic, no forced loading or save/item mutation calls, hash-owned removal and failed-capture reporting. Fixed PowerShell 7 auto-DateTime freshness conversion by preserving UTC kind; 5.1 strings parse with RoundtripKind. Actual-release fixture, parser/JSON and diff checks pass locally; Windows 5.1 CI test added. Game compatibility/persistent favorites remain unfinished. Details/commands/primary sources: FAVORITES_PERSISTENCE_INVESTIGATION.md.

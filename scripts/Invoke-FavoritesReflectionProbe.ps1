@@ -23,6 +23,24 @@ if (@(Get-Process -Name 'Dungeons', 'Dungeons-Win64-Shipping' -ErrorAction Silen
 function Write-Json($Path, $Value) {
     [IO.File]::WriteAllText($Path, ($Value | ConvertTo-Json -Depth 12), (New-Object Text.UTF8Encoding($false)))
 }
+function Get-ProbeEncoding($Path) {
+    # UE4SS 3.0.1 uses wchar_t output. Accept UTF-16 without a BOM as well
+    # as the UTF-8/BOM variants; Windows PowerShell otherwise assumes ANSI.
+    $stream = [IO.File]::OpenRead($Path)
+    try {
+        $prefix = New-Object byte[] 4
+        $count = $stream.Read($prefix, 0, 4)
+        if ($count -ge 2 -and (($prefix[0] -eq 255 -and $prefix[1] -eq 254) -or
+            ($prefix[0] -ne 0 -and $prefix[1] -eq 0))) { return [Text.Encoding]::Unicode }
+        if ($count -ge 2 -and (($prefix[0] -eq 254 -and $prefix[1] -eq 255) -or
+            ($prefix[0] -eq 0 -and $prefix[1] -ne 0))) { return [Text.Encoding]::BigEndianUnicode }
+        return [Text.Encoding]::UTF8
+    } finally { $stream.Dispose() }
+}
+function Read-ProbeText($Path) {
+    $reader = [IO.StreamReader]::new($Path, (Get-ProbeEncoding $Path), $true)
+    try { return $reader.ReadToEnd() } finally { $reader.Dispose() }
+}
 function Read-State {
     if (-not (Test-Path $statePath -PathType Leaf)) { throw 'No probe install manifest. No game files will be changed.' }
     $state = Get-Content $statePath -Raw | ConvertFrom-Json
@@ -130,18 +148,26 @@ $dump = Join-Path $game 'UE4SS_ObjectDump.txt'
 if ((Test-Path $dump -PathType Leaf) -and (Get-Item $dump).LastWriteTimeUtc -ge $start) {
     # Keep native Dungeons declarations; omit the full object/address catalog.
     $dest = Join-Path $output 'Dungeons-reflection.txt'
-    Get-Content -LiteralPath $dump | Where-Object { $_ -match '/Script/Dungeons[.:/]' } | Set-Content -LiteralPath $dest -Encoding UTF8
+    $reader = [IO.StreamReader]::new($dump, (Get-ProbeEncoding $dump), $true)
+    $writer = [IO.StreamWriter]::new($dest, $false, (New-Object Text.UTF8Encoding($false)))
+    $matched = 0
+    try {
+        while ($null -ne ($line = $reader.ReadLine())) {
+            if ($line -match '/Script/Dungeons[.:/]') { $writer.WriteLine($line); $matched++ }
+        }
+    } finally { $reader.Dispose(); $writer.Dispose() }
+    if ($matched -eq 0) { $issues.Add('Object dump contains no native Dungeons declarations.') }
     $files.Add(@{ path = 'Dungeons-reflection.txt'; bytes = (Get-Item $dest).Length; sha256 = (Get-FileHash $dest -Algorithm SHA256).Hash.ToLowerInvariant() })
 } else { $issues.Add('Missing or stale: UE4SS_ObjectDump.txt') }
 $symbols = @{}
 $header = Join-Path $output 'CXXHeaderDump/Dungeons.hpp'
-$text = if (Test-Path $header) { Get-Content $header -Raw } else { '' }
+$text = if (Test-Path $header) { Read-ProbeText $header } else { '' }
 foreach ($symbol in @('UInventoryItem', 'UInventoryItemSlot', 'UItemStashComponent', 'UDungeonsGameInstance', 'UDungeonsUserManager')) {
     $symbols[$symbol] = [bool]($text -match ('\bclass\s+' + $symbol + '\b'))
     if (-not $symbols[$symbol]) { $issues.Add("Native class declaration missing: $symbol") }
 }
 $log = Join-Path $output 'UE4SS.log'
-$completed = (Test-Path $log) -and [bool]((Get-Content $log -Raw) -match '\[MCDQoLReflection\] Capture completed')
+$completed = (Test-Path $log) -and [bool]((Read-ProbeText $log) -match '\[MCDQoLReflection\] Capture completed')
 if (-not $completed) { $issues.Add('Probe did not report a completed capture; include this ZIP even if startup failed.') }
 Write-Json (Join-Path $output 'REPORT.json') @{ schemaVersion = 1; collectedUtc = [DateTime]::UtcNow.ToString('o'); source = $config;
     captureCompleted = $completed; symbols = $symbols; issues = @($issues.ToArray()); files = @($files.ToArray());
