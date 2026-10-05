@@ -1,5 +1,11 @@
 # Test Plan
 
+## v8 and persistent-favorite acceptance
+
+v8 visual check: selected tiles have 6-unit red borders without covering power/count; favorited melee/ranged/armor/artifacts show stars in equipped slots. Equip/unequip, scroll/filter/rebuild, unfavorite and reopen: markers must follow current physical items, deduplicate widgets and stay hit-test invisible. Equipped items remain excluded from Select All/native salvage.
+
+Persistence is NOT repaired in v8. Collect the new evidence through GAME_EVIDENCE.md. Future persistence acceptance must cover mission return, restart, hero switching, independent identical items, explicit unfavorite, storage, upgrades/rerolls and online host/join. An unresolved identity must never silently clear protection or transfer a favorite to the wrong item.
+
 ## v7 favorite marker acceptance
 
 1. Favorite an unequipped item: a gold star appears top-right on its grid tile, and FAVORITE appears after the existing rarity/gilded/custom tags when inspecting it. Check an item with all three native badges present; the label must not cover the item name or power.

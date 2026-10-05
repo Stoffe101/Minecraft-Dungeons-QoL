@@ -20,6 +20,15 @@ static class InventoryTileMarks
         var loop = g.Integer("MarkLoop"); var markIndex = g.Integer("MarkIndex"); var itemIndex = g.Integer("MarkItemIndex");
         var queued = g.Boolean("MarkQueued"); var locked = g.Boolean("MarkLocked");
         g.Set(widgets, g.I(g.Field("InventorySlotsInGrid")));
+        // Equipment uses the same slot contracts; a widget listed in both
+        // collections must receive only one marker set.
+        g.Set(loop, g.N(0)); g.Label("MARK_EQUIPMENT_LOOP");
+        g.Branch(g.Math("Less_IntInt", g.L(loop), g.Array("Array_Length", g.I(g.Field("EquipSlots")))), "MARK_EQUIPMENT_DONE");
+        g.Obj(widget, new EX_DynamicCast { ClassPtr = widgetSlotClass, Target = g.At(g.I(g.Field("EquipSlots")), g.L(loop)) });
+        g.Branch(g.Valid(g.L(widget)), "MARK_EQUIPMENT_NEXT");
+        g.Add(g.Array("Array_AddUnique", g.L(widgets), g.L(widget)));
+        g.Label("MARK_EQUIPMENT_NEXT"); g.Set(loop, g.Math("Add_IntInt", g.L(loop), g.N(1))); g.Jump("MARK_EQUIPMENT_LOOP");
+        g.Label("MARK_EQUIPMENT_DONE");
         // Release detached grid widgets; don't retain every historical grid rebuild.
         g.Set(loop, g.Math("Subtract_IntInt", g.Array("Array_Length", g.I(owners)), g.N(1)));
         g.Label("MARK_PRUNE"); g.Branch(g.Math("GreaterEqual_IntInt", g.L(loop), g.N(0)), "MARK_PRUNE_DONE");
@@ -40,12 +49,12 @@ static class InventoryTileMarks
         g.Obj(root, new EX_DynamicCast { ClassPtr = g.Class("/Script/UMG", "CanvasPanel"), Target = g.C(g.C(g.L(widget), g.V(tree), tree), g.V(rootMember), rootMember) });
         // Only attach to the observed canvas contract; unsupported roots fail closed.
         g.Branch(g.Valid(g.L(root)), "MARK_NEXT");
-        var cyan = ui.Color(.08f, .8f, .95f);
+        var selectionColor = ui.Color(1, .12f, .12f);
         var edges = new[] {
-            ui.Fill("MarkTop", g.L(root), 1, 1, 1, 3, cyan, maxX: 1, instance: false, z: 200),
-            ui.Fill("MarkBottom", g.L(root), 1, -4, 1, 3, cyan, ay: 1, maxX: 1, instance: false, z: 200),
-            ui.Fill("MarkLeft", g.L(root), 1, 1, 3, 1, cyan, maxY: 1, instance: false, z: 200),
-            ui.Fill("MarkRight", g.L(root), -4, 1, 3, 1, cyan, ax: 1, maxY: 1, instance: false, z: 200),
+            ui.Fill("MarkTop", g.L(root), 1, 1, 1, 6, selectionColor, maxX: 1, instance: false, z: 200),
+            ui.Fill("MarkBottom", g.L(root), 1, -7, 1, 6, selectionColor, ay: 1, maxX: 1, instance: false, z: 200),
+            ui.Fill("MarkLeft", g.L(root), 1, 1, 6, 1, selectionColor, maxY: 1, instance: false, z: 200),
+            ui.Fill("MarkRight", g.L(root), -7, 1, 6, 1, selectionColor, ax: 1, maxY: 1, instance: false, z: 200),
             ui.FavoriteStar(g.L(root))
         };
         // Borders never receive mouse hits. Draw over native rarity/inspection frames.

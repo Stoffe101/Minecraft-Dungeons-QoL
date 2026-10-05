@@ -36,6 +36,15 @@ try {
     if (@(Get-ChildItem $sources -Recurse -File | Where-Object { $_.Extension -in @('.pak', '.uasset', '.uexp', '.ubulk') }).Count -ne 0) { throw 'Unexpected cooked asset collected.' }
     if ((Get-FileHash $pak).Hash -ne $before) { throw 'Patch-source collection modified the input pak.' }
     Write-Host '[PASS] Patch-source collection rejects unrelated packages and reports missing required sources'
+    $persistence = Join-Path $fixture 'persistence metadata with spaces'
+    & (Join-Path $PSScriptRoot 'Collect-LegacyGameEvidence.ps1') -PaksPath $paks -AesKey ('0x' + ('0' * 64)) -OutputDirectory $persistence -DotNetPath (Get-Command dotnet).Source -CollectPersistenceEvidence
+    if ($LASTEXITCODE -ne 1) { throw 'Missing persistence targets must report failure, not a verified API.' }
+    $persistenceReport = Get-Content (Join-Path $persistence 'Metadata/EXPORT_REPORT.json') -Raw | ConvertFrom-Json
+    if (-not $persistenceReport.persistenceEvidence -or $persistenceReport.inventoryPatchSources -or $persistenceReport.candidateCount -ne 0 -or $persistenceReport.sourceFiles.Count -ne 0) { throw 'Persistence mode selected unrelated or raw assets.' }
+    if ($persistenceReport.targetMatches -notcontains 'BP_GameInstance' -or $persistenceReport.targetMatches -notcontains 'Storage') { throw 'Persistence target manifest missing.' }
+    if (@(Get-ChildItem $persistence -Recurse -File | Where-Object { $_.Extension -in @('.pak', '.uasset', '.uexp', '.ubulk') }).Count -ne 0) { throw 'Persistence mode exported game assets.' }
+    if ((Get-FileHash $pak).Hash -ne $before) { throw 'Persistence collection modified the input pak.' }
+    Write-Host '[PASS] Persistence evidence reports missing targets and preserves metadata-only/read-only boundaries'
 } catch {
     foreach ($log in Get-ChildItem $fixture -Recurse -Filter '*.log') { Write-Host (Get-Content $log.FullName -Raw) }
     throw

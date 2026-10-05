@@ -1,5 +1,13 @@
 # Research Log
 
+## 2026-10-06: confirmed UI, travel-loss investigation and v8 visual follow-up
+
+User confirms v7 features/layout work, requests thicker red selection and equipped stars, and reproduces lost favorites after a mission. Workspace maintenance removed scratch inputs; recovered original source/evidence ZIPs from their saved identities and re-cloned source. Inspector-owned UObject favorites explain the lifecycle limitation. Existing game metadata and fresh MCD-PE item/save/caching inspection still expose no verified stable per-item/hero ID. Item type, localized fingerprints, transient object names and serialized gameplay flags are unsuitable. No guessed persistence path implemented.
+
+v8 uses 6-unit red strips and deduplicates the six equipment widgets into mark targets; native equipment exclusion remains. Added metadata-only persistence collector, a key-supplying wrapper and target manifest. A real legacy-pak negative test checks unrelated assets, missing-target failure, no raw output and unchanged input hash. All three UI modes write/reopen preserving 11,152 original exports. Existing 39 action/layout and 27 owner cases plus probe/diagnostic checks remain required. Windows checks are the remaining validation gate. Private assets stay excluded.
+
+Persistence remains blocked on new game-instance/profile/save/storage evidence; do not call v8 a persistence repair. New equipped-star placement needs retail testing. Next: inspect uploaded persistence metadata, obtain runtime reflection if native identifiers are unavailable, then implement hero-scoped sidecar plus travel/restart/transfer/reconciliation tests. Record requirements and acceptance in INVENTORY_IDENTITY.md.
+
 ## 2026-10-05: v7 favorite icon and inspector tag
 
 Inspected the user's two local crops and private InspectInfo/tag widget layout. The observed native rarity/gilded/custom tags share a HorizontalBox; UMG_ItemTagIconName and inspected-item fields are reflected. Checked GetParent/AddChildToHorizontalBox/padding/alignment in pinned Epic UE4.22 headers, with current official docs corroboration. Replaced tiny gold square with a native pixel star and appended a FAVORITE badge to the native row, resolving the physical inspected item. Dynamic row replacement detaches the old badge; unsupported rows hide it. Native selection/salvage safeguards, session-scoped favorites and v6 redraw suppression remain.
