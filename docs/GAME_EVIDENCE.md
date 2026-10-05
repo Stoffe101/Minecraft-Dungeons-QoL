@@ -1,4 +1,15 @@
-> The 2026-10-04 legacy upload succeeded for all 31 targets and has been analyzed. There is no need to rerun that same export. Current contracts and remaining runtime/identity gaps are in [GAME_API_CONTRACTS.md](GAME_API_CONTRACTS.md).
+> The original 31-target export remains analyzed. Mission-travel favorite loss now requires the NEW persistence targets below, not a repeat of that same inventory export.
+
+## Favorites persistence evidence — 2026-10-06
+
+From the updated repository run:
+
+```powershell
+git pull
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Collect-FavoritesPersistenceEvidence.ps1 -PaksPath 'C:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks'
+```
+
+Upload the `persistence-evidence-<timestamp>.zip` printed at completion. No AES prompt: the wrapper supplies the previously verified public archive key. This metadata-only archive inspects game-instance, character-selection/profile, SaveGame/UserManager, Storage and Blacksmith Blueprint references, not character saves or executable memory. Existing input/output safeguards and checksums apply. EXPORT_REPORT records exact targets/candidates and missing targets fail rather than certify an API. Review local paths/logs before sharing. Runtime stable identity is still unverified; this collector is research, not a persistence fix.
 
 # Inspect the installed Dungeons 1 build
 

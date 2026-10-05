@@ -1,5 +1,11 @@
 # Inventory UI redesign — 2026-10-05
 
+## v8: thicker red selection and equipped favorite stars — 2026-10-06
+
+User confirms v7 visuals/placement work and requests thicker red selection and favorite icons on equipped gear. The four selection strips now use width/height 6 (previously 3), RGB 1/.12/.12, inset 1, with bottom/right offsets -7. Favorite stars and badge layout remain unchanged. Marker targets copy InventorySlotsInGrid, then append valid dynamically cast EquipSlots widgets with Array_AddUnique. All six observed equipment slots use the same base/native item contract. Native selection still excludes equipment; adding marker targets does not make equipped gear salvageable. Existing detached-widget pruning, physical item lookup and change-only visibility apply to both collections.
+
+The user also reports favorite loss after a mission. Inspector-owned favorites cannot meet until-explicit-unfavorite persistence. v8 is a visual update ONLY while new evidence is collected. Stable hero/item runtime IDs remain unverified; names/power, ItemId/type, slot position and UObject paths are not safe replacements. See INVENTORY_IDENTITY.md and GAME_EVIDENCE.md for the blocker and prepared metadata-only collector.
+
 ## v7: recognizable favorite markers
 
 User's supplied crops show an Elite Power Bow grid tile and the UNIQUE/GILDED/CUSTOM inspector row. Requested an icon on favorite tiles and a detail label. Replace the 8-unit square with a 25x25 dark-backed gold pixel star at the top-right, 5 units from the edges. The top-left enchantment count and bottom-right power remain clear. Build the star from native hit-test-invisible Border strips inside a CanvasPanel, avoiding font-dependent star glyphs, external textures or another replaced game asset. Five per-widget mark references remain; their common type is Widget so the favorite canvas and four selection borders can share cleanup/visibility logic. No new marks are allocated on unchanged ticks.

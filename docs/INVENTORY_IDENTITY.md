@@ -2,6 +2,16 @@
 
 Last updated: 2026-10-04
 
+## Reproduced mission-travel loss — 2026-10-06
+
+User confirms otherwise-working v7 loses explicit favorites after mission travel. Runtime favorites live in UMG_InventoryItemInspector.MCDQoL_Favorites, an array of physical UInventoryItem references. Recreating the inspector loses the array; retaining UObject references alone would not establish identity after item reconstruction or restart. Until the player explicitly unfavorites is a hard requirement, including travel/restart.
+
+Recovered private UI packages and 31-asset metadata after workspace cleanup. Re-inspected InventoryItem.Item/Meta/SerializableItemId, controller caching and save-state imports, plus MCD-PE inventory metadata/save reconstruction. No verified Blueprint-visible persistent hero/item unique ID emerged. ItemId is a type ID; MarkedNew/Cloned are gameplay state and must not be repurposed. GetCachedUIWidget caches by class and does not establish per-hero, restart-safe item identity. Do not guess GUID functions, alter gameplay flags, or silently group duplicate names/power.
+
+Prepared Collect-FavoritesPersistenceEvidence.ps1 with the already verified public archive key. Its new metadata-only mode covers game-instance, character selection/profile, SaveGame, UserManager, Blacksmith and Storage paths, recording targets/candidates/errors. It never exports raw assets or reads/modifies character saves or executable memory. Inspect it for stable profile/item identifiers and reconstruction/transfer paths before implementing a versioned hero-scoped sidecar. Missing native contracts may require a runtime reflection probe; archive metadata is not proof of an API.
+
+Persistence remains unfinished; v8 does not change favorite lifetime. Acceptance must cover independent duplicate items, explicit unfavorite, camp→mission→camp, quit/restart, hero switch, equipment, storage transfer, upgrade/reroll, and host/join. Only deliberately marked physical items may stay protected. Retain unresolved records and block destructive actions when identity cannot be reconciled; never clear records automatically.
+
 A lock system is only safe if it can recognize the **same physical item instance** later. Item type alone is not enough because a player can own multiple copies of the same weapon or armor.
 
 ## Best-case target

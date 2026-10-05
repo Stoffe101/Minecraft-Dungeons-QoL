@@ -21,7 +21,7 @@ internal static class Program
                 return DumpAsset(args[1], args[2], Path.GetFileName(args[1])) ? 0 : 1;
             }
             if (args.Length < 5 || args[0] != "--paks")
-                throw new ArgumentException("Usage: --asset <uasset> <output-json> OR --paks <paks> <aes-key> <output-directory> <inspector-libraries> [path-match | --inventory-patch-sources]");
+                throw new ArgumentException("Usage: --asset <uasset> <output-json> OR --paks <paks> <aes-key> <output-directory> <inspector-libraries> [path-match | --inventory-patch-sources | --persistence-evidence]");
             var libraries = Path.GetFullPath(args[4]);
             AssemblyLoadContext.Default.Resolving += (_, name) =>
             {
@@ -29,7 +29,8 @@ internal static class Program
                 return File.Exists(path) ? AssemblyLoadContext.Default.LoadFromAssemblyPath(path) : null;
             };
             var patchSources = args.Length == 6 && args[5] == "--inventory-patch-sources";
-            return DumpPaks(args[1], args[2], args[3], libraries, patchSources ? null : args.Length > 5 ? args[5] : null, patchSources);
+            var persistence = args.Length == 6 && args[5] == "--persistence-evidence";
+            return DumpPaks(args[1], args[2], args[3], libraries, patchSources || persistence ? null : args.Length > 5 ? args[5] : null, patchSources, persistence);
         }
         catch (Exception ex) { Console.Error.WriteLine(ex); return 1; }
     }
@@ -98,7 +99,7 @@ internal static class Program
         "Dungeons/Content/UI/Inventory/Salvage/UMG_SalvageUndoButton.uasset"
     };
 
-    private static int DumpPaks(string paks, string key, string output, string libraries, string? fixtureMatch, bool patchSources)
+    private static int DumpPaks(string paks, string key, string output, string libraries, string? fixtureMatch, bool patchSources, bool persistence)
     {
         if (OperatingSystem.IsWindows())
         {
@@ -112,7 +113,8 @@ internal static class Program
         var aes = new FAesKey(key);
         foreach (var archive in provider.UnloadedVfs.ToArray()) provider.SubmitKey(archive.EncryptionKeyGuid, aes);
         provider.PostMount();
-        var matches = fixtureMatch != null ? new[] { fixtureMatch } : new[]
+        var matches = persistence ? new[] { "BP_GameInstance", "CharacterSelection", "CharacterSelect", "CharacterProfile", "SaveGame", "UserManager", "Blacksmith", "Storage" }
+            : fixtureMatch != null ? new[] { fixtureMatch } : new[]
         {
             "Dungeons/Content/UI/Inventory/UMG_Inventory", "Dungeons/Content/UI/Inventory/Salvage/",
             "Dungeons/Content/UI/Inventory/UMG_Item", "Dungeons/Content/UI/Inventory/Inspector2/UMG_InventoryItem",
@@ -178,7 +180,7 @@ internal static class Program
         if (candidates.Length == 0) errors.Add("No targeted assets visible. Check archive access/key.");
         File.WriteAllText(Path.Combine(output, "EXPORT_REPORT.json"), JsonConvert.SerializeObject(new
         { schemaVersion = 1, engine = "UE4_22", candidateCount = candidates.Length, completed, errors,
-            inventoryPatchSources = patchSources, sourceFiles }, Formatting.Indented));
+            inventoryPatchSources = patchSources, persistenceEvidence = persistence, targetMatches = matches, sourceFiles }, Formatting.Indented));
         return errors.Count == 0 ? 0 : 1;
     }
 }

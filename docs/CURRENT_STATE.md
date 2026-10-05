@@ -2,9 +2,9 @@
 
 # Current State
 
-Latest status: v7 replaces the tiny favorite square with a gold pixel star at the grid tile's top-right, and appends a FAVORITE badge to the inspector's existing rarity/gilded/custom row. Badge visibility resolves the actual inspected physical item, not a pending HUD highlight. Native salvage and v6 left toolbar/redraw suppression remain. Layout/loading of the new markers still require retail verification. The prior alt-tab crash's GPU-hang trigger remains unknown; no crash fix is established. See [INVENTORY_UI_DESIGN.md](INVENTORY_UI_DESIGN.md) and [INVENTORY_CRASH_INVESTIGATION.md](INVENTORY_CRASH_INVESTIGATION.md).
+Latest status: user confirms v7 features and placement work, but favorites disappear after mission travel. This is the existing inspector-lifetime limitation, now explicitly reproduced. v8 doubles selection borders from 3 to 6 units, changes cyan to red, and includes the six equipment widgets in favorite marker updates. It does NOT fix persistence yet. Stable hero/item identity needs additional profile/save/storage metadata; a read-only collector is prepared. See [INVENTORY_IDENTITY.md](INVENTORY_IDENTITY.md) and [GAME_EVIDENCE.md](GAME_EVIDENCE.md). No GPU crash fix is established.
 
-Last updated: 2026-10-05 (v7 favorite star and inspector badge)
+Last updated: 2026-10-06 (v7 retail confirmation; v8 borders/equipment; persistence evidence required)
 
 ## Actual implementation
 
