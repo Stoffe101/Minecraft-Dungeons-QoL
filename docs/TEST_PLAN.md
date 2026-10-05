@@ -1,5 +1,9 @@
 # Test Plan
 
+## UI v4 acceptance (2026-10-05)
+
+v3 favorites and selection/Select All are user-confirmed. Check the v4 reserved toolbar against the existing navigation footer, font sizing and all button clicks; four cyan edges must follow each selected physical slot/item across scrolling, filtering and grid rebuilds. Favorite gold markers and Unlock caption must agree with synchronous vanilla salvage refusal. Selected favorites/equipment must be excluded. Salvage opens a count-specific modal, No retains selection, preview Yes deletes nothing, and Escape/close/Clear reset pending confirmation. Test host and joining-player sessions independently. See [INVENTORY_UI_DESIGN.md](INVENTORY_UI_DESIGN.md) for detailed checks and unverified limits.
+
 ## Principle
 
 A destructive inventory mod is only useful if it is boringly safe.

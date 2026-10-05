@@ -29,6 +29,21 @@ static class InventoryActionTests
         InventoryActions.Capture(capture, request, slot, item, capture.I(source), widgetClass, slotClass); capture.Finish();
         var resolve = InventoryActions.Resolver(g, "MCDQoL_TestResolve", slot, item, slotClass, itemClass);
         var toggle = InventoryActions.ToggleMode(g, mode, armed, running);
+        var yes = g.Boolean("TestYes", true); var no = g.Boolean("TestNo", true); var review = g.Boolean("TestReview", true);
+        var snapshotSlots = g.ObjectArray("TestSnapshotSlots", slotClass, true); var snapshotItems = g.ObjectArray("TestSnapshotItems", itemClass, true);
+        var batchIndex = g.Integer("TestIndex", true); var complete = g.Integer("TestComplete", true); var skipped = g.Integer("TestSkipped", true);
+        var dismiss = InventoryActions.DismissReview(g, armed, yes, no, review);
+        var approve = InventoryActions.ApproveReview(g, armed, running, snapshotSlots, snapshotItems, batchIndex, complete, skipped, true);
+        // Use a second asset graph name to test the shipped non-destructive path too.
+        var previewAsset = new UAsset(fixture, EngineVersion.VER_UE4_22);
+        var previewDonor = (FunctionExport)previewAsset.Exports.OfType<FunctionExport>().First().Clone();
+        previewDonor.Children = Array.Empty<FPackageIndex>(); previewAsset.Exports.Add(previewDonor);
+        var previewSeed = new Graph(previewAsset, "MCDQoL_PreviewSeed");
+        var previewArmed = previewSeed.Boolean("TestArmed", true); var previewRunning = previewSeed.Boolean("TestRunning", true);
+        var previewSlots = previewSeed.ObjectArray("TestSnapshotSlots", previewSeed.Class("/Script/Dungeons", "InventoryItemSlot"), true);
+        var previewItems = previewSeed.ObjectArray("TestSnapshotItems", previewSeed.Class("/Script/Dungeons", "InventoryItem"), true);
+        var preview = InventoryActions.ApproveReview(previewSeed, previewArmed, previewRunning, previewSlots, previewItems,
+            previewSeed.Integer("TestIndex", true), previewSeed.Integer("TestComplete", true), previewSeed.Integer("TestSkipped", true), false);
         var state = new Dictionary<string, object?>(); var vm = new ActionVm(asset, state);
         object first = new(), second = new();
         var nativeSlot = new Dictionary<string, object?> { ["Item"] = first };
@@ -66,6 +81,28 @@ static class InventoryActionTests
         state[running.ObjectName.ToString()] = true; state[armed.ObjectName.ToString()] = true;
         vm.Run(toggle);
         Check(!(bool)state[mode.ObjectName.ToString()]! && (bool)state[armed.ObjectName.ToString()]!, "mode change is refused during salvage");
+        state[yes.ObjectName.ToString()] = state[no.ObjectName.ToString()] = state[review.ObjectName.ToString()] = true;
+        vm.Run(dismiss);
+        Check(!(bool)state[armed.ObjectName.ToString()]!, "No dismisses the confirmation");
+        Check(new[] { yes, no, review }.All(p => !(bool)state[p.ObjectName.ToString()]!), "No clears pending Yes and repeat Review requests");
+        Check(ReferenceEquals(state["SelectionQueue"], queue) && queue.Count == 2, "No preserves selected physical items");
+        state[snapshotSlots.ObjectName.ToString()] = new List<object?> { nativeSlot };
+        state[snapshotItems.ObjectName.ToString()] = new List<object?> { first };
+        state[running.ObjectName.ToString()] = false; vm.Run(approve);
+        Check(!(bool)state[running.ObjectName.ToString()]!, "unarmed Yes cannot begin salvage");
+        state[armed.ObjectName.ToString()] = true; state[snapshotSlots.ObjectName.ToString()] = new List<object?>(); vm.Run(approve);
+        Check(!(bool)state[running.ObjectName.ToString()]!, "empty confirmation cannot begin salvage");
+        state[armed.ObjectName.ToString()] = true; state[snapshotSlots.ObjectName.ToString()] = new List<object?> { nativeSlot, nativeSlot }; vm.Run(approve);
+        Check(!(bool)state[running.ObjectName.ToString()]!, "mismatched snapshot cannot begin salvage");
+        state[armed.ObjectName.ToString()] = true; state[snapshotSlots.ObjectName.ToString()] = new List<object?> { nativeSlot };
+        state[batchIndex.ObjectName.ToString()] = 9; vm.Run(approve);
+        Check((bool)state[running.ObjectName.ToString()]! && !(bool)state[armed.ObjectName.ToString()]!, "armed Yes starts only the reviewed batch");
+        Check((int)state[batchIndex.ObjectName.ToString()]! == 0, "approved batch resets its cursor");
+        state[batchIndex.ObjectName.ToString()] = 7; state[armed.ObjectName.ToString()] = true; vm.Run(approve);
+        Check((int)state[batchIndex.ObjectName.ToString()]! == 7, "repeat Yes cannot restart a running batch");
+        state[running.ObjectName.ToString()] = false; state[armed.ObjectName.ToString()] = true;
+        new ActionVm(previewAsset, state).Run(preview);
+        Check(!(bool)state[running.ObjectName.ToString()]! && !(bool)state[armed.ObjectName.ToString()]!, "preview Yes dismisses without starting deletion");
         // Prove tests are sensitive to the historical identity bug, not only happy paths.
         var old = resolve.ScriptBytecode.OfType<EX_LetBool>().Last().AssignmentExpression;
         var assignment = resolve.ScriptBytecode.OfType<EX_LetBool>().Last();
@@ -115,12 +152,14 @@ static class InventoryActionTests
                 case EX_NoObject: case EX_Nothing: return null;
                 case EX_Self: return instance;
                 case EX_ObjectConst x: return x.Value;
+                case EX_IntConst x: return x.Value;
                 case EX_LocalVariable: case EX_LocalOutVariable: case EX_InstanceVariable: return Get(e, target);
                 case EX_Context x:
                     var obj = Eval(x.ObjectExpression, target);
                     return obj == null ? null : Eval(x.ContextExpression, obj);
                 case EX_LetObj x: Put(x.VariableExpression, Eval(x.AssignmentExpression, target)); return null;
                 case EX_LetBool x: Put(x.VariableExpression, Eval(x.AssignmentExpression, target)); return null;
+                case EX_Let x: Put(x.Variable, Eval(x.Expression, target)); return null;
                 case EX_FinalFunction x:
                     // UE evaluates function arguments in Stack.Object (the caller),
                     // not the function's EX_Context receiver such as a library CDO.
@@ -129,6 +168,9 @@ static class InventoryActionTests
                         "IsValid" => args[0] != null,
                         "EqualEqual_ObjectObject" => ReferenceEquals(args[0], args[1]),
                         "Not_PreBool" => !(bool)args[0]!,
+                        "Array_Length" => ((List<object?>)args[0]!).Count,
+                        "Greater_IntInt" => (int)args[0]! > (int)args[1]!,
+                        "EqualEqual_IntInt" => (int)args[0]! == (int)args[1]!,
                         _ => throw new NotSupportedException(Name(x.StackNode))
                     };
                 default: throw new NotSupportedException(e.GetType().Name);

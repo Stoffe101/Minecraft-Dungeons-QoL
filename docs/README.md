@@ -4,6 +4,8 @@ This folder is the canonical project record.
 
 ## Canonical documents
 
+- **INVENTORY_UI_DESIGN.md** — v3 runtime report, v4 toolbar/fonts/tile frames/confirmation contracts and retail acceptance checks.
+
 - **REPO_AUDIT.md** — baseline code analysis, safety gaps, applied fixes, evidence levels and next implementation sequence.
 - **CURRENT_STATE.md** — what exists right now, known blockers, next implementation target.
 - **GAME_EVIDENCE.md** — read-only Windows collection needed to verify the active installed game's APIs.

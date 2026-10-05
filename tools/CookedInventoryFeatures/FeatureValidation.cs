@@ -84,6 +84,8 @@ static class FeatureValidation
                         EX_LocalVariable l => l.Variable.Old,
                         EX_LocalOutVariable l => l.Variable.Old,
                         EX_InstanceVariable i => i.Variable.Old,
+                        EX_StructMemberContext m => m.StructMemberExpression.Old,
+                        EX_Let l => l.Value.Old,
                         _ => null
                     };
                     if (reference != null && (reference.IsImport() || reference.Index > originalCount)) Add(fn.CreateBeforeSerializationDependencies, reference);

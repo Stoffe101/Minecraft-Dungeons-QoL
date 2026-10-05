@@ -42,4 +42,29 @@ static class InventoryActions
         toggle.Label("DONE"); toggle.Finish();
         return toggle.Function;
     }
+
+    public static FunctionExport DismissReview(Graph context, PropertyExport armed, params PropertyExport[] requests)
+    {
+        var dismiss = new Graph(context.Asset, "MCDQoL_DismissReview");
+        dismiss.Bool(armed, false, true);
+        foreach (var request in requests) dismiss.Bool(request, false, true);
+        // No is not Clear: leave the selected items and selection mode intact.
+        dismiss.Finish(); return dismiss.Function;
+    }
+
+    public static FunctionExport ApproveReview(Graph context, PropertyExport armed, PropertyExport running,
+        PropertyExport slots, PropertyExport items, PropertyExport index, PropertyExport completed, PropertyExport skipped, bool nativeBatch)
+    {
+        var approve = new Graph(context.Asset, "MCDQoL_ApproveReview");
+        approve.Branch(approve.I(armed), "DONE");
+        approve.Branch(approve.Not(approve.I(running)), "DONE");
+        approve.Bool(armed, false, true);
+        approve.Branch(approve.Math("Greater_IntInt", approve.Array("Array_Length", approve.I(slots)), approve.N(0)), "DONE");
+        approve.Branch(approve.Math("EqualEqual_IntInt", approve.Array("Array_Length", approve.I(slots)), approve.Array("Array_Length", approve.I(items))), "DONE");
+        if (nativeBatch) {
+            approve.Bool(running, true, true); approve.Set(index, approve.N(0), true);
+            approve.Set(completed, approve.N(0), true); approve.Set(skipped, approve.N(0), true);
+        }
+        approve.Label("DONE"); approve.Finish(); return approve.Function;
+    }
 }

@@ -1,10 +1,10 @@
-> Runtime status: the user confirmed PR #14 opens inventory, shows correct item names/power and responds to F6/F7. The screenshot shows 216 slots and Ghostly Armor, power 163. This verifies the read-only UI/input foundation on the user’s Store installation. Locks, favorites, multi-selection, persistent identity and native salvage remain unfinished. Online host/join-friend compatibility remains required and not established by this report.
+> Runtime status: on 2026-10-05 the user confirmed the v3 favorites variant works well and the combined variant supports selection, including Select All. Actual batch salvage was disabled in those packages and remains untested. Persistent locks, loadouts and online joining-player compatibility remain unfinished/unverified.
 
 # Current State
 
-Latest status: the v1 private inventory feature test crashes. The mouse-control candidate is still not runtime-confirmed. The subsequent audit fixes click-time identity, retained selection when leaving multi-select mode, and native-local initialization flags; see the latest section below. The older read-only probe remains the user-confirmed working milestone.
+Latest status: v3 mouse controls are user-confirmed working. The v4 UI candidate replaces diagnostic text with a compact footer, uses the retail inventory font, adds cyan selection frames and gold favorite markers, and replaces double-click Review with a Yes/No modal. v4 has source/graph/packaging validation, not retail runtime confirmation. See [INVENTORY_UI_DESIGN.md](INVENTORY_UI_DESIGN.md).
 
-Last updated: 2026-10-05 (user-confirmed inventory overlay and native reads)
+Last updated: 2026-10-05 (v3 favorites/selection confirmation; v4 UI redesign)
 
 ## Actual implementation
 
