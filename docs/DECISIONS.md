@@ -43,3 +43,7 @@ The baseline fingerprint identity and equipment guards are insufficient for the 
 ## D-009: Isolate and pin reusable templates
 
 Use the MIT LetMeMove 1.1.0 cooked shell with a recorded SHA-256 and retained license. Relocate all manager/loader references into our namespace to coexist with the original mod. Pin the Mod Kit commit. Diagnostic CI uploads the exact-source artifact and cannot write a rebased manifest to main.
+
+## 2026-10-05: Shared inventory core and optional feature builds
+
+User requested clickable controls and asked to split the features if better. Favorites and multi-salvage both modify original inventory HUD/inspector assets; independent co-installed paks would silently replace each other's whole assets. Keep the protection core shared and provide mutually exclusive favorites-only and combined builds, with the same native eligibility/mutation guards. Other modules may be separate when they own non-conflicting assets. This provides smaller runtime tests without allowing batch salvage to bypass favorites. Private default downloads remain batch-disabled until retail UI/guard verification.

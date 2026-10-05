@@ -226,3 +226,5 @@ Start at [docs/README.md](docs/README.md).
 ## Project rule
 
 Every meaningful implementation or research pass must update the canonical docs with what changed, what was learned, decisions made, tests/results, and next work.
+
+The v1 private inventory feature test is withdrawn after an inventory-open crash. The replacement uses mouse buttons and offers mutually exclusive favorites-only/combined builds (`-FavoritesOnly`); install only one. See [current crash findings and feature status](docs/FAVORITES_SALVAGE_IMPLEMENTATION.md). Default private test builds still disable batch deletion and await in-game verification.

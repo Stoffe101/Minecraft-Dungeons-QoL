@@ -2,8 +2,10 @@ param(
     [Parameter(Mandatory=$true)][string]$SourcesDirectory,
     [string]$OutputDirectory,
     [string]$DotNetPath,
-    [switch]$EnableNativeSalvage
+    [switch]$EnableNativeSalvage,
+    [switch]$FavoritesOnly
 )
+if ($FavoritesOnly -and $EnableNativeSalvage) { throw 'FavoritesOnly cannot enable native batch salvage.' }
 . (Join-Path $PSScriptRoot 'Common.ps1')
 Assert-Command git
 Assert-Command python
@@ -39,9 +41,10 @@ if ($LASTEXITCODE -ne 0) { throw 'Feature patcher build failed.' }
 $stage = Join-Path $out 'stage'
 $arguments = @((Join-Path $build 'CookedInventoryFeatures.dll'), $sources, (Join-Path $stage 'Dungeons/Content'))
 if ($EnableNativeSalvage) { $arguments += '--enable-salvage' }
+if ($FavoritesOnly) { $arguments += '--favorites-only' }
 & $DotNetPath @arguments
 if ($LASTEXITCODE -ne 0) { throw 'Feature patch/graph validation failed.' }
-$name = if ($EnableNativeSalvage) { 'zzz_MinecraftDungeonsQoL-InventoryFeaturesNative_P.pak' } else { 'zzz_MinecraftDungeonsQoL-InventoryFeaturesTest_P.pak' }
+$name = if ($FavoritesOnly) { 'zzz_MinecraftDungeonsQoL-FavoritesOnlyTest_P.pak' } elseif ($EnableNativeSalvage) { 'zzz_MinecraftDungeonsQoL-InventoryFeaturesNative_P.pak' } else { 'zzz_MinecraftDungeonsQoL-InventoryFeaturesTest_P.pak' }
 $pak = Join-Path $out $name
 Push-Location $stage
 try {
@@ -52,6 +55,9 @@ try {
     schemaVersion = 1
     sourceCommit = (& git -C $root rev-parse HEAD).Trim()
     nativeBatchEnabled = [bool]$EnableNativeSalvage
+    favoritesOnly = [bool]$FavoritesOnly
+    controls = 'Mouse buttons; multi-select intercepts original SlotClicked only in combined build.'
+    installation = 'Install one inventory QoL variant only; these packages override the same game assets.'
     favoritesPersistence = 'Inspector UI lifetime only; no persistent item identity certified.'
     pakSha256 = (Get-FileHash $pak -Algorithm SHA256).Hash.ToLowerInvariant()
     originals = @(Get-ChildItem $sources -Recurse -File | Where-Object { $_.Name -in @('UMG_InventoryHUD.uasset', 'UMG_InventoryHUD.uexp', 'UMG_InventoryItemInspector.uasset', 'UMG_InventoryItemInspector.uexp') } | ForEach-Object { @{ name = $_.Name; sha256 = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() } })

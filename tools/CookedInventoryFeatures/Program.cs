@@ -5,13 +5,15 @@ using UAssetAPI.Kismet.Bytecode;
 using UAssetAPI.Kismet.Bytecode.Expressions;
 using UAssetAPI.UnrealTypes;
 
-if (args.Length is < 2 or > 3 || args.Length == 3 && args[2] != "--enable-salvage")
+if (args.Length is < 2 or > 4 || args.Skip(2).Any(x => x is not "--enable-salvage" and not "--favorites-only"))
 {
-    Console.Error.WriteLine("Usage: CookedInventoryFeatures <original Dungeons/Content directory> <output Dungeons/Content directory> [--enable-salvage]"); return 2;
+    Console.Error.WriteLine("Usage: CookedInventoryFeatures <original Dungeons/Content directory> <output Dungeons/Content directory> [--enable-salvage] [--favorites-only]"); return 2;
 }
 var source = Path.GetFullPath(args[0]); var output = Path.GetFullPath(args[1]);
 if (source == output || output.StartsWith(source + Path.DirectorySeparatorChar)) throw new ArgumentException("Use a separate output directory.");
-var destructive = args.Length == 3;
+var favoritesOnly = args.Contains("--favorites-only");
+var destructive = args.Contains("--enable-salvage");
+if (destructive && favoritesOnly) throw new ArgumentException("Favorites-only cannot enable batch salvage.");
 var inspectorPath = "UI/Inventory/Inspector2/UMG_InventoryItemInspector.uasset";
 var hudPath = "UI/Inventory/UMG_InventoryHUD.uasset";
 var inspector = new UAsset(Path.Combine(source, inspectorPath), EngineVersion.VER_UE4_22);
@@ -61,7 +63,7 @@ var inventory = batch.ObjectArray("Inventory", slotClass);
 var undoDonor = batch.Field("CallFunc_SalvageItemInSlot_ReturnValue", "SalvageSlot");
 var undo = batch.Property("Undo", new UStructProperty { Struct = ((UStructProperty)undoDonor.Property).Struct }, "StructProperty");
 batch.Bool(success, false);
-batch.Obj(owning, batch.C(new EX_Self(), batch.F(batch.Fn(batch.Class("/Script/UMG", "UserWidget"), "GetOwningPlayer")), batch.Index(owning)));
+batch.Obj(owning, batch.C(new EX_Self(), batch.F(batch.Fn(batch.Class("/Script/UMG", "Widget"), "GetOwningPlayer")), batch.Index(owning)));
 batch.Branch(batch.Valid(batch.L(owning)), "DONE");
 batch.Branch(batch.C(batch.L(owning), batch.F(batch.Fn(batch.Class("/Script/Engine", "Controller"), "IsLocalPlayerController"))), "DONE");
 batch.Branch(batch.Valid(batch.L(batchSlot)), "DONE"); batch.Branch(batch.Valid(batch.L(expected)), "DONE");
@@ -104,9 +106,21 @@ var textClass = g.Class("/Script/UMG", "TextBlock"); var widgetClass = g.Class("
 var text = g.Object("MCDQoL_Text", textClass, true); var canvasSlotClass = g.Class("/Script/UMG", "CanvasPanelSlot");
 var canvasSlot = g.Object("CanvasSlot", canvasSlotClass); var status = g.String("Status");
 var cachedText = g.String("MCDQoL_CachedText", true);
+var mode = g.Boolean("MCDQoL_SelectMode", true);
+var clickedSlot = g.Object("MCDQoL_ClickedSlot", hudSlot, true);
+var controls = new MouseControls(g, favoritesOnly);
+var click = new Graph(hud, "MCDQoL_SlotClicked");
+var sourceWidget = click.Object("Source", widgetSlotClass, flags: EPropertyFlags.CPF_Parm);
+click.Branch(click.I(mode), "DONE"); click.Branch(click.Not(click.I(running)), "DONE");
+click.Obj(clickedSlot, click.C(click.L(sourceWidget), click.V(click.Member(widgetSlotClass, "ObjectProperty", "InventoryItemSlot")), click.Index(clickedSlot)), true);
+click.Bool(controls.Select.Request, true, true); click.Label("DONE"); click.Finish();
+if (!favoritesOnly) Prepend(g, hud.Exports.OfType<FunctionExport>().Single(x => x.ObjectName.ToString() == "SlotClicked"), new[] { g.Local(click.Function, g.L(g.Field("Source", "SlotClicked"))) });
+
 var key = g.Import("/Script/CoreUObject", "ScriptStruct", "Key", g.Package("/Script/InputCore"));
 var cancel = new Graph(hud, "MCDQoL_CancelBatch");
-cancel.Bool(armed, false, true); cancel.Bool(running, false, true);
+cancel.Bool(armed, false, true); cancel.Bool(running, false, true); cancel.Bool(mode, false, true);
+foreach (var control in controls.All) cancel.Bool(control.Request, false, true);
+cancel.Obj(clickedSlot, new EX_NoObject(), true);
 foreach (var array in new[] { selectedSlots, selectedItems, snapshotSlots, snapshotItems }) cancel.Add(cancel.Array("Array_Clear", cancel.I(array)));
 cancel.Finish();
 // Slate may stop ticking a hidden widget. Cancel in the real open/close function too,
@@ -150,7 +164,7 @@ void Eligible(string reject, string suffix)
     g.Branch(g.Math("NotEqual_ObjectObject", g.L(equipItem), g.L(currentItem)), reject);
     g.Set(equipIndex, g.Math("Add_IntInt", g.L(equipIndex), g.N(1))); g.Jump("EQUIP_" + suffix); g.Label("EQUIP_DONE_" + suffix);
 }
-g.Obj(pc, g.C(new EX_Self(), g.F(g.Fn(g.Class("/Script/UMG", "UserWidget"), "GetOwningPlayer")), g.Index(pc)));
+g.Obj(pc, g.C(new EX_Self(), g.F(g.Fn(g.Class("/Script/UMG", "Widget"), "GetOwningPlayer")), g.Index(pc)));
 g.Branch(g.Valid(g.L(pc)), "CANCEL"); g.Branch(g.C(g.L(pc), g.F(g.Fn(g.Class("/Script/Engine", "Controller"), "IsLocalPlayerController"))), "CANCEL");
 g.Branch(g.C(new EX_Self(), g.F(g.Fn(widgetClass, "IsVisible"))), "CANCEL"); g.Branch(g.Valid(g.I(hudInspector)), "CANCEL");
 g.Obj(localStash, g.C(g.L(pc), g.F(g.Fn(g.Class("/Script/Dungeons", "BasePlayerController"), "GetItemStashComponent")), g.Index(localStash)));
@@ -158,15 +172,20 @@ g.Branch(g.Valid(g.L(localStash)), "CANCEL");
 g.Set(slots, g.C(g.L(localStash), g.F(g.Fn(g.Existing("ItemStashComponent", "Class"), "GetInventorySlots")), g.Index(slots)));
 g.Set(equips, g.I(g.Field("EquipSlots")));
 // Cancel/clear works even when no item is highlighted; closing also cancels confirmation.
-g.Branch(Press("Escape"), "CHECK_BATCH"); ClearSelection();
-g.Label("CHECK_BATCH"); g.Branch(g.I(running), "INPUT");
+g.Branch(Press("Escape"), "CHECK_BATCH"); g.Add(g.Local(cancel.Function));
+g.Label("CHECK_BATCH");
+g.Branch(g.I(controls.Cancel.Request), "CHECK_MODE");
+g.Add(g.Local(cancel.Function));
+g.Label("CHECK_MODE"); g.Branch(g.Math("BooleanAND", g.I(controls.Mode.Request), g.Not(g.I(running))), "CHECK_RUNNING");
+g.Bool(controls.Mode.Request, false, true); ClearSelection(); g.Set(mode, g.Not(g.I(mode)), true);
+g.Label("CHECK_RUNNING"); g.Branch(g.I(running), "INPUT");
 g.Branch(g.Math("EqualEqual_IntInt", Length(g.I(snapshotSlots)), Length(g.I(snapshotItems))), "CANCEL");
 g.Branch(g.Math("Less_IntInt", g.I(index), Length(g.I(snapshotSlots))), "BATCH_DONE");
 g.Obj(current, g.At(g.I(snapshotSlots), g.I(index))); g.Obj(expectedItem, g.At(g.I(snapshotItems), g.I(index)));
 g.Branch(g.Valid(g.L(current)), "SKIP"); g.Obj(currentItem, SlotItem(g.L(current), currentItem));
 g.Branch(g.Math("EqualEqual_ObjectObject", g.L(currentItem), g.L(expectedItem)), "SKIP"); Eligible("SKIP", "BATCH");
 g.Bool(didSalvage, false);
-g.Add(g.C(g.I(hudInspector), g.F(g.Fn(inspectorClass, "MCDQoL_SalvageQueued"), g.L(current), g.L(expectedItem), g.L(didSalvage))));
+g.Add(g.C(g.I(hudInspector), g.Virtual("MCDQoL_SalvageQueued", g.L(current), g.L(expectedItem), g.L(didSalvage))));
 g.Branch(g.L(didSalvage), "SKIP"); g.Set(completed, g.Math("Add_IntInt", g.I(completed), g.N(1)), true); g.Jump("ADVANCE");
 g.Label("SKIP"); g.Set(skipped, g.Math("Add_IntInt", g.I(skipped), g.N(1)), true);
 g.Label("ADVANCE"); g.Set(index, g.Math("Add_IntInt", g.I(index), g.N(1)), true); g.Jump("DISPLAY");
@@ -174,22 +193,24 @@ g.Label("BATCH_DONE"); ClearSelection(); g.Add(g.Array("Array_Clear", g.I(snapsh
 g.Label("INPUT");
 g.Obj(current, g.C(g.I(g.Field("SelectedSlot")), g.V(g.Member(widgetSlotClass, "ObjectProperty", "InventoryItemSlot")), g.Index(current)));
 g.Obj(currentItem, SlotItem(g.L(current), currentItem));
-g.Branch(Press("F5"), "SELECT_ONE"); g.Branch(g.Valid(g.L(currentItem)), "SELECT_ONE"); Cancel();
+g.Branch(g.I(controls.Favorite.Request), "SELECT_ONE"); g.Bool(controls.Favorite.Request, false, true); g.Branch(g.Valid(g.L(currentItem)), "SELECT_ONE"); Cancel();
 g.Branch(IsFavorite(), "FAVORITE"); g.Add(g.Array("Array_RemoveItem", FavoriteArray(), g.L(currentItem))); g.Jump("REFRESH_BUTTON");
 g.Label("FAVORITE"); g.Add(g.Array("Array_AddUnique", FavoriteArray(), g.L(currentItem))); RemoveCurrent("FAVORITE");
 g.Label("REFRESH_BUTTON");
-g.Add(g.C(g.I(hudInspector), g.F(g.Fn(inspectorClass, "SetSalvageDialogVisibility"), new EX_False())));
+g.Add(g.C(g.I(hudInspector), g.Virtual("SetSalvageDialogVisibility", new EX_False())));
 // Refresh vanilla eligibility visibility on the same physical inspected item.
 var toggleMember = g.Member(inspectorClass, "ObjectProperty", "UMG_SalvageButtonToggle");
-g.Label("SELECT_ONE"); g.Branch(Press("F8"), "SELECT_ALL"); Cancel();
+g.Label("SELECT_ONE"); g.Branch(g.I(controls.Select.Request), "SELECT_ALL"); g.Bool(controls.Select.Request, false, true); Cancel();
+g.Branch(g.Valid(g.I(clickedSlot)), "CURRENT_SELECTED"); g.Obj(current, g.I(clickedSlot)); g.Obj(currentItem, SlotItem(g.L(current), currentItem));
+g.Label("CURRENT_SELECTED"); g.Obj(clickedSlot, new EX_NoObject(), true);
 g.Branch(IsQueued(), "QUEUE_ONE"); RemoveCurrent("TOGGLE"); g.Jump("SELECT_ALL");
 g.Label("QUEUE_ONE"); Eligible("SELECT_ALL", "ONE"); AddCurrent();
-g.Label("SELECT_ALL"); g.Branch(Press("F9"), "CONFIRM"); ClearSelection(); g.Set(loop, g.N(0));
+g.Label("SELECT_ALL"); g.Branch(g.I(controls.AllItems.Request), "CONFIRM"); g.Bool(controls.AllItems.Request, false, true); g.Bool(mode, true, true); ClearSelection(); g.Set(loop, g.N(0));
 g.Label("ALL_LOOP"); g.Branch(g.Math("Less_IntInt", g.L(loop), Length(g.L(slots))), "CONFIRM");
 g.Obj(current, g.At(g.L(slots), g.L(loop))); g.Branch(g.Valid(g.L(current)), "ALL_NEXT"); g.Obj(currentItem, SlotItem(g.L(current), currentItem));
 Eligible("ALL_NEXT", "ALL"); AddCurrent();
 g.Label("ALL_NEXT"); g.Set(loop, g.Math("Add_IntInt", g.L(loop), g.N(1))); g.Jump("ALL_LOOP");
-g.Label("CONFIRM"); g.Branch(Press("F10"), "DISPLAY");
+g.Label("CONFIRM"); g.Branch(g.I(controls.Review.Request), "DISPLAY"); g.Bool(controls.Review.Request, false, true);
 g.Branch(g.Math("Greater_IntInt", Length(g.I(selectedSlots)), g.N(0)), "DISPLAY");
 g.Branch(g.Math("EqualEqual_IntInt", Length(g.I(selectedSlots)), Length(g.I(selectedItems))), "CANCEL");
 g.Branch(g.I(armed), "ARM");
@@ -214,8 +235,9 @@ g.Add(g.C(g.L(canvasSlot), g.F(g.Fn(canvasSlotClass, "SetAlignment"), Vec(.5f, 1
 g.Add(g.C(g.L(canvasSlot), g.F(g.Fn(canvasSlotClass, "SetPosition"), Vec(0, -120))));
 g.Add(g.C(g.L(canvasSlot), g.F(g.Fn(canvasSlotClass, "SetSize"), Vec(1100, 115))));
 g.Add(g.C(g.L(canvasSlot), g.F(g.Fn(canvasSlotClass, "SetZOrder"), g.N(100))));
-g.Label("TEXT_READY"); g.Add(g.C(g.I(text), g.F(g.Fn(widgetClass, "SetVisibility"), new EX_ByteConst { Value = 3 })));
-g.Add(g.C(g.I(hudInspector), g.F(g.Fn(inspectorClass, "CanSalavage"), g.L(vanillaEligible))));
+g.Label("TEXT_READY"); controls.EnsureCreated(canvasSlot, Vec);
+g.Add(g.C(g.I(text), g.F(g.Fn(widgetClass, "SetVisibility"), new EX_ByteConst { Value = 3 })));
+g.Add(g.C(g.I(hudInspector), g.Virtual("CanSalavage", g.L(vanillaEligible))));
 g.Add(g.C(g.C(g.I(hudInspector), g.V(toggleMember), toggleMember), g.F(g.Fn(widgetClass, "SetIsEnabled"), g.L(vanillaEligible))));
 g.Set(status, g.S(destructive ? "MCD QoL (session favorites) | " : "MCD QoL SELECTION TEST (session favorites, batch disabled) | "));
 g.Obj(current, g.C(g.I(g.Field("SelectedSlot")), g.V(g.Member(widgetSlotClass, "ObjectProperty", "InventoryItemSlot")), g.Index(current)));
@@ -230,11 +252,15 @@ g.Label("STATUS"); g.Set(status, g.Count(g.Concat(g.L(status), g.S("\nSelected: 
 g.Set(status, g.Count(g.L(status), Length(FavoriteArray()), " | Salvaged: "));
 g.Set(status, g.Count(g.L(status), g.I(completed), " | Skipped: ")); g.Set(status, g.Count(g.L(status), g.I(skipped)));
 g.Branch(g.I(armed), "NORMAL_HELP");
-g.Set(status, g.Concat(g.L(status), g.S(destructive ? "\nF10 again: SALVAGE selected items. Undo restores the last item only. Esc cancels." : "\nPreview only. Batch salvage is disabled in this build. Esc clears."))); g.Jump("WRITE");
+g.Set(status, g.Concat(g.L(status), g.S(destructive ? "\nClick Review / Confirm again to SALVAGE selected items. Undo restores the last item only. Cancel stops." : "\nPreview only. Batch salvage is disabled in this build. Esc clears."))); g.Jump("WRITE");
 g.Label("NORMAL_HELP"); g.Branch(g.I(running), "REGULAR_HELP");
 g.Set(status, g.Concat(g.L(status), g.S("\nSalvaging confirmed batch. Esc stops remaining items."))); g.Jump("WRITE");
-g.Label("REGULAR_HELP"); g.Set(status, g.Concat(g.L(status), g.S("\nF5 favorite/unfavorite | F8 select | F9 select all eligible | F10 review | Esc clear/cancel")));
-g.Label("WRITE"); g.Branch(g.Static("KismetStringLibrary", "EqualEqual_StrStr", g.L(status), g.I(cachedText)), "CHANGED"); g.Jump("END");
+g.Label("REGULAR_HELP");
+g.Branch(g.I(mode), "MODE_OFF");
+g.Set(status, g.Concat(g.L(status), g.S("\nMULTI SELECT ACTIVE: click items to toggle selection. Favorites and equipment are excluded."))); g.Jump("HELP_DONE");
+g.Label("MODE_OFF"); g.Set(status, g.Concat(g.L(status), g.S(favoritesOnly ? "\nClick Favorite / Lock to toggle protection on the highlighted item." : "\nClick Multi salvage, then click inventory items. Select All excludes favorites and equipment.")));
+g.Label("HELP_DONE");
+g.Label("WRITE"); controls.UpdateEnabled(currentItem, running, selectedItems); g.Branch(g.Static("KismetStringLibrary", "EqualEqual_StrStr", g.L(status), g.I(cachedText)), "CHANGED"); g.Jump("END");
 g.Label("CHANGED"); g.Set(cachedText, g.L(status), true);
 var converted = g.TextValue(g.Static("KismetTextLibrary", "Conv_StringToText", g.L(status)), true);
 g.Add(g.C(g.I(text), g.F(g.Fn(textClass, "SetText"), converted))); g.Jump("END");

@@ -6,6 +6,7 @@ using UAssetAPI.Kismet.Bytecode.Expressions;
 using UAssetAPI.UnrealTypes;
 
 if (args.Length != 1) { Console.Error.WriteLine("Usage: CookedGraphTests <diagnostic-actor.uasset>"); return 2; }
+FunctionOwnerTests.Run(args[0]);
 var asset = new UAsset(args[0], EngineVersion.VER_UE4_22);
 var fn = asset.Exports.OfType<FunctionExport>().Single(x => x.ObjectName.ToString().StartsWith("ExecuteUbergraph_"));
 var code = fn.ScriptBytecode;
