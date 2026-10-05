@@ -13,8 +13,8 @@ static class InventoryTileMarks
         var ui = new InventoryAppearance(g, "Marks");
         var widgets = g.ObjectArray("MarkWidgets", widgetSlotClass);
         var owners = g.ObjectArray("MCDQoL_MarkOwners", widgetSlotClass, true);
-        var borderClass = g.Class("/Script/UMG", "Border");
-        var marks = Enumerable.Range(0, 5).Select(i => g.ObjectArray("MCDQoL_Marks_" + i, borderClass, true)).ToArray();
+        var markClass = g.Class("/Script/UMG", "Widget");
+        var marks = Enumerable.Range(0, 5).Select(i => g.ObjectArray("MCDQoL_Marks_" + i, markClass, true)).ToArray();
         var widget = g.Object("MarkWidget", widgetSlotClass); var root = g.Object("MarkRoot", g.Class("/Script/UMG", "CanvasPanel"));
         var slot = g.Object("MarkNativeSlot", nativeSlotClass); var item = g.Object("MarkItem", itemClass);
         var loop = g.Integer("MarkLoop"); var markIndex = g.Integer("MarkIndex"); var itemIndex = g.Integer("MarkItemIndex");
@@ -46,7 +46,7 @@ static class InventoryTileMarks
             ui.Fill("MarkBottom", g.L(root), 1, -4, 1, 3, cyan, ay: 1, maxX: 1, instance: false, z: 200),
             ui.Fill("MarkLeft", g.L(root), 1, 1, 3, 1, cyan, maxY: 1, instance: false, z: 200),
             ui.Fill("MarkRight", g.L(root), -4, 1, 3, 1, cyan, ax: 1, maxY: 1, instance: false, z: 200),
-            ui.Fill("MarkFavorite", g.L(root), -13, 5, 8, 8, ui.Color(1, .68f, .12f), ax: 1, instance: false, z: 200)
+            ui.FavoriteStar(g.L(root))
         };
         // Borders never receive mouse hits. Draw over native rarity/inspection frames.
         foreach (var e in edges) ui.Visibility(g.L(e), 1);

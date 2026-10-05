@@ -124,6 +124,23 @@ static class InventoryActionTests
         Check((int)widget["VisibilityWrites"]! == 1, "unchanged selected mark never hides and shows again");
         state[mode.ObjectName.ToString()] = false; vm.Run(presentation.Function);
         Check((byte)widget["Visibility"]! == 1 && (int)widget["VisibilityWrites"]! == 2, "deselection collapses the mark once");
+        var favoriteUi = new Graph(asset, "MCDQoL_TestFavoriteBadge");
+        var badgeUi = new InventoryAppearance(favoriteUi, "TestBadge");
+        var badgeFavorites = favoriteUi.ObjectArray("TestBadgeFavorites", itemClass, true);
+        FavoriteBadge.ApplyState(favoriteUi, badgeUi, source, favoriteUi.I(item), favoriteUi.I(badgeFavorites));
+        favoriteUi.Label("END"); favoriteUi.Finish();
+        var lockedItems = new List<object?> { first }; state[badgeFavorites.ObjectName.ToString()] = lockedItems;
+        state[item.ObjectName.ToString()] = first; vm.Run(favoriteUi.Function);
+        Check((byte)widget["Visibility"]! == 3, "badge shows for the inspected favorite");
+        vm.Run(favoriteUi.Function); var writes = (int)widget["VisibilityWrites"]!;
+        vm.Run(favoriteUi.Function);
+        Check((int)widget["VisibilityWrites"]! == writes, "unchanged favorite badge avoids a visibility setter");
+        state[item.ObjectName.ToString()] = second; vm.Run(favoriteUi.Function);
+        Check((byte)widget["Visibility"]! == 1, "badge does not transfer to another physical item");
+        state[item.ObjectName.ToString()] = first; lockedItems.Clear(); vm.Run(favoriteUi.Function);
+        Check((byte)widget["Visibility"]! == 1, "unfavoriting hides the inspected badge");
+        state[item.ObjectName.ToString()] = null; lockedItems.Add(null); vm.Run(favoriteUi.Function);
+        Check((byte)widget["Visibility"]! == 1, "empty inspector never shows a favorite badge");
         FunctionLayoutContracts.Validate(asset, resolve);
         void RejectLayout(Action mutate, Action restore, string expected) {
             mutate();
@@ -187,6 +204,8 @@ static class InventoryActionTests
                     }
                     return Name(x.StackNode) switch {
                         "IsValid" => args[0] != null,
+                        "BooleanAND" => (bool)args[0]! && (bool)args[1]!,
+                        "Array_Contains" => ((List<object?>)args[0]!).Contains(args[1]),
                         "EqualEqual_ObjectObject" => ReferenceEquals(args[0], args[1]),
                         "Not_PreBool" => !(bool)args[0]!,
                         "Array_Length" => ((List<object?>)args[0]!).Count,

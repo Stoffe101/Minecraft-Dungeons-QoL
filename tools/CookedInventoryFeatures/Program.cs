@@ -278,6 +278,7 @@ if (destructive) {
 }
 g.Label("WRITE"); controls.UpdateEnabled(currentItem, running, selectedItems, armed, mode, IsFavorite(), snapshotItems);
 InventoryTileMarks.Update(g, selectedSlots, selectedItems, FavoriteArray(), widgetSlotClass, hudSlot, hudItem);
+FavoriteBadge.Update(g, hudInspector, FavoriteArray());
 g.Branch(g.Static("KismetStringLibrary", "EqualEqual_StrStr", g.L(status), g.I(cachedText)), "CHANGED"); g.Jump("END");
 g.Label("CHANGED"); g.Set(cachedText, g.L(status), true);
 var converted = g.TextValue(g.Static("KismetTextLibrary", "Conv_StringToText", g.L(status)), true);
