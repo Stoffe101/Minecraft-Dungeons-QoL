@@ -39,6 +39,25 @@ static class EvidenceTests
         var failedReader = new LegacyReader(new BoundedMemory(new Fixture().Memory, maxCalls: 0));
         try { failedReader.Collect([new Region(Fixture.Base, new Fixture().Memory.Read(Fixture.Base, 4096))]); throw new Exception("Budget ignored"); }
         catch (BudgetExceeded ex) { Check(ex.Message.Contains("calls") && failedReader.Stage == "global-discovery", "budget cause and failing stage distinguishable without addresses"); }
+        var emptySlots = new Fixture(capacity: 256); emptySlots.Set(emptySlots.ObjectHeader + 20, 4096, 4); emptySlots.Collect();
+        var baseSlots = new Fixture(capacity: 256); baseSlots.Collect();
+        Check(emptySlots.Memory.Calls - baseSlots.Memory.Calls <= 2, "3072 empty slots require at most two additional block reads");
+        var replacedDeclaration = new Fixture(); bool slotChanged = false;
+        replacedDeclaration.Memory.Override = (address, size) => {
+            if (address == replacedDeclaration.SelectedSlot && size == 8) { slotChanged = true; return new byte[8]; }
+            return null;
+        };
+        Reject(() => replacedDeclaration.Collect(), "selected declaration slot replaced before acceptance");
+        Check(slotChanged, "selected declaration pointers rechecked directly after batched scan");
+        var boundary = new Fixture(capacity: 256); boundary.AddChunkBoundaryInstance(); bool finalBlockBounded = false;
+        boundary.Memory.Override = (address, size) => {
+            if (address == Fixture.Base + 0x280000) finalBlockBounded = size == 24;
+            return null;
+        };
+        Check(boundary.Collect().Completed && finalBlockBounded, "slot blocks cross 65536 boundary without reading beyond live tail");
+        Check(boundary.Memory.Calls - baseSlots.Memory.Calls < 1000, "65537 slot traversal uses bounded block count");
+        var partialBlock = new Fixture(); partialBlock.Memory.Override = (address, size) => address == partialBlock.ObjectChunk && size > 8 ? new byte[size - 1] : null;
+        Reject(() => partialBlock.Collect(), "partial slot block read");
         var f1 = new Fixture(); f1.Set(f1.GuidReturn + 0x70, f1.Classes["CharacterSaveData"]); Reject(() => f1.Collect(), "wrong GUID target");
         var f2 = new Fixture(); f2.Set(f2.BoolInput + 56, 0x480); Reject(() => f2.Collect(), "input bool mistaken for return");
         var f3 = new Fixture(); f3.Set(f3.FirstFunction + 40, f3.FirstFunction); Reject(() => f3.Collect(), "cyclic child chain");
@@ -50,7 +69,7 @@ static class EvidenceTests
         var f9 = new Fixture(); f9.Memory.Partial = true; Reject(() => f9.Collect(), "partial read");
         try { new BoundedMemory(f1.Memory, maxBytes: 0).Read(Fixture.Base, 8); throw new Exception("Byte budget ignored"); }
         catch (BudgetExceeded ex) { Check(ex.Message.Contains("bytes"), "byte budget cause explicit"); }
-        try { new BoundedMemory(f1.Memory, timeout: TimeSpan.Zero).Read(Fixture.Base, 8); throw new Exception("Time budget ignored"); }
+        try { new BoundedMemory(f1.Memory, timeout: TimeSpan.FromTicks(-1)).Read(Fixture.Base, 8); throw new Exception("Time budget ignored"); }
         catch (BudgetExceeded ex) { Check(ex.Message.Contains("time"), "time budget cause explicit"); }
         try { new BoundedMemory(f1.Memory, maxCalls: 0).Read(Fixture.Base, 8); throw new Exception("Budget ignored"); } catch (BudgetExceeded) { Check(true, "hard read budget stops traversal"); }
         Reject(() => new BoundedMemory(f1.Memory).Read(ulong.MaxValue, 8), "overflowing address");
@@ -85,7 +104,7 @@ static class EvidenceTests
         public const ulong Base = 0x100000; public readonly FakeMemory Memory = new(); public readonly Dictionary<string, ulong> Classes = new();
         public ulong NameHeader = Base + 0x2000, ObjectHeader = Base + 128, FirstObject, GuidReturn, BoolInput, FirstFunction;
         readonly Dictionary<string, int> names = new(); readonly Dictionary<ulong, ulong> last = new();
-        ulong next = Base + 0x30000, nameChunk = Base + 0x4000, objectTable = Base + 0x10000, objectChunk = Base + 0x11000;
+        ulong next = Base + 0x30000, nameChunk = Base + 0x4000, objectTable = Base + 0x10000, objectChunk = Base + 0x100000;
         readonly int chars, children, target, capacity; int index; ulong classMeta, scriptMeta, functionMeta, packageMeta;
         public Fixture(int chars = 12, int children = 0x48, int target = 0x70, int capacity = 128) {
             this.chars = chars; this.children = children; this.target = target; this.capacity = capacity;
@@ -107,7 +126,7 @@ static class EvidenceTests
             Param(fn, "Index", "IntProperty", 0x80); Param(fn, "ReturnValue", "ObjectProperty", 0x480, Classes["CharacterSaveData"]);
             fn = Function("PlayerControllerBase", "GetCharacterSlotByIndex"); Param(fn, "Index", "IntProperty", 0x80); BoolInput = Param(fn, "Option", "BoolProperty", 0x80); Param(fn, "ReturnValue", "ObjectProperty", 0x480, Classes["PlayerCharacterSaveSlot"]);
             fn = Function("ItemStashComponent", "SalvageItemInSlot"); Param(fn, "Slot", "ObjectProperty", 0x80, Classes["InventoryItemSlot"]); Param(fn, "Success", "BoolProperty", 0x180); Param(fn, "ReturnValue", "StructProperty", 0x480, Classes["ItemSalvageUndoInfo"]);
-            Encoding.ASCII.GetBytes("account-secret").CopyTo(Memory.Bytes, 0x200000);
+            Encoding.ASCII.GetBytes("account-secret").CopyTo(Memory.Bytes, 0x3f0000);
         }
         public void Set(ulong address, ulong value, int size = 8) {
             var span = Memory.Bytes.AsSpan((int)(address - Base), size); if (size == 8) BinaryPrimitives.WriteUInt64LittleEndian(span, value); else BinaryPrimitives.WriteUInt32LittleEndian(span, (uint)value);
@@ -119,12 +138,15 @@ static class EvidenceTests
             Encoding.ASCII.GetBytes(name).CopyTo(Memory.Bytes, (int)(entry + (ulong)chars - Base)); Set(NameHeader + (ulong)capacity * 8, (ulong)names.Count, 4); return i;
         }
         ulong Object(string name, ulong kind, ulong outer) {
-            var obj = Allocate(); Set(objectChunk + (ulong)index * 24, obj); Set(obj + 12, (ulong)index++, 4); Set(obj + 16, kind); Set(obj + 24, (ulong)Name(name), 4); Set(obj + 32, outer); return obj;
+            var obj = Allocate(); Set((index < 65536 ? objectChunk : Base + 0x280000) + (ulong)(index % 65536) * 24, obj); Set(obj + 12, (ulong)index++, 4); Set(obj + 16, kind); Set(obj + 24, (ulong)Name(name), 4); Set(obj + 32, outer); return obj;
         }
         void Add(ulong owner, ulong field) { if (last.TryGetValue(owner, out var prev)) Set(prev + 40, field); else Set(owner + (ulong)children, field); last[owner] = field; }
         ulong Function(string owner, string name) { var obj = Object(name, functionMeta, Classes[owner]); Add(Classes[owner], obj); return obj; }
         ulong Param(ulong fn, string name, string kind, ulong flags, ulong type = 0) { var obj = Object(name, Classes[kind], fn); Set(obj + 56, flags); Set(obj + (ulong)target, type); Add(fn, obj); return obj; }
         public ulong ObjectTable => objectTable;
+        public ulong ObjectChunk => objectChunk;
+        public void AddChunkBoundaryInstance() { Set(objectTable + 8, Base + 0x280000); SetObjectCapacity(2, 2); index = 65536; Object("boundary-item", Classes["InventoryItem"], 0); Set(ObjectHeader + 20, (ulong)index, 4); }
+        public ulong SelectedSlot => objectChunk + (ulong)BinaryPrimitives.ReadInt32LittleEndian(Memory.Bytes.AsSpan((int)(Classes["InventoryItem"] + 12 - Base), 4)) * 24;
         public void AddInventoryInstances(int count) { for (int i = 0; i < count; i++) Object("ordinary-item", Classes["InventoryItem"], 0); Set(ObjectHeader + 20, (ulong)Math.Max(128, index), 4); }
         public void SetObjectCapacity(int maximumChunks, int allocatedChunks) { Set(ObjectHeader + 16, (ulong)maximumChunks * 65536, 4); Set(ObjectHeader + 24, (ulong)maximumChunks, 4); Set(ObjectHeader + 28, (ulong)allocatedChunks, 4); }
         public void CorruptFirstName() => Set(BinaryPrimitives.ReadUInt64LittleEndian(Memory.Read(nameChunk, 8)) + 8, 4, 4);

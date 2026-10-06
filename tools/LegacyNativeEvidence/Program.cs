@@ -23,7 +23,7 @@ try {
 }
 // No executable bytes, object addresses, item instances, saves, account IDs or local paths.
 File.WriteAllText(Path.Combine(output, "REPORT.json"), JsonSerializer.Serialize(new {
-    schemaVersion = 1, readerRevision = "legacy-bounded-traversal-v4", capture.Completed, capture.Issues, capture.Declarations,
+    schemaVersion = 1, readerRevision = "legacy-batched-slots-v5", capture.Completed, capture.Issues, capture.Declarations,
     diagnostics = new { stage = reader?.Stage ?? stage, readCalls = memory?.ReadCalls ?? 0, readBytes = memory?.ReadBytes ?? 0, elapsedMilliseconds = memory?.ElapsedMilliseconds ?? 0 },
     mode = "external-read-only-legacy-declarations", gameProcessModified = false,
     note = "Experimental reader; matching seven call shapes does not establish native ABI or favorite persistence. No instance values or memory dumps exported."
