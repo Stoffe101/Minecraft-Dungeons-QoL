@@ -55,7 +55,8 @@ static class CodeTests
         Reject(() => reader.AcceptedFunction("PlayerControllerBase", "GetNumProfiles"), "sampling requested before completed declaration gates");
         f = new Fixture(); f.Pe(0x60000000);
         Check(NativeCode.ReadRanges(new BoundedMemory(f.Memory), Image, f.Memory.Bytes.Length).Single().Start == Code, "PE executable range selected within image");
-        f.Pe(0xe0000000); Reject(() => NativeCode.ReadRanges(new BoundedMemory(f.Memory), Image, f.Memory.Bytes.Length), "writable executable section");
+        f.Pe(0xe0000000); Check(NativeCode.ReadRanges(new BoundedMemory(f.Memory), Image, f.Memory.Bytes.Length).Length == 1, "readable executable sections need no protection changes even if image permits writes");
+        f.Pe(0x20000000); Reject(() => NativeCode.ReadRanges(new BoundedMemory(f.Memory), Image, f.Memory.Bytes.Length), "image has no readable executable section");
         f.Pe(0x60000000); f.Write(Image + 100, 0xffff, 4);
         Reject(() => NativeCode.ReadRanges(new BoundedMemory(f.Memory), Image, f.Memory.Bytes.Length), "executable section outside module bounds");
         f.Write(Image, 0, 2); Reject(() => NativeCode.ReadRanges(new BoundedMemory(f.Memory), Image, f.Memory.Bytes.Length), "non-PE code range source");

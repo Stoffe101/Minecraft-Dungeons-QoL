@@ -4,7 +4,7 @@
 
 CharacterSerializeComponent directly inherits Engine.ActorComponent. Its two properties are mDefaultSaveData/mSaveData, both CharacterSaveData objects. Ten functions: SetSkin(Name), SetName(String), SetLegendaryStatus(Enum), SetIsTowerLevel(), ReadSkin()->Name, ReadName()->String, HasProfile()->Bool, GetLegendaryStatus()->Enum, GetCloudPlayerId()->Guid, AssignCharacter(CharacterSaveData). GetCloudPlayerId return property flags are `0018001040000782`; this does not establish lifetime/clone semantics. There is no reflected record-returning serializer in this declaration. BaseCharacter also adds no reflected save identity. EquipmentComponent's EquipmentSlots/GetSlotsOfType use ItemSlot, distinct from InventoryItemSlot; do not substitute these object types.
 
-The optional native code collector inspects native flags/count/parameter sizes and source-derived function-pointer layouts, accepting a unique variant only when seven known anchors agree and pointers fall in read-only executable main-image sections. This is evidence collection, not a callable native bridge. Raw snippets/RVAs remain private and are never embedded as guessed production offsets.
+The optional native code collector inspects native flags/count/parameter sizes and source-derived function-pointer layouts, accepting a unique variant only when seven known anchors agree and pointers fall in readable executable main-image sections. This is evidence collection, not a callable native bridge. Raw snippets/RVAs remain private and are never embedded as guessed production offsets.
 
 
 ## Native declaration confirmation — 2026-10-06

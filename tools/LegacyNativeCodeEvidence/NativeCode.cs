@@ -43,12 +43,12 @@ sealed class NativeCode(IMemory memory, ulong imageBase, ExecutableRange[] range
             int length = BinaryPrimitives.ReadInt32LittleEndian(section[8..]), rva = BinaryPrimitives.ReadInt32LittleEndian(section[12..]);
             if (length < 0 || rva < 0 || rva > imageSize - length) throw new ReadFailure("Section outside image.");
             if ((flags & 0x20000000) == 0) continue;
-            if ((flags & 0x80000000) != 0 || length < 1) throw new ReadFailure("Writable executable section is unsupported.");
+            if ((flags & 0x40000000) == 0 || length < 1) continue; // Sampling is read-only even when the image permits writes.
             result.Add(new(imageBase + (ulong)rva, length));
         }
         var sorted = result.OrderBy(x => x.Start).ToArray();
         for (int i = 1; i < sorted.Length; i++) if (sorted[i - 1].Start + (ulong)sorted[i - 1].Length > sorted[i].Start) throw new ReadFailure("Overlapping executable sections.");
-        if (sorted.Length == 0) throw new ReadFailure("No read-only executable image sections.");
+        if (sorted.Length == 0) throw new ReadFailure("No readable executable image sections.");
         return sorted;
     }
     ExecutableRange? Range(ulong address) => ranges.SingleOrDefault(x => address >= x.Start && address - x.Start < (ulong)x.Length);
@@ -72,7 +72,7 @@ sealed class NativeCode(IMemory memory, ulong imageBase, ExecutableRange[] range
         return new(owner, name, flags.ToString("x8"), count, size, ret, Rva(pointer));
     }
     internal CodeSample Sample(ulong entry) {
-        var range = Range(entry) ?? throw new ReadFailure("Code entry outside read-only executable main image.");
+        var range = Range(entry) ?? throw new ReadFailure("Code entry outside readable executable main image.");
         int length = (int)Math.Min(Window, range.Start + (ulong)range.Length - entry);
         var bytes = memory.Read(entry, length);
         var pending = new Queue<ulong>(); pending.Enqueue(entry);
