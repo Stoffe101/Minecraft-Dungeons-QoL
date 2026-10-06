@@ -13,28 +13,30 @@ sealed record Capture(bool Completed, string[] Issues, ClassDeclaration[] Declar
 sealed class LegacyReader(IMemory memory)
 {
     readonly Dictionary<int, string> nameCache = new();
-    ulong names, objects; int nameCount, objectCount, charsOffset, childrenOffset, targetOffset;
+    ulong names, objects; int nameCount, objectCount, nameCapacity, charsOffset, childrenOffset, targetOffset;
     static readonly string[] Targets = ["InventoryItem", "InventoryItemSlot", "ItemStashComponent", "PlayerControllerBase",
         "PlayerCharacterSaveSlot", "CharacterSaveData", "DungeonsGameInstance", "DungeonsUserManager",
         "InventoryItemData", "InventoryItemMetaData", "SerializableItemId"];
     public Capture Collect(IReadOnlyList<Region> regions) {
-        var nameCandidates = new HashSet<(ulong Header, int Chars)>(); var attemptedHeaders = new HashSet<ulong>(); var objectCandidates = new HashSet<ulong>();
+        var nameCandidates = new HashSet<(ulong Header, int Chars, int Capacity)>(); var attemptedHeaders = new HashSet<(ulong Header, int Capacity)>(); var objectCandidates = new HashSet<ulong>();
         foreach (var region in regions) for (int i = 0; i + 32 <= region.Bytes.Length; i += 8) {
             var p = BinaryPrimitives.ReadUInt64LittleEndian(region.Bytes.AsSpan(i));
-            foreach (var header in new[] { region.Address + (ulong)i, p }) {
+            // UE 4.22 NameTypes.h uses 4M / 16384 = 256 inline chunk pointers.
+            // Retain the earlier 128 candidate; accept only uniquely validated names/contracts.
+            foreach (var header in new[] { region.Address + (ulong)i, p }) foreach (int capacity in new[] { 128, 256 }) {
                 if (!MemoryValues.Pointer(header)) continue;
                 if (header == region.Address + (ulong)i) {
-                    if (i + 1032 > region.Bytes.Length) continue;
-                    int n = BinaryPrimitives.ReadInt32LittleEndian(region.Bytes.AsSpan(i + 1024)), c = BinaryPrimitives.ReadInt32LittleEndian(region.Bytes.AsSpan(i + 1028));
-                    if (n < 3 || n > 2_000_000 || c != (n + 16383) / 16384) continue;
+                    if (i + capacity * 8 + 8 > region.Bytes.Length) continue;
+                    int n = BinaryPrimitives.ReadInt32LittleEndian(region.Bytes.AsSpan(i + capacity * 8)), c = BinaryPrimitives.ReadInt32LittleEndian(region.Bytes.AsSpan(i + capacity * 8 + 4));
+                    if (n < 3 || n > 2_000_000 || c < (n + 16383) / 16384 || c > capacity) continue;
                 }
-                if (!attemptedHeaders.Add(header)) continue;
+                if (!attemptedHeaders.Add((header, capacity))) continue;
                 try {
-                    int count = memory.I32(header + 1024), chunks = memory.I32(header + 1028);
-                    if (count < 3 || count > 2_000_000 || chunks != (count + 16383) / 16384) continue;
+                    int count = memory.I32(header + (ulong)capacity * 8), chunks = memory.I32(header + (ulong)capacity * 8 + 4);
+                    if (count < 3 || count > 2_000_000 || chunks < (count + 16383) / 16384 || chunks > capacity) continue;
                     foreach (var offset in new[] { 12, 16 }) {
                         names = header; nameCount = count; charsOffset = offset; nameCache.Clear();
-                        try { if (Name(0) == "None" && Name(1) == "ByteProperty" && Name(2) == "IntProperty") nameCandidates.Add((header, offset)); } catch (ReadFailure) { }
+                        try { if (Name(0) == "None" && Name(1) == "ByteProperty" && Name(2) == "IntProperty") nameCandidates.Add((header, offset, capacity)); } catch (ReadFailure) { }
                     }
                 } catch (ReadFailure) { }
             }
@@ -44,7 +46,7 @@ sealed class LegacyReader(IMemory memory)
                 && countChunks == (countObjects + 65535) / 65536 && maxChunks >= countChunks && maxChunks <= 32) objectCandidates.Add(region.Address + (ulong)i);
         }
         if (nameCandidates.Count != 1) throw new ReadFailure($"Legacy name array not uniquely validated ({nameCandidates.Count} matches); no declarations accepted.");
-        (names, charsOffset) = nameCandidates.Single(); nameCount = memory.I32(names + 1024); nameCache.Clear();
+        (names, charsOffset, nameCapacity) = nameCandidates.Single(); nameCount = memory.I32(names + (ulong)nameCapacity * 8); nameCache.Clear();
         var validated = new List<ulong>();
         foreach (var candidate in objectCandidates) try {
             objects = memory.U64(candidate); objectCount = memory.I32(candidate + 20); int good = 0;

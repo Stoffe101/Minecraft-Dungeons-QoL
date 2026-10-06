@@ -1,5 +1,18 @@
 # Research Log
 
+## 2026-10-06: visual feedback and first external native capture
+
+User reports the updated appearance looks better and is acceptable. This confirms general visual feedback, not a six-slot equipment matrix, travel/restart persistence or host/join acceptance. Keep the working v8 pak.
+
+Inspected private native-favorites-20261006-130720-9fdf11.zip (SHA-256 `cee7785026223cb5c3c1f6d7a509f987ba4958e4664a1a2b99b83873f4b77e34`): REPORT.json only, Completed=false, zero declarations, `Legacy name array not uniquely validated (0 matches); no declarations accepted.` The collector reached the name scan; no access-denial error is reported. This does not establish the game's actual table layout or absence of reflected item identity.
+
+Primary engine-source review at folgerwang/UnrealEngine commit `99a530d4ccbe6bea1e8f49df20acfeb294006962`, Engine/Source/Runtime/Core/Public/UObject/NameTypes.h, found a concrete discovery defect: TNameEntryArray uses 4 * 1024 * 1024 elements / 16384 per chunk = 256 inline chunk pointers. The reader only checked 128 (counts at +1024/+1028), omitting the source-defined +2048/+2052 layout. Reserve can allocate more chunks than the live element count requires, so exact chunk-count equality was also too strict. FNameEntry HashNext-before-Index and encoded index >> 1 agree with the existing reader; UnrealNames.inl confirms indices 0/1/2 are None/ByteProperty/IntProperty. No engine implementation is copied.
+
+Reader revision `legacy-names-256-v2` checks both 128 and 256 candidates, permits bounded reserved chunks, and increases image block overlap to 4096 bytes to cover the larger header at scan seams. Existing unique-name and seven retail call-shape acceptance gates, read budgets and metadata-only output remain. Tests cover 24 layout combinations, inline discovery without a global pointer, reserved capacity, corrupt entry indices, image scan seam coverage and previous rejection cases: 89 local checks pass (Windows adds its own-process read check). These fixtures do not prove retail discovery; a new capture from this changed reader is required. Persistent favorites remain unfinished; no gameplay pak change or runtime success is claimed.
+
+Sources: [NameTypes.h](https://github.com/folgerwang/UnrealEngine/blob/99a530d4ccbe6bea1e8f49df20acfeb294006962/Engine/Source/Runtime/Core/Public/UObject/NameTypes.h), [UnrealNames.inl](https://github.com/folgerwang/UnrealEngine/blob/99a530d4ccbe6bea1e8f49df20acfeb294006962/Engine/Source/Runtime/Core/Public/UObject/UnrealNames.inl).
+
+
 ## 2026-10-06: equipped marker coverage and external reader
 
 Implemented MarkerWidgetCollection shared by production generator and tests, with four checks for equipped widgets, owner deduplication, array copy semantics and missing widgets. Added project-authored LegacyNativeEvidence and existing-SDK PowerShell wrapper: query/read only; bounded legacy names/objects/UProperty traversal; seven observed call-shape gates; eleven native declaration targets; incomplete reports on failure; private metadata-only ZIP. No injected loader or item/save values. See NATIVE_FAVORITES_EVIDENCE.md. Native identity/save-load integration remains unresolved, so no persistent release. User's screenshot shows a work timer without a visible handoff, not a game test result.

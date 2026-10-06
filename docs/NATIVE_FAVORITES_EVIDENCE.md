@@ -2,7 +2,11 @@
 
 Favorites persistence remains unfinished. Archive exports establish six profile call shapes and the salvage shape, but no permanent physical-item identifier. This project-authored experimental reader checks loaded native declarations without installing an injected loader. Keep UE4SS disabled.
 
-## Run once from camp
+## First result and corrected reader
+
+The first user capture reached discovery but found zero name-array matches; no declarations were accepted. Revision `legacy-names-256-v2` adds the 256-pointer layout defined by pinned Unreal 4.22 source, permits reserved capacity, and covers the larger header across scan boundaries. The previous collector omitted this source-defined layout. A repeat is useful only after updating to this revision; keep the working v8 gameplay pak. See the latest RESEARCH_LOG entry for evidence and source links. Retail discovery and permanent item identity remain unverified.
+
+## Run the corrected reader once from camp
 
 Update the repository, launch normally with the working QoL pak, and enter camp. Leave the game idle while running this from the repository's PowerShell terminal:
 
@@ -21,7 +25,7 @@ Upload the printed `.research/native-favorites-TIMESTAMP-SUFFIX.zip` privately, 
 - Accept a reflection layout only if seven observed call shapes match: Guid return; three int32 getters; index → CharacterSaveData; index/bool → PlayerCharacterSaveSlot; salvage slot/out-bool/undo-struct. This establishes consistency, not a complete native ABI.
 - Export eleven allowlisted `/Script/Dungeons` class/struct declarations only. No executable buffers, addresses, item/save values, account IDs, full object dump or complete SDK. Container/enum/subclass typing is partial; non-reflected C++ members are unavailable. A completed report does not certify GUID lifetime, clone behavior, permanent item identity or persistence.
 
-Fixtures test twelve legacy layout combinations, Guid typing/export privacy, mismatch/cycle/partial read/index/count/range/budget failures. Windows CI also reads eight bytes from this test process's own allocation through the actual query/read handle. No tests attach to a game or require game assets. Runtime Store discovery remains unverified.
+Fixtures test twenty-four legacy layout combinations, inline 256-chunk discovery, reserved capacity and corrupt entry indices,, Guid typing/export privacy, mismatch/cycle/partial read/index/count/range/budget failures. Windows CI also reads eight bytes from this test process's own allocation through the actual query/read handle. No tests attach to a game or require game assets. 89 local checks pass; Windows adds an own-process read check. Runtime Store discovery remains unverified.
 
 ## Next gate
 

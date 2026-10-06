@@ -21,7 +21,7 @@ try {
 }
 // No executable bytes, object addresses, item instances, saves, account IDs or local paths.
 File.WriteAllText(Path.Combine(output, "REPORT.json"), JsonSerializer.Serialize(new {
-    schemaVersion = 1, capture.Completed, capture.Issues, capture.Declarations,
+    schemaVersion = 1, readerRevision = "legacy-names-256-v2", capture.Completed, capture.Issues, capture.Declarations,
     mode = "external-read-only-legacy-declarations", gameProcessModified = false,
     note = "Experimental reader; matching seven call shapes does not establish native ABI or favorite persistence. No instance values or memory dumps exported."
 }, new JsonSerializerOptions { WriteIndented = true }));
@@ -44,7 +44,7 @@ static class ImageData
             if ((flags & 0x80000000) == 0 || (flags & 0x20000000) != 0) continue; // writable, non-executable data
             int size = BinaryPrimitives.ReadInt32LittleEndian(section[8..]), rva = BinaryPrimitives.ReadInt32LittleEndian(section[12..]);
             if (size < 0 || rva < 0 || rva > imageSize - size || (total += size) > 64 * 1024 * 1024) throw new ReadFailure("Image data exceeds bounded scan.");
-            for (int offset = 0; offset < size; offset += 1024 * 1024 - 2048) {
+            for (int offset = 0; offset < size; offset += 1024 * 1024 - 4096) {
                 int n = Math.Min(1024 * 1024, size - offset); if (n < 32) break;
                 regions.Add(new Region(image + (ulong)rva + (ulong)offset, memory.Read(image + (ulong)rva + (ulong)offset, n)));
             }
