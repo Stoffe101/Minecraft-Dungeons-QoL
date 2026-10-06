@@ -1,4 +1,4 @@
-param([int]$GameProcessId, [string]$DotNetPath)
+param([int]$GameProcessId, [string]$DotNetPath, [switch]$CollectSerializationContracts)
 . (Join-Path $PSScriptRoot 'Common.ps1')
 if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT -or -not [Environment]::Is64BitOperatingSystem) { throw 'This experimental read-only collector requires Windows x64.' }
 $root = Get-ProjectRoot
@@ -19,7 +19,11 @@ $project = Join-Path $root 'tools/LegacyNativeEvidence/LegacyNativeEvidence.cspr
 if ((Invoke-EvidenceProcess $DotNetPath @('build', $project, '-c', 'Release', '-o', $build) (Join-Path $logs 'Build.log')) -ne 0) { throw "Reader build failed; see $logs. No game files changed." }
 $out = Join-Path $root ('.research/native-favorites-' + [DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss') + '-' + [Guid]::NewGuid().ToString('N').Substring(0, 6))
 Push-Location $root
-try { $code = Invoke-EvidenceProcess $DotNetPath @((Join-Path $build 'LegacyNativeEvidence.dll'), [string]$games[0].Id, $out) (Join-Path $logs 'Reader.log') } finally { Pop-Location }
+try {
+    $readerArgs = @((Join-Path $build 'LegacyNativeEvidence.dll'), [string]$games[0].Id, $out)
+    if ($CollectSerializationContracts) { $readerArgs += '--serialization-contracts' }
+    $code = Invoke-EvidenceProcess $DotNetPath $readerArgs (Join-Path $logs 'Reader.log')
+} finally { Pop-Location }
 if (-not (Test-Path (Join-Path $out 'REPORT.json'))) { throw "No capture report; see $logs. Do not change game protections or install a loader." }
 Compress-Archive -LiteralPath (Join-Path $out 'REPORT.json') -DestinationPath "$out.zip"
 Write-Host "Private native declaration evidence: $out.zip"

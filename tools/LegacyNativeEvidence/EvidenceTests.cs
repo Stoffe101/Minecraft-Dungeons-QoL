@@ -58,6 +58,12 @@ static class EvidenceTests
         Check(boundary.Memory.Calls - baseSlots.Memory.Calls < 1000, "65537 slot traversal uses bounded block count");
         var partialBlock = new Fixture(); partialBlock.Memory.Override = (address, size) => address == partialBlock.ObjectChunk && size > 8 ? new byte[size - 1] : null;
         Reject(() => partialBlock.Collect(), "partial slot block read");
+        var expanded = new Fixture(capacity: 256); expanded.AddSerializationClasses();
+        var expandedResult = expanded.CollectSerialization();
+        Check(expandedResult.Completed && expandedResult.Declarations.Length == 14, "focused serialization set returns fourteen allowlisted declarations");
+        Check(expanded.Collect().Declarations.Length == 11, "default collection retains original scope");
+        var missingSerialization = new Fixture().CollectSerialization();
+        Check(!missingSerialization.Completed && missingSerialization.Declarations.Length == 11 && missingSerialization.Issues.Length == 3, "absent serialization classes recorded explicitly without claiming complete evidence");
         var f1 = new Fixture(); f1.Set(f1.GuidReturn + 0x70, f1.Classes["CharacterSaveData"]); Reject(() => f1.Collect(), "wrong GUID target");
         var f2 = new Fixture(); f2.Set(f2.BoolInput + 56, 0x480); Reject(() => f2.Collect(), "input bool mistaken for return");
         var f3 = new Fixture(); f3.Set(f3.FirstFunction + 40, f3.FirstFunction); Reject(() => f3.Collect(), "cyclic child chain");
@@ -104,6 +110,7 @@ static class EvidenceTests
         public const ulong Base = 0x100000; public readonly FakeMemory Memory = new(); public readonly Dictionary<string, ulong> Classes = new();
         public ulong NameHeader = Base + 0x2000, ObjectHeader = Base + 128, FirstObject, GuidReturn, BoolInput, FirstFunction;
         readonly Dictionary<string, int> names = new(); readonly Dictionary<ulong, ulong> last = new();
+        ulong gamePackage;
         ulong next = Base + 0x30000, nameChunk = Base + 0x4000, objectTable = Base + 0x10000, objectChunk = Base + 0x100000;
         readonly int chars, children, target, capacity; int index; ulong classMeta, scriptMeta, functionMeta, packageMeta;
         public Fixture(int chars = 12, int children = 0x48, int target = 0x70, int capacity = 128) {
@@ -116,7 +123,7 @@ static class EvidenceTests
             var core = Object("/Script/CoreUObject", packageMeta, 0);
             foreach (var obj in new[] { classMeta, packageMeta, scriptMeta, functionMeta }) Set(obj + 32, core);
             foreach (var kind in new[] { "IntProperty", "BoolProperty", "StructProperty", "ObjectProperty" }) Classes[kind] = Object(kind, classMeta, core);
-            var game = Object("/Script/Dungeons", packageMeta, 0);
+            var game = Object("/Script/Dungeons", packageMeta, 0); gamePackage = game;
             foreach (var name in new[] { "InventoryItem", "InventoryItemSlot", "ItemStashComponent", "PlayerControllerBase", "PlayerCharacterSaveSlot", "CharacterSaveData", "DungeonsGameInstance", "DungeonsUserManager" }) Classes[name] = Object(name, classMeta, game);
             foreach (var name in new[] { "InventoryItemData", "InventoryItemMetaData", "SerializableItemId", "ItemSalvageUndoInfo" }) Classes[name] = Object(name, scriptMeta, game);
             Classes["Guid"] = Object("Guid", scriptMeta, core);
@@ -143,6 +150,8 @@ static class EvidenceTests
         void Add(ulong owner, ulong field) { if (last.TryGetValue(owner, out var prev)) Set(prev + 40, field); else Set(owner + (ulong)children, field); last[owner] = field; }
         ulong Function(string owner, string name) { var obj = Object(name, functionMeta, Classes[owner]); Add(Classes[owner], obj); return obj; }
         ulong Param(ulong fn, string name, string kind, ulong flags, ulong type = 0) { var obj = Object(name, Classes[kind], fn); Set(obj + 56, flags); Set(obj + (ulong)target, type); Add(fn, obj); return obj; }
+        public void AddSerializationClasses() { foreach (var name in new[] { "CharacterSerializeComponent", "BaseCharacter", "EquipmentComponent" }) Classes[name] = Object(name, classMeta, gamePackage); }
+        public Capture CollectSerialization() => new LegacyReader(new BoundedMemory(Memory), serializationContracts: true).Collect([new Region(Base, Memory.Read(Base, 4096))]);
         public ulong ObjectTable => objectTable;
         public ulong ObjectChunk => objectChunk;
         public void AddChunkBoundaryInstance() { Set(objectTable + 8, Base + 0x280000); SetObjectCapacity(2, 2); index = 65536; Object("boundary-item", Classes["InventoryItem"], 0); Set(ObjectHeader + 20, (ulong)index, 4); }

@@ -1,5 +1,12 @@
 # Installed-game API contracts
 
+## Native declaration confirmation — 2026-10-06
+
+The completed private v5 report matches all six profile caller shapes below plus ItemStashComponent.SalvageItemInSlot(slot, out-success) returning ItemSalvageUndoInfo. GetCharacterSlotByIndex's bool parameter is named `forceRefreshSlot`; that name does not establish refresh/lifetime semantics. SerializeSaveState has no parameters or return. GetInventorySlots/GetStorageChestSlots return arrays of InventoryItemSlot; return property flags are `0010000008000782`. GetEquipmentSlots returns a map whose inner types this reader does not export. Save slot/controller reference CharacterSerializeComponent; save slot inherits BaseCharacter.
+
+This collector does not export FunctionFlags, property offsets, structure sizes or complete enum/map typing. Parameter flags and matching call shapes do not certify complete C++ ABI, const/static/BlueprintPure specifiers, GUID lifetime, clone identity or physical-item identity. Editor stubs remain provisional for these details. Expanded serialization declarations are the next gate.
+
+
 ## Profile call sites — 2026-10-06
 
 Private exact profile evidence SHA-256 `056d6178ddd194d421f05f926dacf01201416af9d2c467b86dec635d12d7264b`: 26/26 packages completed, zero reported errors. All owners below are `/Script/Dungeons` classes. These are caller layouts, not complete native declarations/flags or runtime lifetime guarantees.

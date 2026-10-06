@@ -1,5 +1,12 @@
 # Favorites persistence investigation
 
+## 2026-10-06: core native capture completed; serializer is the next gate
+
+The v5 report completed 11 declarations, 132 properties and 262 functions with zero issues and seven matching native call shapes. InventoryItemData has eleven fields: ItemId, ItemPower, Enchantments, ArmorProperties, Rarity, bIsUpgraded, bIsGifted, bIsModified, timesModified, bHasNetherite and NetheriteEnchantData. None is a reflected physical-item identifier; SerializableItemId contains only a type name. InventoryItemMetaData contains MarkedNew/Cloned; these gameplay flags must not be repurposed. Slot change indices are not durable identity. InventoryItem's reflected interface offers display/state/mutation APIs, not an instance UUID getter.
+
+SerializeSaveState is a void writer. CharacterSaveData's byte-array load callback is a callback, not a serialization read API. Save-slot CharacterSerializeComponent and controller mCharacterSerializeComponent identify a specific uncollected class. The save-slot superclass BaseCharacter and EquipmentComponent are also uncollected. Optional v6 scope adds these three to the core anchors; it neither guesses C++ layout nor invokes functions. Reflection may still lack a usable bridge; version-checked serialization/lifecycle integration remains necessary if so. Keep v8 and UE4SS disabled.
+
+
 ## 2026-10-06: exact call-budget failure in object traversal; batched slots
 
 Inspected private native-favorites-20261006-133827-9942ba.zip, SHA-256 `f2217f4fe22d43e5b7b6b6f2abf8cee1baea5bdf88d438d7d6e43c8c5d16d8c8`. Revision `legacy-bounded-traversal-v4` reports Completed=false, zero declarations, budget cause `calls`, stage `object-traversal`, 2,000,001 attempted reads, 33,054,711 requested bytes and 3,505 elapsed milliseconds. This establishes that unique name/basic object-table validation passed and traversal began. It does not establish seven native call contracts, exact native declaration layout or stable item identity. The failure is the read-call ceiling, not the 90-second timeout or an access-denial error. No repeat of unchanged v4 is needed.

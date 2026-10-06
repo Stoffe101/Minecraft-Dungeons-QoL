@@ -2,6 +2,9 @@
 
 # Current State
 
+2026-10-06 completed native capture: `legacy-batched-slots-v5` returned all 11 requested declarations (132 properties, 262 functions), no issues, and matched all seven native contract anchors. Runtime diagnostics: 1,667,667 reads / 49,019,979 requested bytes / 3,345 ms. Reflected item data contains no physical-item ID; SerializeSaveState is a void writer. Added optional `-CollectSerializationContracts` scope for CharacterSerializeComponent, BaseCharacter and EquipmentComponent, with 111 local reader checks passing. Core collection need not repeat. Keep v8; durable favorites remain unfinished pending serialization/lifecycle evidence. See NATIVE_FAVORITES_EVIDENCE.md.
+
+
 2026-10-06 latest capture: v4 passed unique name/basic object-table validation but reached the two-million-call ceiling during object traversal (3,505 ms; 33,054,711 requested bytes). No declarations were accepted. Revision `legacy-batched-slots-v5` reads slot tables in bounded 48 KiB blocks and directly revalidates selected declaration slots/kinds/paths before accepting metadata. Limits remain unchanged. All 108 local checks pass, including a 65,537-slot chunk-boundary fixture and replacement/partial-block rejection. Retail completion, native contracts and permanent favorites remain unverified; keep the working v8 pak.
 
 2026-10-06 latest capture: v3 exhausted a read/time budget and returned no declarations; its old report cannot identify the stage or limit. Revision `legacy-bounded-traversal-v4` reduces repeated class/chunk/header reads and per-word allocations, rechecks cached chunks and native contracts, and reports stage/call/byte/time diagnostics. Limits remain unchanged. All 102 local reader checks pass, including 2,048-instance traversal and changed-chunk rejection. Retail completion and permanent favorites remain unverified; keep the working v8 pak. See NATIVE_FAVORITES_EVIDENCE.md.

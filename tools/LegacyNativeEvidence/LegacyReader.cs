@@ -10,7 +10,7 @@ sealed record Capture(bool Completed, string[] Issues, ClassDeclaration[] Declar
 
 // Candidates must match independent retail call sites before metadata is accepted.
 // These reads are not native calls, ABI certification or item-instance identity.
-sealed class LegacyReader(IMemory memory)
+sealed class LegacyReader(IMemory memory, bool serializationContracts = false)
 {
     readonly Dictionary<int, string> nameCache = new();
     readonly Dictionary<ulong, string> classNames = new();
@@ -22,7 +22,10 @@ sealed class LegacyReader(IMemory memory)
     static readonly string[] Targets = ["InventoryItem", "InventoryItemSlot", "ItemStashComponent", "PlayerControllerBase",
         "PlayerCharacterSaveSlot", "CharacterSaveData", "DungeonsGameInstance", "DungeonsUserManager",
         "InventoryItemData", "InventoryItemMetaData", "SerializableItemId"];
+    static readonly string[] SerializationTargets = ["CharacterSerializeComponent", "BaseCharacter", "EquipmentComponent"];
+    string[] TargetNames => serializationContracts ? [..Targets, ..SerializationTargets] : Targets;
     public Capture Collect(IReadOnlyList<Region> regions) {
+        var targetNames = TargetNames;
         Stage = "global-discovery";
         var nameCandidates = new HashSet<(ulong Header, int Chars, int Capacity)>(); var attemptedHeaders = new HashSet<(ulong Header, int Capacity)>(); var objectCandidates = new HashSet<ulong>();
         foreach (var region in regions) for (int i = 0; i + 32 <= region.Bytes.Length; i += 8) {
@@ -80,7 +83,7 @@ sealed class LegacyReader(IMemory memory)
             var header = memory.Read(obj, 32);
             if (BinaryPrimitives.ReadInt32LittleEndian(header.AsSpan(12)) != i) throw new ReadFailure("Object table changed during collection.");
             var kind = ClassName(BinaryPrimitives.ReadUInt64LittleEndian(header.AsSpan(16))); if (kind is not "Class" and not "ScriptStruct") continue;
-            var name = NameOf(obj); if (!Targets.Contains(name) || FullName(obj) != "/Script/Dungeons." + name) continue;
+            var name = NameOf(obj); if (!targetNames.Contains(name) || FullName(obj) != "/Script/Dungeons." + name) continue;
             if (!selected.TryAdd(name, obj)) throw new ReadFailure("Duplicate native declaration.");
             selectedKinds.Add(name, kind);
         }
@@ -107,7 +110,7 @@ sealed class LegacyReader(IMemory memory)
         VerifyKnownContracts(selected);
         foreach (var chunk in objectChunks) if (memory.U64(objects + (ulong)chunk.Key * 8) != chunk.Value) throw new ReadFailure("Object chunk table changed during collection.");
         if (memory.U64(validated[0]) != objects || memory.I32(validated[0] + 20) != objectCount) throw new ReadFailure("Object table changed during collection.");
-        var missing = Targets.Where(x => !selected.ContainsKey(x)).Select(x => "Native declaration missing: " + x).ToArray();
+        var missing = targetNames.Where(x => !selected.ContainsKey(x)).Select(x => "Native declaration missing: " + x).ToArray();
         Stage = "completed";
         return new Capture(missing.Length == 0, missing, declarations);
     }
