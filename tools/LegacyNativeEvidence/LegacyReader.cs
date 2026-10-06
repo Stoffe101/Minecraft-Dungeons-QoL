@@ -13,17 +13,23 @@ sealed record Capture(bool Completed, string[] Issues, ClassDeclaration[] Declar
 sealed class LegacyReader(IMemory memory)
 {
     readonly Dictionary<int, string> nameCache = new();
+    readonly Dictionary<ulong, string> classNames = new();
+    readonly Dictionary<int, ulong> objectChunks = new();
+    public string Stage { get; private set; } = "not-started";
     ulong names, objects; int nameCount, objectCount, nameCapacity, charsOffset, childrenOffset, targetOffset;
+    static readonly int[] NameCapacities = [128, 256], StringOffsets = [12, 16];
     static readonly string[] Targets = ["InventoryItem", "InventoryItemSlot", "ItemStashComponent", "PlayerControllerBase",
         "PlayerCharacterSaveSlot", "CharacterSaveData", "DungeonsGameInstance", "DungeonsUserManager",
         "InventoryItemData", "InventoryItemMetaData", "SerializableItemId"];
     public Capture Collect(IReadOnlyList<Region> regions) {
+        Stage = "global-discovery";
         var nameCandidates = new HashSet<(ulong Header, int Chars, int Capacity)>(); var attemptedHeaders = new HashSet<(ulong Header, int Capacity)>(); var objectCandidates = new HashSet<ulong>();
         foreach (var region in regions) for (int i = 0; i + 32 <= region.Bytes.Length; i += 8) {
             var p = BinaryPrimitives.ReadUInt64LittleEndian(region.Bytes.AsSpan(i));
             // UE 4.22 NameTypes.h uses 4M / 16384 = 256 inline chunk pointers.
             // Retain the earlier 128 candidate; accept only uniquely validated names/contracts.
-            foreach (var header in new[] { region.Address + (ulong)i, p }) foreach (int capacity in new[] { 128, 256 }) {
+            for (int indirect = 0; indirect < 2; indirect++) foreach (int capacity in NameCapacities) {
+                ulong header = indirect == 0 ? region.Address + (ulong)i : p;
                 if (!MemoryValues.Pointer(header)) continue;
                 if (header == region.Address + (ulong)i) {
                     if (i + capacity * 8 + 8 > region.Bytes.Length) continue;
@@ -32,9 +38,10 @@ sealed class LegacyReader(IMemory memory)
                 }
                 if (!attemptedHeaders.Add((header, capacity))) continue;
                 try {
-                    int count = memory.I32(header + (ulong)capacity * 8), chunks = memory.I32(header + (ulong)capacity * 8 + 4);
+                    var counts = memory.Read(header + (ulong)capacity * 8, 8);
+                    int count = BinaryPrimitives.ReadInt32LittleEndian(counts), chunks = BinaryPrimitives.ReadInt32LittleEndian(counts.AsSpan(4));
                     if (count < 3 || count > 2_000_000 || chunks < (count + 16383) / 16384 || chunks > capacity) continue;
-                    foreach (var offset in new[] { 12, 16 }) {
+                    foreach (var offset in StringOffsets) {
                         names = header; nameCount = count; charsOffset = offset; nameCache.Clear();
                         try { if (Name(0) == "None" && Name(1) == "ByteProperty" && Name(2) == "IntProperty") nameCandidates.Add((header, offset, capacity)); } catch (ReadFailure) { }
                     }
@@ -50,8 +57,10 @@ sealed class LegacyReader(IMemory memory)
         }
         if (nameCandidates.Count != 1) throw new ReadFailure($"Legacy name array not uniquely validated ({nameCandidates.Count} matches); no declarations accepted.");
         (names, charsOffset, nameCapacity) = nameCandidates.Single(); nameCount = memory.I32(names + (ulong)nameCapacity * 8); nameCache.Clear();
+        Stage = "object-validation";
         var validated = new List<ulong>();
         foreach (var candidate in objectCandidates) try {
+            objectChunks.Clear(); classNames.Clear();
             objects = memory.U64(candidate); objectCount = memory.I32(candidate + 20); int good = 0;
             for (int i = 0; i < Math.Min(objectCount, 128); i++) {
                 ulong obj = ObjectAt(i); if (obj == 0) continue;
@@ -60,15 +69,19 @@ sealed class LegacyReader(IMemory memory)
             if (good >= 8) validated.Add(candidate);
         } catch (ReadFailure) { }
         if (validated.Count != 1) throw new ReadFailure($"Legacy object array not uniquely validated ({validated.Count} matches from {objectCandidates.Count} candidates); no declarations accepted.");
+        objectChunks.Clear(); classNames.Clear();
         objects = memory.U64(validated[0]); objectCount = memory.I32(validated[0] + 20);
+        Stage = "object-traversal";
         var selected = new Dictionary<string, ulong>();
         for (int i = 0; i < objectCount; i++) {
             ulong obj = ObjectAt(i); if (obj == 0) continue;
-            if (memory.I32(obj + 12) != i) throw new ReadFailure("Object table changed during collection.");
-            var kind = Kind(obj); if (kind is not "Class" and not "ScriptStruct") continue;
+            var header = memory.Read(obj, 32);
+            if (BinaryPrimitives.ReadInt32LittleEndian(header.AsSpan(12)) != i) throw new ReadFailure("Object table changed during collection.");
+            var kind = ClassName(BinaryPrimitives.ReadUInt64LittleEndian(header.AsSpan(16))); if (kind is not "Class" and not "ScriptStruct") continue;
             var name = NameOf(obj); if (!Targets.Contains(name) || FullName(obj) != "/Script/Dungeons." + name) continue;
             if (!selected.TryAdd(name, obj)) throw new ReadFailure("Duplicate native declaration.");
         }
+        Stage = "contract-validation";
         var layouts = new List<(int Children, int Target)>();
         var mismatches = new List<string>();
         foreach (var child in new[] { 0x38, 0x48 }) foreach (var target in new[] { 0x70, 0x78, 0x80 }) {
@@ -78,14 +91,20 @@ sealed class LegacyReader(IMemory memory)
         }
         if (layouts.Count != 1) throw new ReadFailure("Native layout did not uniquely match all seven retail call contracts. " + string.Join("; ", mismatches));
         (childrenOffset, targetOffset) = layouts.Single();
+        Stage = "declaration-export";
         var declarations = selected.Values.Select(Declaration).OrderBy(x => x.Name).ToArray();
+        classNames.Clear();
         VerifyKnownContracts(selected);
+        foreach (var chunk in objectChunks) if (memory.U64(objects + (ulong)chunk.Key * 8) != chunk.Value) throw new ReadFailure("Object chunk table changed during collection.");
         if (memory.U64(validated[0]) != objects || memory.I32(validated[0] + 20) != objectCount) throw new ReadFailure("Object table changed during collection.");
         var missing = Targets.Where(x => !selected.ContainsKey(x)).Select(x => "Native declaration missing: " + x).ToArray();
+        Stage = "completed";
         return new Capture(missing.Length == 0, missing, declarations);
     }
     ulong ObjectAt(int i) {
-        ulong chunk = memory.U64(objects + (ulong)(i / 65536) * 8); if (!MemoryValues.Pointer(chunk)) throw new ReadFailure("Invalid object chunk.");
+        int chunkIndex = i / 65536;
+        if (!objectChunks.TryGetValue(chunkIndex, out var chunk)) { chunk = memory.U64(objects + (ulong)chunkIndex * 8); objectChunks.Add(chunkIndex, chunk); }
+        if (!MemoryValues.Pointer(chunk)) throw new ReadFailure("Invalid object chunk.");
         ulong value = memory.U64(chunk + (ulong)(i % 65536) * 24); if (value != 0 && !MemoryValues.Pointer(value)) throw new ReadFailure("Invalid object address."); return value;
     }
     internal string Name(int index) {
@@ -106,9 +125,14 @@ sealed class LegacyReader(IMemory memory)
     }
     string NameOf(ulong obj) {
         if (!MemoryValues.Pointer(obj)) throw new ReadFailure("Invalid object pointer.");
-        var number = memory.I32(obj + 28); var name = Name(memory.I32(obj + 24)); return number == 0 ? name : name + "_" + (number - 1);
+        var value = memory.Read(obj + 24, 8);
+        var number = BinaryPrimitives.ReadInt32LittleEndian(value.AsSpan(4)); var name = Name(BinaryPrimitives.ReadInt32LittleEndian(value)); return number == 0 ? name : name + "_" + (number - 1);
     }
-    string Kind(ulong obj) => NameOf(memory.U64(obj + 16));
+    string ClassName(ulong cls) {
+        if (!classNames.TryGetValue(cls, out var name)) { name = NameOf(cls); classNames.Add(cls, name); }
+        return name;
+    }
+    string Kind(ulong obj) => ClassName(memory.U64(obj + 16));
     string FullName(ulong obj) {
         var parts = new List<string>(); var seen = new HashSet<ulong>();
         while (obj != 0) { if (parts.Count >= 16 || !seen.Add(obj)) throw new ReadFailure("Cyclic/oversized outer chain."); parts.Add(NameOf(obj)); obj = memory.U64(obj + 32); }

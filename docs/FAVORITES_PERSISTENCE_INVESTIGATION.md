@@ -1,5 +1,16 @@
 # Favorites persistence investigation
 
+## 2026-10-06: bounded capture exhausted; traversal and failure diagnostics improved
+
+Inspected private native-favorites-20261006-132748-c19746.zip, SHA-256 `c8171da5ed80eb1cc728e3314d792fe89e8b3191771e485772aea6f0a5fd0679`. REPORT.json identifies `legacy-objects-capacity-v3`, Completed=false, no declarations and `Read/time budget exceeded; capture is incomplete.` The old message contains no stage/counter/limit cause. This report therefore does not prove object discovery succeeded, which limit was reached, or any native identity/layout contract. Do not request another unchanged v3 run or increase the limits to hide the failure.
+
+Revision `legacy-bounded-traversal-v4` reduces repeated reads: adjacent name-table counters are read together; UObject name index/number are read together; traversal reads index/class together from a bounded 32-byte header; class-name lookups and used object-chunk pointers are cached for one collection. Both caches reset between object candidates and before accepted traversal. Class names are refreshed for the final seven-contract check, and every used chunk pointer is reread and compared before declarations are accepted. No bulk process/object dump or permanent instance values are exported. The discovery loop no longer allocates tiny candidate arrays for every image word. Existing source-defined capacities, unique matches, object-index/owner/chain gates and seven retail contract checks remain.
+
+Reports now include only bounded diagnostic scalars: constant stage label, attempted read-call count, requested bytes and elapsed milliseconds. Budget exceptions distinguish calls/bytes/time. The two-million-call, 256 MiB requested-byte, 90-second and one-MiB single-read limits are unchanged. These counters are diagnostics, not evidence of native API or physical-item identity.
+
+Added a 2,048-instance fixture that retains exactly eleven allowlisted declarations and adds at most three reads per instance, a cache-change rejection before final acceptance, stage/call-budget diagnostics and separate byte/time rejection checks. All 102 local reader checks pass; Windows adds an own-process read check. Fixtures do not prove retail performance or completion. No gameplay pak or persistence release is produced. Next gate is one capture from v4; keep the working v8 pak and UE4SS disabled. Durable favorites still require validated identity/lifecycle access and mission/restart/duplicate/hero/storage/online acceptance.
+
+
 ## 2026-10-06: name table validated; object capacity filter corrected
 
 Inspected private native-favorites-20261006-132111-71d697.zip, SHA-256 `4fe92a78974593228c4a978013ce49653002ccb99aa7a57e6593218a6ad0079e`. REPORT.json identifies revision `legacy-names-256-v2`, Completed=false, zero declarations and `Legacy object array not uniquely validated (0 matches from 0 candidates); no declarations accepted.` Reaching this error means exactly one name table passed the three anchor-name checks. It does not establish the selected table capacity/string offset, native declaration layout, actual object capacity or permanent item identity. No access denial was reported.
