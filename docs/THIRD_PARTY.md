@@ -169,3 +169,7 @@ Official CurseForge file 3385182 was inspected locally to understand online star
 ## Expanded runtime/tool review (2026-10-05)
 
 See MODDING_OPTIONS_REVIEW.md for pinned inspected sources and reuse decisions. UE4SS currently publishes MIT licensing and is a potential runtime diagnostic/client loader option; it is not yet a verified or bundled dependency. GUI X AGPLv3 assets were inspected for compiled value flow, with no implementation/assets copied. Epic UE4.22.3 source was inspected via a version-pinned mirror to understand VM references; no engine code is redistributed. DungeonsLevelLoader, Custom-Skins-Loader and MCD-SMF had no root reuse license observed and remain inspection only. Existing MIT LetMeMove/UAssetAPI/Mod Kit reuse retains its notices.
+
+## External reflection source review — 2026-10-06
+
+See [EXTERNAL_REFLECTION_REVIEW.md](EXTERNAL_REFLECTION_REVIEW.md) for pinned MIT source/license checks on Unreal-eXternalrEsolve, McDaived/UE-Dumper and Spuckwaffel/UEDumper. These are inspection references only: no code, binary or runtime dependency is copied, executed or bundled. Legacy UProperty parameter/layout gaps, overbroad process access and unconfigured game offsets prevent declaring a ready Dungeons Store collector. The withdrawn UE4SS Install remains disabled.

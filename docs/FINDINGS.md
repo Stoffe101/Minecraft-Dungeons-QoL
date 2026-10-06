@@ -1,5 +1,9 @@
 # Findings
 
+## Profile evidence and reflection tools — 2026-10-06
+
+Exact profile collection succeeded on all 26 packages. Vanilla obtains the recent local save slot and compares its GetCloudPlayerId FGuid to a cloud row GUID. This supplies a hero identity candidate with verified caller layout; clone/lifetime semantics and permanent physical-item identity remain unresolved. Six call shapes now have typed argument/result and declaring-owner validation. 142 graph checks pass locally; rebuilt v8 assets are byte-identical, so this is no persistence release. The external MIT tool review found legacy UProperty and access/offset gaps; no replacement native probe is deployed. See GAME_API_CONTRACTS.md, FAVORITES_PERSISTENCE_INVESTIGATION.md and EXTERNAL_REFLECTION_REVIEW.md.
+
 Last updated: 2026-10-04
 
 ## Dungeons Mod Kit

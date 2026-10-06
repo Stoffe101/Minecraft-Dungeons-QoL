@@ -32,3 +32,5 @@ After each meaningful research or implementation pass:
 4. Record tests actually performed. Do not mark untested behavior as working.
 
 - [Installed-game API contracts](GAME_API_CONTRACTS.md): observed UI/native call shapes and identity gaps from the successful legacy export.
+
+- [External reflection review](EXTERNAL_REFLECTION_REVIEW.md): pinned source checks, legacy UE4.22 gaps and requirements for a read-only replacement.

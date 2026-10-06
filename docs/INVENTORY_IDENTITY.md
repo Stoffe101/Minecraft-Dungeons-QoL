@@ -1,8 +1,8 @@
 # Inventory Identity Strategy
 
-The supplied 88-package collection did not establish stable hero/item IDs. See [FAVORITES_PERSISTENCE_INVESTIGATION.md](FAVORITES_PERSISTENCE_INVESTIGATION.md): storage serialization returns no records; unreferenced native fields require runtime reflection. A reversible probe is prepared, with no changes to favorite semantics until reliable identity is established.
+The supplied 88-package collection did not establish stable hero/item IDs. The later exact 26-package profile collection establishes an FGuid cloud matching candidate through PlayerCharacterSaveSlot.GetCloudPlayerId, with no permanent physical-item ID. Its clone/lifetime semantics and relation to uniqueSaveId are unproven. See [FAVORITES_PERSISTENCE_INVESTIGATION.md](FAVORITES_PERSISTENCE_INVESTIGATION.md). The injected probe is withdrawn after a startup crash; no replacement is deployed. Favorite semantics remain unchanged until reliable identity and a persistence bridge are established.
 
-Last updated: 2026-10-04
+Last updated: 2026-10-06
 
 ## Reproduced mission-travel loss — 2026-10-06
 

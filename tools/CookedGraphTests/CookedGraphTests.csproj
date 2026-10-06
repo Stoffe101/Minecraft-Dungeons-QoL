@@ -11,6 +11,7 @@
     <Compile Include="../CookedQoLPatcher/CookedDependencyGraph.cs" Link="CookedDependencyGraph.cs" />
     <Compile Include="../CookedInventoryProbe/InventoryProbeValidator.cs" Link="InventoryProbeValidator.cs" />
     <Compile Include="../CookedInventoryFeatures/FunctionImportContracts.cs" Link="FunctionImportContracts.cs" />
+    <Compile Include="../CookedInventoryFeatures/HeroProfileCallContracts.cs" Link="HeroProfileCallContracts.cs" />
     <Compile Include="../CookedInventoryFeatures/Graph.cs" Link="Graph.cs" />
     <Compile Include="../CookedInventoryFeatures/InventoryActions.cs" Link="InventoryActions.cs" />
     <Compile Include="../CookedInventoryFeatures/InventoryAppearance.cs" Link="InventoryAppearance.cs" />

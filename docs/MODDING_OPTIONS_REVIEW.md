@@ -30,3 +30,7 @@ Primary source repositories: https://github.com/Dokucraft/Dungeons-Mod-Kit ; htt
 Author GUI X page: https://www.curseforge.com/minecraft-dungeons/mods/dungeons-gui-x
 
 Next: retail text repair confirmation, client startup evidence, UE4.22 cooking/runtime diagnostics, then implement the remaining lock/loadout/native salvage/controller UI features with their tests. None of those production features is marked done by this pass.
+
+## External reflection source review — 2026-10-06
+
+See [EXTERNAL_REFLECTION_REVIEW.md](EXTERNAL_REFLECTION_REVIEW.md) for pinned MIT source/license checks on Unreal-eXternalrEsolve, McDaived/UE-Dumper and Spuckwaffel/UEDumper. These are inspection references only: no code, binary or runtime dependency is copied, executed or bundled. Legacy UProperty parameter/layout gaps, overbroad process access and unconfigured game offsets prevent declaring a ready Dungeons Store collector. The withdrawn UE4SS Install remains disabled.
