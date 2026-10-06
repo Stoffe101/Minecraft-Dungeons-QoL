@@ -83,3 +83,13 @@ Inspect native function references, slot/equipment UI patterns, argument express
 After static evidence, the diagnostic pak needs actual Camp/mission testing for loading, stash discovery, input, persistence and hero changes. Production work then covers physical item identity, equipment/loadout guards, review UI, loadout swapping and verified native salvage. The evidence collector alone does not make those features complete.
 
 Primary source: [UeBlueprintDumper](https://github.com/CrystalFerrai/UeBlueprintDumper), reviewed commit `9726294772458eb6114946e967e204925f8b1b66`. Release checksum and Microsoft's runtime checksum from [official .NET 8 release metadata](https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/8.0/releases.json) are pinned in `config/evidence-tool.json`.
+
+## Exact profile metadata after full-catalog recovery (2026-10-06)
+
+The earlier full catalog is recovered; another catalog dump is unnecessary. To collect the missing character-picker/profile call sites from the large local archives, close the game and run:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Collect-FavoritesProfileEvidence.ps1 -PaksPath 'C:\XboxGames\Minecraft Dungeons\Content\Dungeons\Content\Paks'
+```
+
+Share the printed `.research/profile-evidence-TIMESTAMP.zip` privately, including partial output if it reports missing packages/errors. This reads exactly 26 catalog-observed packages and exports legacy metadata/imports/Kismet only. The verified public archive key is automatic. No raw assets, executable access, loader installation or character-save changes. Keep UE4SS disabled. Findings and limits are in FAVORITES_PERSISTENCE_INVESTIGATION.md; this is evidence collection, not a new persistent-favorites release.

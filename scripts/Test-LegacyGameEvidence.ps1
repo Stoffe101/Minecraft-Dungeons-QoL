@@ -45,6 +45,17 @@ try {
     if (@(Get-ChildItem $persistence -Recurse -File | Where-Object { $_.Extension -in @('.pak', '.uasset', '.uexp', '.ubulk') }).Count -ne 0) { throw 'Persistence mode exported game assets.' }
     if ((Get-FileHash $pak).Hash -ne $before) { throw 'Persistence collection modified the input pak.' }
     Write-Host '[PASS] Persistence evidence reports missing targets and preserves metadata-only/read-only boundaries'
+    $profile = Join-Path $fixture 'profile metadata with spaces'
+    & (Join-Path $PSScriptRoot 'Collect-LegacyGameEvidence.ps1') -PaksPath $paks -AesKey ('0x' + ('0' * 64)) -OutputDirectory $profile -DotNetPath (Get-Command dotnet).Source -CollectProfileEvidence
+    if ($LASTEXITCODE -ne 1) { throw 'Absent profile packages must fail rather than establish a native API.' }
+    $profileReport = Get-Content (Join-Path $profile 'Metadata/EXPORT_REPORT.json') -Raw | ConvertFrom-Json
+    if (-not $profileReport.profileEvidence -or $profileReport.persistenceEvidence -or $profileReport.inventoryPatchSources -or $profileReport.candidateCount -ne 0 -or $profileReport.sourceFiles.Count -ne 0) { throw 'Profile evidence selected unrelated or raw packages.' }
+    if ($profileReport.targetMatches.Count -ne 26 -or @($profileReport.errors | Where-Object { $_ -like 'Required profile metadata missing:*' }).Count -ne 26) { throw 'All 26 exact profile packages must be checked.' }
+    if ($profileReport.targetMatches -notcontains 'Dungeons/Content/UI/Character/UMG_CharacterPicker.uasset' -or $profileReport.targetMatches -notcontains 'Dungeons/Content/UI/Character/UICharacterDataBind.uasset') { throw 'Catalog-observed profile targets missing.' }
+    if (@(Get-ChildItem $profile -Recurse -File | Where-Object { $_.Extension -in @('.pak', '.uasset', '.uexp', '.ubulk') }).Count -ne 0) { throw 'Profile collection exported game assets.' }
+    if ((Get-FileHash $pak).Hash -ne $before) { throw 'Profile collection modified the input pak.' }
+    Write-Host '[PASS] Profile evidence rejects unrelated packages, lists every missing target, preserves input and exports metadata only'
+
 } catch {
     foreach ($log in Get-ChildItem $fixture -Recurse -Filter '*.log') { Write-Host (Get-Content $log.FullName -Raw) }
     throw
