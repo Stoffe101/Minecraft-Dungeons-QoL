@@ -16,6 +16,7 @@ sealed class LegacyReader(IMemory memory, bool serializationContracts = false)
     readonly Dictionary<ulong, string> classNames = new();
     readonly Dictionary<int, ulong> objectChunks = new();
     int slotBlockStart = -1; byte[] slotBlock = [];
+    Dictionary<string, ulong>? acceptedClasses;
     public string Stage { get; private set; } = "not-started";
     ulong names, objects; int nameCount, objectCount, nameCapacity, charsOffset, childrenOffset, targetOffset;
     static readonly int[] NameCapacities = [128, 256], StringOffsets = [12, 16];
@@ -25,6 +26,7 @@ sealed class LegacyReader(IMemory memory, bool serializationContracts = false)
     static readonly string[] SerializationTargets = ["CharacterSerializeComponent", "BaseCharacter", "EquipmentComponent"];
     string[] TargetNames => serializationContracts ? [..Targets, ..SerializationTargets] : Targets;
     public Capture Collect(IReadOnlyList<Region> regions) {
+        acceptedClasses = null;
         var targetNames = TargetNames;
         Stage = "global-discovery";
         var nameCandidates = new HashSet<(ulong Header, int Chars, int Capacity)>(); var attemptedHeaders = new HashSet<(ulong Header, int Capacity)>(); var objectCandidates = new HashSet<ulong>();
@@ -111,8 +113,17 @@ sealed class LegacyReader(IMemory memory, bool serializationContracts = false)
         foreach (var chunk in objectChunks) if (memory.U64(objects + (ulong)chunk.Key * 8) != chunk.Value) throw new ReadFailure("Object chunk table changed during collection.");
         if (memory.U64(validated[0]) != objects || memory.I32(validated[0] + 20) != objectCount) throw new ReadFailure("Object table changed during collection.");
         var missing = targetNames.Where(x => !selected.ContainsKey(x)).Select(x => "Native declaration missing: " + x).ToArray();
+        if (missing.Length == 0) acceptedClasses = selected;
         Stage = "completed";
         return new Capture(missing.Length == 0, missing, declarations);
+    }
+    // Available only after all declaration, table and seven contract gates passed.
+    // Source-defined UFunction metadata locations remain candidates until corroborated.
+    internal (ulong Address, int FlagsOffset, FunctionDeclaration Declaration) AcceptedFunction(string owner, string method) {
+        if (acceptedClasses == null || !acceptedClasses.TryGetValue(owner, out var cls)) throw new ReadFailure("Completed declaration capture required.");
+        var fields = Children(cls).Where(x => Kind(x) == "Function" && NameOf(x) == method).ToArray();
+        if (fields.Length != 1) throw new ReadFailure("Sampling function missing or ambiguous: " + owner + "." + method);
+        return (fields[0], childrenOffset + 0x50, Function(fields[0]));
     }
     ulong ObjectAt(int i) {
         int chunkIndex = i / 65536;

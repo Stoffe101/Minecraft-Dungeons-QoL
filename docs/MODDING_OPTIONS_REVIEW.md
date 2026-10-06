@@ -34,3 +34,7 @@ Next: retail text repair confirmation, client startup evidence, UE4.22 cooking/r
 ## External reflection source review — 2026-10-06
 
 See [EXTERNAL_REFLECTION_REVIEW.md](EXTERNAL_REFLECTION_REVIEW.md) for pinned MIT source/license checks on Unreal-eXternalrEsolve, McDaived/UE-Dumper and Spuckwaffel/UEDumper. These are inspection references only: no code, binary or runtime dependency is copied, executed or bundled. Legacy UProperty parameter/layout gaps, overbroad process access and unconfigured game offsets prevent declaring a ready Dungeons Store collector. The withdrawn UE4SS Install remains disabled.
+
+## Completed reflection / native serialization gate — 2026-10-06
+
+Both eleven-class core and fourteen-class expanded captures now complete on the user's Store build. Reflected profile/item APIs do not expose permanent individual-copy identity or serialized item records. Repeating metadata collection or substituting Java Minecraft favorites code cannot solve this native boundary. The new project-authored code collector uses query/read rights and Iced 1.21.0 decoding for exact native serialization/load/transfer functions; no native loader is deployed. The withdrawn UE4SS install stays disabled. Code/ABI/record mapping must be validated before implementing a durable persistence bridge.

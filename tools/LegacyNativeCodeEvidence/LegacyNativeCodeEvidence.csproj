@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Iced" Version="1.21.0" />
+    <Compile Include="../LegacyNativeEvidence/Memory.cs" Link="Memory.cs" />
+    <Compile Include="../LegacyNativeEvidence/LegacyReader.cs" Link="LegacyReader.cs" />
+    <Compile Include="../LegacyNativeEvidence/ImageData.cs" Link="ImageData.cs" />
+  </ItemGroup>
+</Project>

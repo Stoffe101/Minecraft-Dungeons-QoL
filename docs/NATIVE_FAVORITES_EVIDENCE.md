@@ -2,11 +2,13 @@
 
 Favorites persistence remains unfinished. Archive exports establish six profile call shapes and the salvage shape, but no permanent physical-item identifier. This project-authored experimental reader checks loaded native declarations without installing an injected loader. Keep UE4SS disabled.
 
-## Current gate: focused serialization contracts
+## Current gate: inspect bounded native serialization code
 
-The private v5 capture completed all eleven requested declarations: 132 properties and 262 functions, with all seven native call-shape gates matching. It required 1,667,667 read calls / 49,019,979 requested bytes / 3,345 ms; there were no reported issues. Default collection does not need repeating. This validates reflection consistency, not native ABI, item identity or persistence.
+The supplied v6 report completed all fourteen declarations (172 properties, 333 functions) with no issues. It confirms that CharacterSerializeComponent provides profile metadata and save-object assignment, not a reflected item-record getter/custom save-data API. BaseCharacter and EquipmentComponent do not expose durable physical-item identity either. Neither default nor expanded declaration collection needs repeating.
 
-`InventoryItemData` exposes eleven type/stat fields but no reflected physical-item identifier. `SerializableItemId.SerializedId` is a name identifying item type. `ItemStashComponent.SerializeSaveState` has no parameters or return data. Both the save slot and controller reference `CharacterSerializeComponent`; the slot inherits `BaseCharacter`. Revision `legacy-serialization-contracts-v6` adds an optional focused scope containing those two classes and `EquipmentComponent`, alongside the existing eleven contract anchors. A missing additional declaration makes the focused report incomplete while retaining the validated declarations. The default scope remains eleven. Local fixtures: 111 checks pass; Windows adds its own-process check. No gameplay assets or save values are changed.
+The optional code collector uses the same external query/read process rights; no injected loader, native calls or writes. It corroborates source-derived UFunction metadata/native-pointer layout against seven anchors before sampling nine exact functions: ItemStashComponent.SerializeSaveState/GetInventorySlots/GetStorageChestSlots, PlayerControllerBase.SaveCharacterData/GetCharacterSlotByIndex/GetAvailableSaveDataByIndex, CharacterSerializeComponent.AssignCharacter/GetCloudPlayerId and InventoryItemSlot.Swap. Named mutation methods are inspected as code only, never invoked.
+
+Iced 1.21.0 decodes reachable x64 instructions and direct targets. Limits: 4 KiB per routine, 48 routines, roots plus only one level of direct targets, existing 2-million-call / 256 MiB / 90-second overall bounds. Code windows are reread and named roots refreshed. Only reachable instruction bytes/RVAs and necessary declaration/layout metadata are exported; no whole-image dump, instance values or account/save contents. Encoded code can contain address constants; this archive must stay private. Indirect/external calls, invalid/truncated instructions and bounded paths are explicitly reported. Completed collection is not full behavior/ABI/identity proof. Local core fixtures pass; the decoder is verified in Windows CI before handoff.
 
 ## Latest result: budget exhaustion; efficient reader and diagnostic stages
 
@@ -20,18 +22,18 @@ The second capture (`legacy-names-256-v2`) validated a unique name table, then f
 
 The first user capture reached discovery but found zero name-array matches; no declarations were accepted. Revision `legacy-names-256-v2` adds the 256-pointer layout defined by pinned Unreal 4.22 source, permits reserved capacity, and covers the larger header across scan boundaries. The previous collector omitted this source-defined layout. A repeat is useful only after updating to this revision; keep the working v8 gameplay pak. See the latest RESEARCH_LOG entry for evidence and source links. Retail discovery and permanent item identity remain unverified.
 
-## Collect the additional serialization declarations once from camp
+## Collect the bounded serialization code once from camp
 
 Update the repository, launch normally with the working QoL pak, and enter camp. Leave the game idle while running this from the repository's PowerShell terminal:
 
 ```powershell
 git pull
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Collect-NativeFavoritesEvidence.ps1 -CollectSerializationContracts
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Collect-NativeFavoritesEvidence.ps1 -CollectSerializationCode
 ```
 
-Upload the printed `.research/native-favorites-TIMESTAMP-SUFFIX.zip` privately, including an incomplete report. It contains REPORT.json only. If the build fails before a report, provide the terminal message. Do not copy the protected executable, change ACL/ownership, elevate to bypass denial, or reinstall UE4SS. There is nothing to remove afterward: no files are installed into the game folder. The wrapper reuses the SDK installed by the prior archive collector or an installed dotnet SDK; `-DotNetPath` can select that existing SDK. For multiple instances, `-GameProcessId` selects one Dungeons process.
+Upload the printed `.research/native-favorites-TIMESTAMP-SUFFIX.zip` privately, including an incomplete report. It contains REPORT.json only; in code mode that includes private native instruction snippets. If the build fails before a report, provide the terminal message. Do not copy the protected executable, change ACL/ownership, elevate to bypass denial, or reinstall UE4SS. There is nothing to remove afterward: no files are installed into the game folder. Code mode builds a separate tool and restores the pinned Iced NuGet package on first use. The wrapper reuses the SDK installed by the prior archive collector or an installed dotnet SDK; `-DotNetPath` can select that existing SDK. For multiple instances, `-GameProcessId` selects one Dungeons process.
 
-## Implementation and limits
+## Declaration-only implementation and limits (default / -CollectSerializationContracts)
 
 - Attachment rights are PROCESS_QUERY_INFORMATION and PROCESS_VM_READ (0x410). APIs are OpenProcess, ReadProcessMemory and safe handle disposal. No write, injection, suspend, remote thread, driver or privilege APIs.
 - Scan writable, non-executable image data only. No on-disk protected executable access. Limit image data to 64 MiB, individual reads to 1 MiB, total reads to 256 MiB, two million requests and 90 seconds. Unreadable or changing regions produce an incomplete report.
@@ -39,7 +41,7 @@ Upload the printed `.research/native-favorites-TIMESTAMP-SUFFIX.zip` privately, 
 - Accept a reflection layout only if seven observed call shapes match: Guid return; three int32 getters; index → CharacterSaveData; index/bool → PlayerCharacterSaveSlot; salvage slot/out-bool/undo-struct. This establishes consistency, not a complete native ABI.
 - Export eleven allowlisted `/Script/Dungeons` class/struct declarations, or fourteen with the explicit serialization option. No executable buffers, addresses, item/save values, account IDs, full object dump or complete SDK. Container/enum/subclass typing is partial; non-reflected C++ members are unavailable. A completed report does not certify GUID lifetime, clone behavior, permanent item identity or persistence.
 
-Fixtures test twenty-four legacy layout combinations, inline 256-chunk discovery, reserved capacity and corrupt entry indices, Guid typing/export privacy, mismatch/cycle/partial read/index/count/range/budget failures. Windows CI also reads eight bytes from this test process's own allocation through the actual query/read handle. No tests attach to a game or require game assets. 111 local checks pass; Windows adds an own-process read check. The supplied v5 retail capture completed the core scope; expanded-scope completion remains unverified.
+Fixtures test twenty-four legacy layout combinations, inline 256-chunk discovery, reserved capacity and corrupt entry indices, Guid typing/export privacy, mismatch/cycle/partial read/index/count/range/budget failures. Windows CI also reads eight bytes from this test process's own allocation through the actual query/read handle. No tests attach to a game or require game assets. 111 local checks pass; Windows adds an own-process read check. The supplied v5 retail capture completed the core scope; the supplied v6 retail capture also completed the expanded scope. Native code capture completion remains unverified.
 
 ## Next gate
 

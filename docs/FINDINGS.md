@@ -1,5 +1,10 @@
 # Findings
 
+## 2026-10-06: expanded capture reaches reflection limit
+
+All fourteen declarations completed with zero issues. The serializer exposes profile metadata/assignment, not item records or a custom save extension. Added a bounded read-only code collector for nine exact serialization/profile/slot functions, using Iced 1.21.0 rather than byte-pattern call guesses. No persistence gameplay release is claimed; keep v8.
+
+
 ## 2026-10-06: native core capture succeeds
 
 The v5 retail capture completed all eleven allowlisted declarations and matched seven native call shapes. No reflected physical-item identifier was found in the collected item declarations; SerializeSaveState returns no data. Save slot/controller reference the uncollected CharacterSerializeComponent, providing a concrete next target. Added an optional three-class serialization extension, preserving the default scope and read-only bounds. This is evidence collection, not a persistent-favorites release.
