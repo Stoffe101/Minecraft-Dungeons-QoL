@@ -20,6 +20,23 @@ try {
     [IO.File]::WriteAllText((Join-Path $game 'Dungeons.exe'), 'fixture, not an executable')
     [IO.File]::WriteAllText((Join-Path $game 'unrelated.txt'), 'preserve me')
     $before = (Get-FileHash (Join-Path $game 'Dungeons.exe')).Hash
+    Reject { & $invoke -Action Install -Win64Path $game } 'installation withdrawn'
+    Assert (-not (Test-Path (Join-Path $game 'MCDQoLReflectionProbe-install.json'))) 'Withdrawn probe installed files'
+    # Exercise historical install/ownership mechanics ONLY in a copied fixture
+    # repository against the fake executable. Never enable the real config.
+    $fixtureRoot = Join-Path $temp 'repo'
+    foreach ($name in @('scripts/Invoke-FavoritesReflectionProbe.ps1', 'config/reflection-probe.json',
+        'tools/FavoritesReflectionProbe/main.lua', 'tools/FavoritesReflectionProbe/UE4SS-settings.ini', 'third_party/UE4SS-LICENSE.txt')) {
+        $dest = Join-Path $fixtureRoot $name
+        New-Item -ItemType Directory (Split-Path $dest -Parent) -Force | Out-Null
+        Copy-Item (Join-Path $root $name) $dest
+    }
+    $fixtureConfigPath = Join-Path $fixtureRoot 'config/reflection-probe.json'
+    $fixtureConfig = Get-Content $fixtureConfigPath -Raw | ConvertFrom-Json
+    $fixtureConfig.installEnabled = $true
+    $fixtureConfig | ConvertTo-Json | Set-Content $fixtureConfigPath -Encoding UTF8
+    $root = $fixtureRoot
+    $invoke = Join-Path $root 'scripts/Invoke-FavoritesReflectionProbe.ps1'
     # Rejection occurs before network/download or any game mutation.
     [IO.File]::WriteAllText((Join-Path $game 'dwmapi.dll'), 'another loader')
     Reject { & $invoke -Action Install -Win64Path $game } 'Existing loader'
@@ -73,5 +90,5 @@ try {
     Assert (Test-Path (Join-Path $game 'unrelated.txt')) 'Removed unrelated file'
     Assert (Test-Path (Join-Path $headers 'Dungeons.hpp')) 'Deleted generated evidence'
     Assert ((Get-FileHash (Join-Path $game 'Dungeons.exe')).Hash -eq $before) 'Changed the executable'
-    Write-Host '[PASS] Reflection probe ownership, checksum, collection allowlist, failure reporting and reversible removal.'
+    Write-Host '[PASS] Withdrawn install blocked; fixture ownership, checksum, collection allowlist, failure reporting and reversible removal.'
 } finally { Remove-Item -LiteralPath $temp -Recurse -Force }

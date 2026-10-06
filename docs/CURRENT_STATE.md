@@ -2,6 +2,8 @@
 
 # Current State
 
+2026-10-06 startup crash response: user reports immediate crash after installing the native reflection probe and pressing Play; screenshot shows 0xc0000005. UE4SS startup incompatibility is the leading hypothesis, not a verified failing function. The probe is withdrawn and Install is blocked; Collect and hash-owned Remove remain available. Close game/launcher, collect if possible, remove regardless of collection failure, and verify normal launch. Request the printed private evidence ZIP/startup log before changing native settings/signatures. Gameplay QoL paks/saves are unchanged by this recovery. Persistence is still unfinished.
+
 Persistence evidence update (2026-10-05): the uploaded collection completed 88/88 packages without errors, but contains no native hero/item identity contract. Storage SerializeSaveState() is a zero-argument save writer, not a record getter. A pinned, reversible runtime reflection probe is prepared; see [FAVORITES_PERSISTENCE_INVESTIGATION.md](FAVORITES_PERSISTENCE_INVESTIGATION.md). No persistence fix/new gameplay pak is claimed by this pass.
 
 Latest status: user confirms v7 features and placement work, but favorites disappear after mission travel. This is the existing inspector-lifetime limitation, now explicitly reproduced. v8 doubles selection borders from 3 to 6 units, changes cyan to red, and includes the six equipment widgets in favorite marker updates. It does NOT fix persistence yet. Stable hero/item identity needs additional profile/save/storage metadata; a read-only collector is prepared. See [INVENTORY_IDENTITY.md](INVENTORY_IDENTITY.md) and [GAME_EVIDENCE.md](GAME_EVIDENCE.md). No GPU crash fix is established.

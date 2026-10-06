@@ -1,5 +1,24 @@
 # Favorites persistence investigation
 
+## 2026-10-06: probe withdrawn after startup crash
+
+User reports immediate crash after Install and pressing Play, before camp/Ctrl+H. The supplied screenshot shows launcher error 0xc0000005. It contains no stack trace or native function/signature evidence. The newly added loader is the leading suspect; the exact failure and restoration after removal are not yet verified. Do not reinstall or propose guessed signatures/engine settings. Install is blocked in production config. Collect/Remove remain operational; tests enable historical installation only in a copied temporary repository against a fake executable.
+
+Upstream research now found [UE4SS #1219](https://github.com/UE4SS-RE/RE-UE4SS/issues/1219), opened 2026-03-18 and open when read on 2026-10-06. The reporter describes retail Dungeons UE4.22.3 failing at startup with empty Mods and no UE4SS log; their Event Viewer names UE4SS.dll with 0xc0000005. They distinguish a working self-compiled debug build from failing retail builds. This is a related failure report, not proof of our user's module/offset or the exact same UE4SS binary. [#1211](https://github.com/UE4SS-RE/RE-UE4SS/issues/1211) concerns an earlier startup failure in that reporter's self-compiled build and is closed; its closure cannot establish retail compatibility. The earlier generic engine-range/config review missed these game-specific reports. Do not offer repeated loader/settings tests without evidence.
+
+Close the game and launcher, then from the repo:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-FavoritesReflectionProbe.ps1 -Action Collect
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-FavoritesReflectionProbe.ps1 -Action Remove
+```
+
+Run Remove even if collection fails, then verify the game launches normally. Upload the printed private reflection-evidence ZIP; if none is produced, provide UE4SS.log from the game's Binaries/Win64 folder or the terminal error. Removal leaves game saves and QoL paks untouched. Do not delete the game's own DLLs or alter executable protections. If removal fails, use its concrete error/ownership manifest to decide the next step. Favorites persistence remains unresolved.
+
+## 2026-10-06: Drive installation copy available
+
+Authenticated Drive listing confirmed the user-supplied MCD-ModdingCopy folder is accessible, including Dungeons/Content/Paks: 47 game pak files totaling 4,836,730,663 bytes and a separate mods folder. This is a useful source for direct asset/catalog extraction without repeatedly asking the user to export individual packages. Listing is verified; archive contents/integrity/completeness have not yet been downloaded or checked. The listed Dungeons/Binaries/Win64 folder contains XGamingRuntimeThunks.dll and small ancillary files, with no Dungeons executable or runtime reflection output. Static archives do not replace the missing native-class/lifecycle evidence for durable favorites. No protected executable upload is required for asset research. Keep the Drive URL and game files private; only necessary findings belong in git.
+
 ## Supplied archive evidence — 2026-10-05
 
 Inspected the private `persistence-evidence-20261005-234040.zip` (SHA-256 `3e45b55d81dcfb58bd0c73c31c916d404b92111e51757cafb230f427ada03187`). Its exporter completed 88/88 UE4.22 packages with no errors and no raw patch sources. Useful metadata includes BP_GameInstance, its interface, storage chest content, transfer-slot UI and blacksmith UI; most other matches are unrelated audio/animation/material packages.
@@ -15,7 +34,7 @@ Observed contracts:
 
 The inspector-owned MCDQoL_Favorites array remains session scoped. This pass releases no persistence fix or new gameplay pak. v8's wider red border and equipped markers remain unconfirmed in retail.
 
-## Runtime reflection probe
+## Withdrawn runtime reflection probe design
 
 Invoke-FavoritesReflectionProbe.ps1 installs temporary MIT UE4SS **3.0.1**, pinned to commit `d935b5b23bac03b65c14ae38382b02007204cc2e` and official release ZIP SHA-256 `4b47d4bceddd2f561a4e395bfa00924ccfc945af576a2d0c613e6537846c57ec`. The ZIP was independently downloaded, hashed and inspected. Upstream targets UE4.12–5.3, which includes 4.22, but Store compatibility is **unverified** and may require custom signatures. A failed startup/log is useful evidence.
 
@@ -23,19 +42,7 @@ Installation refuses existing proxies/loaders/configs, checks the release hash, 
 
 GUI/external consoles, hot reload, UObject cache, crash dumps and forced asset loading are disabled. Engine override is the established UE4.22. No executable bytes, ownership or ACLs are changed. Headers describe reflected members, not complete non-reflected save data or portable runtime offsets.
 
-With the game closed, run from the repository:
-
-```powershell
-git pull
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-FavoritesReflectionProbe.ps1 -Action Install
-```
-
-Launch normally, enter camp, open inventory and press **Ctrl+H once**. Wait 30 seconds, then quit. Do not salvage during this capture. If startup fails, proceed with collection anyway:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-FavoritesReflectionProbe.ps1 -Action Collect
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Invoke-FavoritesReflectionProbe.ps1 -Action Remove
-```
+The earlier Install/camp/Ctrl+H test is withdrawn. Follow collection/removal above instead. Any future native probe requires investigation of this startup failure first.
 
 Upload the printed reflection-evidence ZIP. Collection copies fresh UE4SS.log, four allowlisted CXX headers and only `/Script/Dungeons` lines from the object dump. Missing data/classes/completion are reported explicitly, including failed startup. No saves, executables, crash memory or item values are copied. Keep generated game metadata private. Removal deletes only unchanged owned files and preserves edited files/evidence; it warns if an edited loader DLL remains. QoL paks are untouched.
 

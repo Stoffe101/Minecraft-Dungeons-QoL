@@ -1,5 +1,15 @@
 # Research Log
 
+## 2026-10-06: native probe startup failure and withdrawal
+
+Primary-source follow-up found UE4SS upstream #1219 (opened 2026-03-18; open when retrieved): retail Dungeons UE4.22.3 startup failure even with empty Mods, 0xc0000005 attributed by the reporter's Event Viewer to UE4SS.dll, sometimes no log. #1211 is a closed report involving their self-compiled build; do not infer retail compatibility from that fix. These game-specific reports were missed by the earlier generic engine/version review. Recorded the correction and retained withdrawal. User's faulting module/offset still requires their evidence. Sources: https://github.com/UE4SS-RE/RE-UE4SS/issues/1219 and https://github.com/UE4SS-RE/RE-UE4SS/issues/1211.
+
+Inspected user screenshot: immediate crash after installation/Play, launcher reports 0xc0000005, before manual reflection capture. No native stack/function is available. Newly installed UE4SS loader is the leading suspect; removal/restored launch still needs retail confirmation. Blocked production Install, preserved Collect/Remove, and replaced recommended installation steps with rollback. Test exercises the block in the real configuration, then historical checksum/ownership mechanics only in a copied temporary fixture repo/fake game. No guessed loader settings/signatures, save changes, executable protection changes or gameplay pak changes. Need private startup evidence before further native work.
+
+## 2026-10-06: assess user-supplied Drive installation copy
+
+Read the supplied folder using authenticated Drive metadata/listing. Verified MCD-ModdingCopy structure and 47 game paks (4,836,730,663 bytes), plus a mods directory. Listed Win64 contains no game executable or native reflection output. Useful for independent static asset research; not proof of archive integrity/completeness or a substitute for native persistence/lifecycle evidence. No game binaries downloaded/published and no sharing changed. Detailed scope recorded in FAVORITES_PERSISTENCE_INVESTIGATION.md.
+
 ## 2026-10-05: supplied persistence evidence and native reflection gate
 
 Follow-up before release: inspected v3.0.1 wchar_t object-dump output and added BOM/UTF-16 detection plus streaming native-line filtering. Tested headers/object dump encoded UTF-16 without a BOM, avoiding Windows PowerShell's ANSI fallback. Lua mock checks pass binding, reentrancy, call order and error recovery.

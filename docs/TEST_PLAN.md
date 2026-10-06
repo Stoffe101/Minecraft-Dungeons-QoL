@@ -1,5 +1,7 @@
 # Test Plan
 
+2026-10-06: the native reflection probe caused a reported immediate startup crash and is withdrawn. Production Install must reject before downloads/writes; Collect and Remove must still work for existing schema-v1 manifests. Historical install tests run only in a copied private fixture config/fake game directory. Retail recovery: close launcher/game, Collect if possible, Remove even if Collect fails, verify normal launch and upload private log/evidence. No further Ctrl+H/reinstall test until the startup failure is investigated.
+
 Native identity evidence gate: Test-FavoritesReflectionProbe.ps1 verifies the pinned release, collision/checksum rejection, metadata allowlist, incomplete capture reporting and hash-owned removal against a fake installation. Retail: install closed, enter camp/open inventory, Ctrl+H once, quit, collect and remove. Upload the private printed ZIP even if startup fails. Inspect native identity before implementing persistence; do not repeat the exhausted broad archive export or treat SDK generation as feature validation. See FAVORITES_PERSISTENCE_INVESTIGATION.md.
 
 ## v8 and persistent-favorite acceptance
