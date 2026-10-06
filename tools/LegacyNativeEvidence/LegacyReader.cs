@@ -15,6 +15,7 @@ sealed class LegacyReader(IMemory memory)
     readonly Dictionary<int, string> nameCache = new();
     readonly Dictionary<ulong, string> classNames = new();
     readonly Dictionary<int, ulong> objectChunks = new();
+    int slotBlockStart = -1; byte[] slotBlock = [];
     public string Stage { get; private set; } = "not-started";
     ulong names, objects; int nameCount, objectCount, nameCapacity, charsOffset, childrenOffset, targetOffset;
     static readonly int[] NameCapacities = [128, 256], StringOffsets = [12, 16];
@@ -60,7 +61,7 @@ sealed class LegacyReader(IMemory memory)
         Stage = "object-validation";
         var validated = new List<ulong>();
         foreach (var candidate in objectCandidates) try {
-            objectChunks.Clear(); classNames.Clear();
+            objectChunks.Clear(); classNames.Clear(); slotBlockStart = -1; slotBlock = [];
             objects = memory.U64(candidate); objectCount = memory.I32(candidate + 20); int good = 0;
             for (int i = 0; i < Math.Min(objectCount, 128); i++) {
                 ulong obj = ObjectAt(i); if (obj == 0) continue;
@@ -69,10 +70,11 @@ sealed class LegacyReader(IMemory memory)
             if (good >= 8) validated.Add(candidate);
         } catch (ReadFailure) { }
         if (validated.Count != 1) throw new ReadFailure($"Legacy object array not uniquely validated ({validated.Count} matches from {objectCandidates.Count} candidates); no declarations accepted.");
-        objectChunks.Clear(); classNames.Clear();
+        objectChunks.Clear(); classNames.Clear(); slotBlockStart = -1; slotBlock = [];
         objects = memory.U64(validated[0]); objectCount = memory.I32(validated[0] + 20);
         Stage = "object-traversal";
         var selected = new Dictionary<string, ulong>();
+        var selectedKinds = new Dictionary<string, string>();
         for (int i = 0; i < objectCount; i++) {
             ulong obj = ObjectAt(i); if (obj == 0) continue;
             var header = memory.Read(obj, 32);
@@ -80,6 +82,7 @@ sealed class LegacyReader(IMemory memory)
             var kind = ClassName(BinaryPrimitives.ReadUInt64LittleEndian(header.AsSpan(16))); if (kind is not "Class" and not "ScriptStruct") continue;
             var name = NameOf(obj); if (!Targets.Contains(name) || FullName(obj) != "/Script/Dungeons." + name) continue;
             if (!selected.TryAdd(name, obj)) throw new ReadFailure("Duplicate native declaration.");
+            selectedKinds.Add(name, kind);
         }
         Stage = "contract-validation";
         var layouts = new List<(int Children, int Target)>();
@@ -94,6 +97,13 @@ sealed class LegacyReader(IMemory memory)
         Stage = "declaration-export";
         var declarations = selected.Values.Select(Declaration).OrderBy(x => x.Name).ToArray();
         classNames.Clear();
+        foreach (var declaration in selected) {
+            ulong obj = declaration.Value; int index = memory.I32(obj + 12);
+            if (index < 0 || index >= objectCount || !objectChunks.TryGetValue(index / 65536, out var chunk)
+                || memory.U64(chunk + (ulong)(index % 65536) * 24) != obj
+                || Kind(obj) != selectedKinds[declaration.Key] || FullName(obj) != "/Script/Dungeons." + declaration.Key)
+                throw new ReadFailure("Selected native declaration changed during collection.");
+        }
         VerifyKnownContracts(selected);
         foreach (var chunk in objectChunks) if (memory.U64(objects + (ulong)chunk.Key * 8) != chunk.Value) throw new ReadFailure("Object chunk table changed during collection.");
         if (memory.U64(validated[0]) != objects || memory.I32(validated[0] + 20) != objectCount) throw new ReadFailure("Object table changed during collection.");
@@ -105,7 +115,14 @@ sealed class LegacyReader(IMemory memory)
         int chunkIndex = i / 65536;
         if (!objectChunks.TryGetValue(chunkIndex, out var chunk)) { chunk = memory.U64(objects + (ulong)chunkIndex * 8); objectChunks.Add(chunkIndex, chunk); }
         if (!MemoryValues.Pointer(chunk)) throw new ReadFailure("Invalid object chunk.");
-        ulong value = memory.U64(chunk + (ulong)(i % 65536) * 24); if (value != 0 && !MemoryValues.Pointer(value)) throw new ReadFailure("Invalid object address."); return value;
+        // FUObjectItem entries occupy 24 bytes. Read at most 2048 live entries
+        // (48 KiB) from one allocated chunk; retain only the current block.
+        int start = i / 2048 * 2048;
+        if (slotBlockStart != start) {
+            int count = Math.Min(2048, objectCount - start);
+            slotBlock = memory.Read(chunk + (ulong)(start % 65536) * 24, count * 24); slotBlockStart = start;
+        }
+        ulong value = BinaryPrimitives.ReadUInt64LittleEndian(slotBlock.AsSpan((i - start) * 24)); if (value != 0 && !MemoryValues.Pointer(value)) throw new ReadFailure("Invalid object address."); return value;
     }
     internal string Name(int index) {
         if (index < 0 || index >= nameCount) throw new ReadFailure("Invalid legacy name index.");

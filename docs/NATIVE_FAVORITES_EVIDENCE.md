@@ -2,6 +2,10 @@
 
 Favorites persistence remains unfinished. Archive exports establish six profile call shapes and the salvage shape, but no permanent physical-item identifier. This project-authored experimental reader checks loaded native declarations without installing an injected loader. Keep UE4SS disabled.
 
+## Current gate: batched slot traversal
+
+The fourth report (`legacy-bounded-traversal-v4`) identifies a precise failure: two-million-call ceiling at `object-traversal`, after 3,505 ms and 33,054,711 requested bytes. Unique name/basic object-table validation passed; native declarations/call-contract checks did not complete. Revision `legacy-batched-slots-v5` replaces per-slot pointer reads with at most 48 KiB blocks confined to a chunk and live tail, retaining direct per-object index/class checks and final selected-slot/kind/path/contract/chunk validation. Existing budgets remain unchanged. All 108 local checks pass, including 65,537 slots, chunk boundaries, partial blocks and changed selected slots; Windows adds an own-process check. Keep the working v8 pak and update to v5 before the next camp capture. Permanent favorites remain unfinished.
+
 ## Latest result: budget exhaustion; efficient reader and diagnostic stages
 
 The third capture (`legacy-objects-capacity-v3`) exhausted a budget and returned no declarations. Its old report does not reveal the failing stage or whether calls, bytes or time ran out. Revision `legacy-bounded-traversal-v4` reduces repeated reads and loop allocations while retaining the existing limits. Cached class/chunk metadata is scoped to a collection; chunks and seven retail contracts are refreshed before acceptance. Reports now carry constant stage names, read calls/requested bytes/elapsed milliseconds and the exact exhausted limit. No raw addresses or instance values are exported. All 102 local checks pass, including 2,048-instance traversal and changed-chunk rejection; Windows adds an own-process check. Retail performance/completion and persistence remain unverified. Update to v4 before running the camp command; another unchanged v3 run is not needed.
