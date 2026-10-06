@@ -1,5 +1,9 @@
 # Findings
 
+## Read-only native collector and equipped marker coverage — 2026-10-06
+
+The project-owned external reader supports legacy UProperty parameters and rejects unsupported/ambiguous metadata using the seven independently observed call shapes. It requests query/read only, installs no loader and exports allowlisted declarations rather than instance values. Local tests: 49 reader checks and 146 graph checks, including all six equipped widgets and deduplication. Rebuilt assets are byte-identical to v8. Runtime access, equipped-star rendering and persistent favorite identity still require confirmation. See NATIVE_FAVORITES_EVIDENCE.md.
+
 ## Profile evidence and reflection tools — 2026-10-06
 
 Exact profile collection succeeded on all 26 packages. Vanilla obtains the recent local save slot and compares its GetCloudPlayerId FGuid to a cloud row GUID. This supplies a hero identity candidate with verified caller layout; clone/lifetime semantics and permanent physical-item identity remain unresolved. Six call shapes now have typed argument/result and declaring-owner validation. 142 graph checks pass locally; rebuilt v8 assets are byte-identical, so this is no persistence release. The external MIT tool review found legacy UProperty and access/offset gaps; no replacement native probe is deployed. See GAME_API_CONTRACTS.md, FAVORITES_PERSISTENCE_INVESTIGATION.md and EXTERNAL_REFLECTION_REVIEW.md.

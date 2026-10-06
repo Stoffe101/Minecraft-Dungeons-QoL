@@ -1,5 +1,7 @@
 # Documentation Index
 
+- [Native favorites evidence](NATIVE_FAVORITES_EVIDENCE.md): bounded external read-only reader and private camp capture gate; persistence is still unfinished.
+
 This folder is the canonical project record.
 
 ## Canonical documents

@@ -1,5 +1,11 @@
 # Research Log
 
+## 2026-10-06: equipped marker coverage and external reader
+
+Implemented MarkerWidgetCollection shared by production generator and tests, with four checks for equipped widgets, owner deduplication, array copy semantics and missing widgets. Added project-authored LegacyNativeEvidence and existing-SDK PowerShell wrapper: query/read only; bounded legacy names/objects/UProperty traversal; seven observed call-shape gates; eleven native declaration targets; incomplete reports on failure; private metadata-only ZIP. No injected loader or item/save values. See NATIVE_FAVORITES_EVIDENCE.md. Native identity/save-load integration remains unresolved, so no persistent release. User's screenshot shows a work timer without a visible handoff, not a game test result.
+
+Local direct Roslyn builds pass. Graph tests: 146 passes; native-reader fixtures: 49 passes. Regenerated UI preserves 2,584 inspector + 8,568 HUD exports (11,152 total); all four files match v8 byte-for-byte. Repository/PowerShell/JSON and diff validation pass. Existing v8 ZIP verified as SHA-256 3a00de133bf75495a6f16794d9ddbde3c005f95005c0ecbf4029d7de7dda261e. Private inputs/output remain outside git/public CI. Windows CI additionally checks the actual own-process query/read handle; no retail outcome is inferred.
+
 ## 2026-10-06: verified profile call contracts and external tool review
 
 The uploaded private profile-evidence-20261006-013555.zip has SHA-256 `056d6178ddd194d421f05f926dacf01201416af9d2c467b86dec635d12d7264b`. All 26 targets completed with zero reported issues/export errors; metadata only, no raw patch sources. The exact collector succeeded on the user's installation. No repeat profile collection is needed.

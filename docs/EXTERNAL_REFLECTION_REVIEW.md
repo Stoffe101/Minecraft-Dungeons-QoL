@@ -1,5 +1,7 @@
 # External native reflection review — 2026-10-06
 
+Follow-up implementation: the project-authored experimental LegacyNativeEvidence reader now implements bounded legacy declaration collection with seven call-shape gates, without bundling these reviewed tools. See NATIVE_FAVORITES_EVIDENCE.md. Local fixtures pass; Store process access/discovery still needs a private runtime report, and persistence remains unfinished. The reviewed stock tools below remain inspection references only.
+
 The injected UE4SS probe is withdrawn after the user's startup crash. A replacement should obtain allowlisted native declarations without injecting a DLL or invoking gameplay/save functions. External process reads are a research option, not a proven implementation for this Store build. All three projects below were inspected privately at pinned source commits; their root MIT licenses were checked. No code is copied into this repository, and none was built, executed, installed or bundled.
 
 | Project / inspected commit | Relevant behavior | Decision |

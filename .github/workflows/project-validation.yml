@@ -56,6 +56,12 @@ jobs:
         shell: pwsh
         run: dotnet build tools/UAssetProbe/UAssetProbe.csproj -c Release
 
+      - name: Test legacy read-only native reader without game assets
+        shell: pwsh
+        run: |
+          dotnet run --project tools/LegacyNativeEvidence/LegacyNativeEvidence.csproj -c Release -- --self-test
+          if ($LASTEXITCODE -ne 0) { throw "Native reader fixture tests failed." }
+
       - name: Build cooked runtime tools
         shell: pwsh
         run: |

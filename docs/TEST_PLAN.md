@@ -1,5 +1,11 @@
 # Test Plan
 
+## Equipped marker and native reader checks — 2026-10-06
+
+Graph tests cover all six equipped widgets, grid/equipment deduplication, copying containers without modifying native arrays, and skipping a missing widget. Fixtures assume valid widget classes; actual casts/root canvas/rendering still require retail testing. Red border/star artwork is unchanged.
+
+LegacyNativeEvidence --self-test tests twelve synthetic legacy layouts, Guid type/privacy and mismatch/cycle/index/count/partial read/range/budget failures. Windows additionally reads its own eight-byte allocation through the real query/read handle. CI does not attach to Dungeons. One private camp capture is needed before accepting Store discovery/native declarations; persistence acceptance still requires mission/restart/duplicate/storage/upgrade/hero-switch/host/join tests.
+
 ## Profile caller regression gate — 2026-10-06
 
 CookedGraphTests now includes 18 profile-owner checks and 38 profile caller checks. For each of the six observed methods, accept its typed layout and reject extra arguments, string results, missing RValue result fields and bare calls. For indexed getters, reject missing/string indices and wrong object result classes; reject an integer in the bool position and a Vector in place of the Guid result. Fixture is the licensed UE4.22 diagnostic actor; no private game assets are required by CI.

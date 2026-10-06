@@ -19,16 +19,9 @@ static class InventoryTileMarks
         var slot = g.Object("MarkNativeSlot", nativeSlotClass); var item = g.Object("MarkItem", itemClass);
         var loop = g.Integer("MarkLoop"); var markIndex = g.Integer("MarkIndex"); var itemIndex = g.Integer("MarkItemIndex");
         var queued = g.Boolean("MarkQueued"); var locked = g.Boolean("MarkLocked");
-        g.Set(widgets, g.I(g.Field("InventorySlotsInGrid")));
         // Equipment uses the same slot contracts; a widget listed in both
         // collections must receive only one marker set.
-        g.Set(loop, g.N(0)); g.Label("MARK_EQUIPMENT_LOOP");
-        g.Branch(g.Math("Less_IntInt", g.L(loop), g.Array("Array_Length", g.I(g.Field("EquipSlots")))), "MARK_EQUIPMENT_DONE");
-        g.Obj(widget, new EX_DynamicCast { ClassPtr = widgetSlotClass, Target = g.At(g.I(g.Field("EquipSlots")), g.L(loop)) });
-        g.Branch(g.Valid(g.L(widget)), "MARK_EQUIPMENT_NEXT");
-        g.Add(g.Array("Array_AddUnique", g.L(widgets), g.L(widget)));
-        g.Label("MARK_EQUIPMENT_NEXT"); g.Set(loop, g.Math("Add_IntInt", g.L(loop), g.N(1))); g.Jump("MARK_EQUIPMENT_LOOP");
-        g.Label("MARK_EQUIPMENT_DONE");
+        MarkerWidgetCollection.Emit(g, widgets, widget, loop, g.I(g.Field("InventorySlotsInGrid")), g.I(g.Field("EquipSlots")), widgetSlotClass);
         // Release detached grid widgets; don't retain every historical grid rebuild.
         g.Set(loop, g.Math("Subtract_IntInt", g.Array("Array_Length", g.I(owners)), g.N(1)));
         g.Label("MARK_PRUNE"); g.Branch(g.Math("GreaterEqual_IntInt", g.L(loop), g.N(0)), "MARK_PRUNE_DONE");

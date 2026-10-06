@@ -1,5 +1,11 @@
 # Favorites persistence investigation
 
+## 2026-10-06: external native reader implemented
+
+Added LegacyNativeEvidence and Collect-NativeFavoritesEvidence.ps1 for eleven allowlisted native declarations from the running Dungeons process. The reader uses query/read rights only, bounded legacy name/object/UField/UProperty traversal and seven profile/salvage shape gates. Failures report incomplete; no injection, executable copying, protection changes or loader retry. Metadata only, no instance/account/save values or memory dumps. Type coverage is partial; it is not a complete SDK or persistence fix. See NATIVE_FAVORITES_EVIDENCE.md for the one-run camp command and limits.
+
+Equipped-marker collection is shared with generated-graph tests covering all six widgets, deduplication, unchanged native arrays and missing widgets. Wider red border/star generation is retained. Next inspect the private native report for item identity/serialization access before connecting a durable favorite store. Runtime visuals and persistent identity remain unconfirmed.
+
 ## 2026-10-06: profile evidence inspected; cloud GUID candidate
 
 The uploaded private profile-evidence-20261006-013555.zip has SHA-256 `056d6178ddd194d421f05f926dacf01201416af9d2c467b86dec635d12d7264b`. All 26 targets completed with zero reported issues/export errors; metadata only, no raw patch sources. The exact collector succeeded on the user's installation. No repeat profile collection is needed.
