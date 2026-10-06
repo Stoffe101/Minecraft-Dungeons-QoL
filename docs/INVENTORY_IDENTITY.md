@@ -1,5 +1,12 @@
 # Inventory Identity Strategy
 
+## Completed native core evidence — 2026-10-06
+
+All eleven requested native declarations were returned with no issues. InventoryItemData's eleven reflected fields describe type and mutable item state; none is an individual-copy identifier. SerializableItemId.SerializedId is NameProperty, and InventoryItemSlot.GetIconTextureForItemId consumes this type ID. InventoryItemMetaData only exposes MarkedNew/Cloned. No reflected instance UUID or inventoryIndex is present in these collected item declarations. This does not rule out unreflected C++ members or inherited members outside the collected scope.
+
+The reconstructed plain C++ save fields remain unverified native ABI. Cloud GUID is not yet proven clone-independent hero identity. Never substitute slot/change index, type/name/power fingerprints or gameplay flag mutation for exact physical-item favorites. A focused CharacterSerializeComponent/BaseCharacter/EquipmentComponent collection is now supported; persistent save/load and transfer integration remain unfinished.
+
+
 The supplied 88-package collection did not establish stable hero/item IDs. The later exact 26-package profile collection establishes an FGuid cloud matching candidate through PlayerCharacterSaveSlot.GetCloudPlayerId, with no permanent physical-item ID. Its clone/lifetime semantics and relation to uniqueSaveId are unproven. See [FAVORITES_PERSISTENCE_INVESTIGATION.md](FAVORITES_PERSISTENCE_INVESTIGATION.md). The injected probe is withdrawn after a startup crash; no replacement is deployed. Favorite semantics remain unchanged until reliable identity and a persistence bridge are established.
 
 Last updated: 2026-10-06

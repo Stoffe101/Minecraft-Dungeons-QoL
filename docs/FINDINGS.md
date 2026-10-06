@@ -1,5 +1,10 @@
 # Findings
 
+## 2026-10-06: native core capture succeeds
+
+The v5 retail capture completed all eleven allowlisted declarations and matched seven native call shapes. No reflected physical-item identifier was found in the collected item declarations; SerializeSaveState returns no data. Save slot/controller reference the uncollected CharacterSerializeComponent, providing a concrete next target. Added an optional three-class serialization extension, preserving the default scope and read-only bounds. This is evidence collection, not a persistent-favorites release.
+
+
 ## Read-only native collector and equipped marker coverage — 2026-10-06
 
 The project-owned external reader supports legacy UProperty parameters and rejects unsupported/ambiguous metadata using the seven independently observed call shapes. It requests query/read only, installs no loader and exports allowlisted declarations rather than instance values. Local tests: 49 reader checks and 146 graph checks, including all six equipped widgets and deduplication. Rebuilt assets are byte-identical to v8. Runtime access, equipped-star rendering and persistent favorite identity still require confirmation. See NATIVE_FAVORITES_EVIDENCE.md.

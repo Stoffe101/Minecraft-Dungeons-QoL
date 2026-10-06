@@ -4,7 +4,8 @@ using System.Text.Json;
 using LegacyNativeEvidence;
 
 if (args.SequenceEqual(new[] { "--self-test" })) { EvidenceTests.Run(); return 0; }
-if (args.Length != 2 || !int.TryParse(args[0], out var pid)) { Console.Error.WriteLine("Usage: LegacyNativeEvidence <Dungeons process ID> <new output directory> OR --self-test"); return 2; }
+bool serializationContracts = args.Length == 3 && args[2] == "--serialization-contracts";
+if ((args.Length != 2 && !serializationContracts) || !int.TryParse(args[0], out var pid)) { Console.Error.WriteLine("Usage: LegacyNativeEvidence <Dungeons process ID> <new output directory> [--serialization-contracts] OR --self-test"); return 2; }
 if (!OperatingSystem.IsWindows() || !Environment.Is64BitProcess) { Console.Error.WriteLine("Collection requires Windows x64. No game files have been changed."); return 2; }
 var output = Path.GetFullPath(args[1]);
 var allowed = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, ".research")) + Path.DirectorySeparatorChar;
@@ -17,13 +18,13 @@ try {
     var module = process.MainModule ?? throw new ReadFailure("Main module unavailable; do not bypass permissions.");
     stage = "image-data";
     var regions = ImageData.Read(memory, (ulong)module.BaseAddress, module.ModuleMemorySize);
-    reader = new LegacyReader(memory); capture = reader.Collect(regions);
+    reader = new LegacyReader(memory, serializationContracts); capture = reader.Collect(regions);
 } catch (Exception ex) when (ex is IOException or System.ComponentModel.Win32Exception or InvalidOperationException or ArgumentException) {
     capture = new Capture(false, [ex is ReadFailure or BudgetExceeded ? ex.Message : "Process access failed or changed; capture incomplete."], []);
 }
 // No executable bytes, object addresses, item instances, saves, account IDs or local paths.
 File.WriteAllText(Path.Combine(output, "REPORT.json"), JsonSerializer.Serialize(new {
-    schemaVersion = 1, readerRevision = "legacy-batched-slots-v5", capture.Completed, capture.Issues, capture.Declarations,
+    schemaVersion = 1, readerRevision = "legacy-serialization-contracts-v6", targetSet = serializationContracts ? "favorites-serialization" : "favorites-core", capture.Completed, capture.Issues, capture.Declarations,
     diagnostics = new { stage = reader?.Stage ?? stage, readCalls = memory?.ReadCalls ?? 0, readBytes = memory?.ReadBytes ?? 0, elapsedMilliseconds = memory?.ElapsedMilliseconds ?? 0 },
     mode = "external-read-only-legacy-declarations", gameProcessModified = false,
     note = "Experimental reader; matching seven call shapes does not establish native ABI or favorite persistence. No instance values or memory dumps exported."

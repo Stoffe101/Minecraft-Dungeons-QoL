@@ -1,5 +1,14 @@
 # Research Log
 
+## 2026-10-06 — completed retail native core evidence and focused serializer scope
+
+Private archive `native-favorites-20261006-134806-1f6922.zip`, SHA-256 `79bff728efe3d524a65e39f211b56fc475a9918271bed1ff09027a8c04ee4c84`: v5 Completed=true, no issues, 11 declarations / 132 properties / 262 functions. Diagnostics: 1,667,667 calls, 49,019,979 requested bytes, 3,345 ms. Seven native call anchors matched. No repeated default collection is needed.
+
+Inspected every collected item property/function. InventoryItemData has eleven reflected type/stat fields, including timesModified, but no individual-copy UUID/inventoryIndex. SerializableItemId has one NameProperty; InventoryItemMetaData has MarkedNew/Cloned. SerializeSaveState has neither parameters nor a return. CharacterSaveData's saveBlob callback is not a getter. PlayerCharacterSaveSlot inherits BaseCharacter and references CharacterSerializeComponent/EquipmentComponent; PlayerControllerBase also references CharacterSerializeComponent. These exact runtime names motivate the focused follow-up rather than a generic object dump. No raw report, addresses, instance/save values or full function inventory enter source control.
+
+Implemented optional `-CollectSerializationContracts` / reader `--serialization-contracts`, revision legacy-serialization-contracts-v6. Default core scope stays eleven; explicit expanded scope adds three classes. Missing expanded classes produce an incomplete report retaining verified declarations. Added fixtures for complete expanded scope, unchanged default scope and absent extra classes; 111 local checks pass (Windows adds its own-process check). Repository syntax/canonical checks and diff checks pass. No gameplay pak changes and no durable favorites claim. Reflection still lacks full ABI/layout/function flags; a validated serialization/lifecycle bridge may require additional native work.
+
+
 ## 2026-10-06: exact call-budget failure in object traversal; batched slots
 
 Inspected private native-favorites-20261006-133827-9942ba.zip, SHA-256 `f2217f4fe22d43e5b7b6b6f2abf8cee1baea5bdf88d438d7d6e43c8c5d16d8c8`. Revision `legacy-bounded-traversal-v4` reports Completed=false, zero declarations, budget cause `calls`, stage `object-traversal`, 2,000,001 attempted reads, 33,054,711 requested bytes and 3,505 elapsed milliseconds. This establishes that unique name/basic object-table validation passed and traversal began. It does not establish seven native call contracts, exact native declaration layout or stable item identity. The failure is the read-call ceiling, not the 90-second timeout or an access-denial error. No repeat of unchanged v4 is needed.
