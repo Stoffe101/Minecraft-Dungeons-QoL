@@ -4,6 +4,8 @@
 
 User reports immediate crash after Install and pressing Play, before camp/Ctrl+H. The supplied screenshot shows launcher error 0xc0000005. It contains no stack trace or native function/signature evidence. The newly added loader is the leading suspect; the exact failure and restoration after removal are not yet verified. Do not reinstall or propose guessed signatures/engine settings. Install is blocked in production config. Collect/Remove remain operational; tests enable historical installation only in a copied temporary repository against a fake executable.
 
+Upstream research now found [UE4SS #1219](https://github.com/UE4SS-RE/RE-UE4SS/issues/1219), opened 2026-03-18 and open when read on 2026-10-06. The reporter describes retail Dungeons UE4.22.3 failing at startup with empty Mods and no UE4SS log; their Event Viewer names UE4SS.dll with 0xc0000005. They distinguish a working self-compiled debug build from failing retail builds. This is a related failure report, not proof of our user's module/offset or the exact same UE4SS binary. [#1211](https://github.com/UE4SS-RE/RE-UE4SS/issues/1211) concerns an earlier startup failure in that reporter's self-compiled build and is closed; its closure cannot establish retail compatibility. The earlier generic engine-range/config review missed these game-specific reports. Do not offer repeated loader/settings tests without evidence.
+
 Close the game and launcher, then from the repo:
 
 ```powershell

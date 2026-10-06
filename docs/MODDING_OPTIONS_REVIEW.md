@@ -1,5 +1,7 @@
 # Modding options and reusable projects — 2026-10-05
 
+2026-10-06 correction: withdraw UE4SS as a recommended retail diagnostic route after the user's immediate startup crash. Upstream [#1219](https://github.com/UE4SS-RE/RE-UE4SS/issues/1219) reports retail Dungeons UE4.22.3 failing in UE4SS.dll with 0xc0000005 and sometimes no startup log, even with empty Mods; it is open when checked. The closed self-compiled-build issue [#1211](https://github.com/UE4SS-RE/RE-UE4SS/issues/1211) is not proof of retail compatibility. Earlier engine-range/signature-directory research missed these game-specific reports. The actual user's faulting function remains unknown. Collect/remove; do not guess settings or reinstall. See FAVORITES_PERSISTENCE_INVESTIGATION.md.
+
 Research focuses on Minecraft Dungeons 1 (Unreal 4.22), not Fabric/Forge mods that port Dungeons items into Java Minecraft. Repository search results such as Dungeons-Gear/JavaDungeons do not implement this game's runtime. No ready-made, licensed implementation of this complete lock/loadout/multi-salvage UI was established in this review.
 
 | Project | License/permission checked | Applicable use and decision |

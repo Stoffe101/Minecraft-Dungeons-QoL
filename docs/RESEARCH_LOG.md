@@ -2,6 +2,8 @@
 
 ## 2026-10-06: native probe startup failure and withdrawal
 
+Primary-source follow-up found UE4SS upstream #1219 (opened 2026-03-18; open when retrieved): retail Dungeons UE4.22.3 startup failure even with empty Mods, 0xc0000005 attributed by the reporter's Event Viewer to UE4SS.dll, sometimes no log. #1211 is a closed report involving their self-compiled build; do not infer retail compatibility from that fix. These game-specific reports were missed by the earlier generic engine/version review. Recorded the correction and retained withdrawal. User's faulting module/offset still requires their evidence. Sources: https://github.com/UE4SS-RE/RE-UE4SS/issues/1219 and https://github.com/UE4SS-RE/RE-UE4SS/issues/1211.
+
 Inspected user screenshot: immediate crash after installation/Play, launcher reports 0xc0000005, before manual reflection capture. No native stack/function is available. Newly installed UE4SS loader is the leading suspect; removal/restored launch still needs retail confirmation. Blocked production Install, preserved Collect/Remove, and replaced recommended installation steps with rollback. Test exercises the block in the real configuration, then historical checksum/ownership mechanics only in a copied temporary fixture repo/fake game. No guessed loader settings/signatures, save changes, executable protection changes or gameplay pak changes. Need private startup evidence before further native work.
 
 ## 2026-10-06: assess user-supplied Drive installation copy
