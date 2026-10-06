@@ -2,6 +2,10 @@
 
 Favorites persistence remains unfinished. Archive exports establish six profile call shapes and the salvage shape, but no permanent physical-item identifier. This project-authored experimental reader checks loaded native declarations without installing an injected loader. Keep UE4SS disabled.
 
+## Latest result: budget exhaustion; efficient reader and diagnostic stages
+
+The third capture (`legacy-objects-capacity-v3`) exhausted a budget and returned no declarations. Its old report does not reveal the failing stage or whether calls, bytes or time ran out. Revision `legacy-bounded-traversal-v4` reduces repeated reads and loop allocations while retaining the existing limits. Cached class/chunk metadata is scoped to a collection; chunks and seven retail contracts are refreshed before acceptance. Reports now carry constant stage names, read calls/requested bytes/elapsed milliseconds and the exact exhausted limit. No raw addresses or instance values are exported. All 102 local checks pass, including 2,048-instance traversal and changed-chunk rejection; Windows adds an own-process check. Retail performance/completion and persistence remain unverified. Update to v4 before running the camp command; another unchanged v3 run is not needed.
+
 ## Current result and object capacity correction
 
 The second capture (`legacy-names-256-v2`) validated a unique name table, then found zero object-array candidates. Revision `legacy-objects-capacity-v3` corrects source-verified reserved-capacity filters: Unreal 4.22's default object reservation rounds to 33 chunks / 2,162,688 slots, and preallocation can allocate more chunks than the live object count needs. Previously our reader rejected both. Live traversal/read/time limits remain; reserved capacity is bounded separately and must agree with its chunk table. 96 local checks pass; Windows adds an own-process read check. Retail discovery and persistence are still unverified. Update before repeating the camp command below; an unchanged v2 capture is not needed. Detailed source evidence and the supplied report hash are in RESEARCH_LOG.md.

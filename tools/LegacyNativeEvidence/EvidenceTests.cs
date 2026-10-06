@@ -26,6 +26,19 @@ static class EvidenceTests
         var overBound = new Fixture(); overBound.SetObjectCapacity(65, 1); Reject(() => overBound.Collect(), "object reserved capacity exceeds bound");
         var tooManyChunks = new Fixture(); tooManyChunks.SetObjectCapacity(1, 2); Reject(() => tooManyChunks.Collect(), "allocated object chunks exceed reserved capacity");
         var liveLimit = new Fixture(); liveLimit.SetObjectCapacity(33, 33); liveLimit.Set(liveLimit.ObjectHeader + 20, 2_000_001, 4); Reject(() => liveLimit.Collect(), "live traversal limit unchanged");
+        var smallInventory = new Fixture(capacity: 256); smallInventory.AddInventoryInstances(0); smallInventory.Collect();
+        var largeInventory = new Fixture(capacity: 256); largeInventory.AddInventoryInstances(2048); var largeResult = largeInventory.Collect();
+        Check(largeResult.Completed && largeResult.Declarations.Length == 11, "2048 inventory instances retain allowlisted declarations");
+        Check(largeInventory.Memory.Calls - smallInventory.Memory.Calls <= 2048 * 3, "inventory traversal bounded to at most three added reads per instance");
+        var changing = new Fixture(); int rootReads = 0;
+        changing.Memory.Override = (address, size) => {
+            if (address == changing.ObjectTable && size == 8 && ++rootReads == 3) return new byte[8];
+            return null;
+        };
+        Reject(() => changing.Collect(), "cached object chunk replaced before final validation");
+        var failedReader = new LegacyReader(new BoundedMemory(new Fixture().Memory, maxCalls: 0));
+        try { failedReader.Collect([new Region(Fixture.Base, new Fixture().Memory.Read(Fixture.Base, 4096))]); throw new Exception("Budget ignored"); }
+        catch (BudgetExceeded ex) { Check(ex.Message.Contains("calls") && failedReader.Stage == "global-discovery", "budget cause and failing stage distinguishable without addresses"); }
         var f1 = new Fixture(); f1.Set(f1.GuidReturn + 0x70, f1.Classes["CharacterSaveData"]); Reject(() => f1.Collect(), "wrong GUID target");
         var f2 = new Fixture(); f2.Set(f2.BoolInput + 56, 0x480); Reject(() => f2.Collect(), "input bool mistaken for return");
         var f3 = new Fixture(); f3.Set(f3.FirstFunction + 40, f3.FirstFunction); Reject(() => f3.Collect(), "cyclic child chain");
@@ -35,6 +48,10 @@ static class EvidenceTests
         var f7 = new Fixture(); f7.Set(f7.NameHeader + 1024, 0, 4); Reject(() => f7.Collect(), "modern/empty name pool");
         var f8 = new Fixture(); f8.Set(f8.GuidReturn + 40, f8.GuidReturn); Reject(() => f8.Collect(), "cyclic parameter chain");
         var f9 = new Fixture(); f9.Memory.Partial = true; Reject(() => f9.Collect(), "partial read");
+        try { new BoundedMemory(f1.Memory, maxBytes: 0).Read(Fixture.Base, 8); throw new Exception("Byte budget ignored"); }
+        catch (BudgetExceeded ex) { Check(ex.Message.Contains("bytes"), "byte budget cause explicit"); }
+        try { new BoundedMemory(f1.Memory, timeout: TimeSpan.Zero).Read(Fixture.Base, 8); throw new Exception("Time budget ignored"); }
+        catch (BudgetExceeded ex) { Check(ex.Message.Contains("time"), "time budget cause explicit"); }
         try { new BoundedMemory(f1.Memory, maxCalls: 0).Read(Fixture.Base, 8); throw new Exception("Budget ignored"); } catch (BudgetExceeded) { Check(true, "hard read budget stops traversal"); }
         Reject(() => new BoundedMemory(f1.Memory).Read(ulong.MaxValue, 8), "overflowing address");
         Reject(() => ImageData.Read(new BoundedMemory(f1.Memory), Fixture.Base, 4096), "non-PE image");
@@ -56,8 +73,9 @@ static class EvidenceTests
         }
     }
     internal sealed class FakeMemory : IMemory {
-        internal readonly byte[] Bytes = new byte[4 * 1024 * 1024]; public bool Partial;
+        internal readonly byte[] Bytes = new byte[4 * 1024 * 1024]; public bool Partial; public int Calls; public Func<ulong, int, byte[]?>? Override;
         public byte[] Read(ulong address, int size) {
+            Calls++; var overridden = Override?.Invoke(address, size); if (overridden != null) return overridden;
             if (address < Fixture.Base || address - Fixture.Base > (ulong)(Bytes.Length - size)) throw new ReadFailure("Fixture read out of bounds.");
             return Bytes.AsSpan((int)(address - Fixture.Base), Partial ? size - 1 : size).ToArray();
         }
@@ -106,6 +124,8 @@ static class EvidenceTests
         void Add(ulong owner, ulong field) { if (last.TryGetValue(owner, out var prev)) Set(prev + 40, field); else Set(owner + (ulong)children, field); last[owner] = field; }
         ulong Function(string owner, string name) { var obj = Object(name, functionMeta, Classes[owner]); Add(Classes[owner], obj); return obj; }
         ulong Param(ulong fn, string name, string kind, ulong flags, ulong type = 0) { var obj = Object(name, Classes[kind], fn); Set(obj + 56, flags); Set(obj + (ulong)target, type); Add(fn, obj); return obj; }
+        public ulong ObjectTable => objectTable;
+        public void AddInventoryInstances(int count) { for (int i = 0; i < count; i++) Object("ordinary-item", Classes["InventoryItem"], 0); Set(ObjectHeader + 20, (ulong)Math.Max(128, index), 4); }
         public void SetObjectCapacity(int maximumChunks, int allocatedChunks) { Set(ObjectHeader + 16, (ulong)maximumChunks * 65536, 4); Set(ObjectHeader + 24, (ulong)maximumChunks, 4); Set(ObjectHeader + 28, (ulong)allocatedChunks, 4); }
         public void CorruptFirstName() => Set(BinaryPrimitives.ReadUInt64LittleEndian(Memory.Read(nameChunk, 8)) + 8, 4, 4);
         public Capture CollectInline() => new LegacyReader(new BoundedMemory(Memory)).Collect([new Region(Base, Memory.Read(Base, 4096)), new Region(NameHeader, Memory.Read(NameHeader, 4096))]);
