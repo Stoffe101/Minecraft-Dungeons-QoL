@@ -141,6 +141,23 @@ static class InventoryActionTests
         Check((byte)widget["Visibility"]! == 1, "unfavoriting hides the inspected badge");
         state[item.ObjectName.ToString()] = null; lockedItems.Add(null); vm.Run(favoriteUi.Function);
         Check((byte)widget["Visibility"]! == 1, "empty inspector never shows a favorite badge");
+        var markerGraph = new Graph(asset, "MCDQoL_TestEquipmentMarkers");
+        var grid = markerGraph.ObjectArray("TestMarkerGrid", widgetClass, true);
+        var equipment = markerGraph.ObjectArray("TestMarkerEquipment", widgetClass, true);
+        var markerWidgets = markerGraph.ObjectArray("TestMarkerWidgets", widgetClass);
+        MarkerWidgetCollection.Emit(markerGraph, markerWidgets, markerGraph.Object("TestMarkerWidget", widgetClass),
+            markerGraph.Integer("TestMarkerLoop"), markerGraph.I(grid), markerGraph.I(equipment), widgetClass);
+        markerGraph.Finish(markerGraph.L(markerWidgets));
+        var allEquipment = Enumerable.Range(0, 6).Select(_ => (object?)new Dictionary<string, object?>()).ToList();
+        var gridWidgets = new List<object?> { widget, allEquipment[0] };
+        state[grid.ObjectName.ToString()] = gridWidgets; state[equipment.ObjectName.ToString()] = allEquipment;
+        var combined = (List<object?>)vm.Run(markerGraph.Function)!;
+        Check(combined.Count == 7 && allEquipment.All(combined.Contains), "marker collection includes all six equipped widgets");
+        Check(combined.Count(x => ReferenceEquals(x, allEquipment[0])) == 1, "grid/equipment overlap creates no duplicate marker owner");
+        Check(gridWidgets.Count == 2 && allEquipment.Count == 6, "marker collection never mutates native grid/equipment arrays");
+        state[equipment.ObjectName.ToString()] = new List<object?> { allEquipment[0], null, allEquipment[1] };
+        combined = (List<object?>)vm.Run(markerGraph.Function)!;
+        Check(combined.Count == 3 && !combined.Contains(null), "missing equipment widget is skipped safely");
         FunctionLayoutContracts.Validate(asset, resolve);
         void RejectLayout(Action mutate, Action restore, string expected) {
             mutate();
@@ -185,13 +202,17 @@ static class InventoryActionTests
                 case EX_ObjectConst x: return x.Value;
                 case EX_IntConst x: return x.Value;
                 case EX_ByteConst x: return x.Value;
+                case EX_DynamicCast x: return Eval(x.Target, target); // fixture widgets have the expected class
+                case EX_ArrayGetByRef x: return ((List<object?>)Eval(x.ArrayVariable, target)!)[(int)Eval(x.ArrayIndex, target)!];
                 case EX_LocalVariable: case EX_LocalOutVariable: case EX_InstanceVariable: return Get(e, target);
                 case EX_Context x:
                     var obj = Eval(x.ObjectExpression, target);
                     return obj == null ? null : Eval(x.ContextExpression, obj);
                 case EX_LetObj x: Put(x.VariableExpression, Eval(x.AssignmentExpression, target)); return null;
                 case EX_LetBool x: Put(x.VariableExpression, Eval(x.AssignmentExpression, target)); return null;
-                case EX_Let x: Put(x.Variable, Eval(x.Expression, target)); return null;
+                case EX_Let x:
+                    var assigned = Eval(x.Expression, target);
+                    Put(x.Variable, assigned is List<object?> list ? new List<object?>(list) : assigned); return null;
                 case EX_FinalFunction x:
                     // UE evaluates function arguments in Stack.Object (the caller),
                     // not the function's EX_Context receiver such as a library CDO.
@@ -202,6 +223,10 @@ static class InventoryActionTests
                         values["Visibility"] = args[0]; values["VisibilityWrites"] = (int)values["VisibilityWrites"]! + 1;
                         return null;
                     }
+                    if (Name(x.StackNode) == "Array_AddUnique") {
+                        var array = (List<object?>)args[0]!; var found = array.IndexOf(args[1]);
+                        if (found >= 0) return found; array.Add(args[1]); return array.Count - 1;
+                    }
                     return Name(x.StackNode) switch {
                         "IsValid" => args[0] != null,
                         "BooleanAND" => (bool)args[0]! && (bool)args[1]!,
@@ -210,6 +235,8 @@ static class InventoryActionTests
                         "Not_PreBool" => !(bool)args[0]!,
                         "Array_Length" => ((List<object?>)args[0]!).Count,
                         "Greater_IntInt" => (int)args[0]! > (int)args[1]!,
+                        "Less_IntInt" => (int)args[0]! < (int)args[1]!,
+                        "Add_IntInt" => (int)args[0]! + (int)args[1]!,
                         "EqualEqual_IntInt" => (int)args[0]! == (int)args[1]!,
                         "NotEqual_ByteByte" => (byte)args[0]! != (byte)args[1]!,
                         _ => throw new NotSupportedException(Name(x.StackNode))
@@ -222,7 +249,7 @@ static class InventoryActionTests
             uint position = 0; var offsets = new Dictionary<uint, int>();
             for (var i = 0; i < fn.ScriptBytecode.Length; i++) { offsets.Add(position, i); position += (uint)fn.ScriptBytecode[i].GetSize(asset); }
             var pc = 0;
-            for (var steps = 0; steps < 100; steps++) {
+            for (var steps = 0; steps < 1000; steps++) {
                 var e = fn.ScriptBytecode[pc++];
                 switch (e) {
                     case EX_JumpIfNot x: if (!(bool)Eval(x.BooleanExpression, instance)!) pc = offsets[x.CodeOffset]; break;
