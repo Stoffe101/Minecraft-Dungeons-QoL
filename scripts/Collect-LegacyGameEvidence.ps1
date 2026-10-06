@@ -5,17 +5,19 @@ param(
     [string]$DotNetPath,
     [string]$AssetMatch,
     [switch]$CollectInventoryPatchSources,
-    [switch]$CollectPersistenceEvidence
+    [switch]$CollectPersistenceEvidence,
+    [switch]$CollectProfileEvidence
 )
 . (Join-Path $PSScriptRoot 'Common.ps1')
 if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) { throw 'This collector requires Windows x64.' }
 if ($AesKey -notmatch '^(0x)?[0-9a-fA-F]{64}$') { throw 'Supply a 256-bit hexadecimal -AesKey.' }
 if ($CollectInventoryPatchSources -and $AssetMatch) { throw 'Patch-source collection uses an exact seven-package allowlist; do not combine it with -AssetMatch.' }
 if ($CollectPersistenceEvidence -and ($CollectInventoryPatchSources -or $AssetMatch)) { throw 'Persistence collection uses its own metadata-only targets; do not combine selection modes.' }
+if ($CollectProfileEvidence -and ($CollectPersistenceEvidence -or $CollectInventoryPatchSources -or $AssetMatch)) { throw 'Profile collection uses an exact metadata-only allowlist; do not combine selection modes.' }
 $root = Get-ProjectRoot
 $paks = Find-McdPaksPath -Override $PaksPath
 if (-not $OutputDirectory) {
-    $folder = if ($CollectInventoryPatchSources) { 'inventory-patch-sources-' + [DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss') } elseif ($CollectPersistenceEvidence) { 'persistence-evidence-' + [DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss') } else { 'game-evidence-legacy' }
+    $folder = if ($CollectInventoryPatchSources) { 'inventory-patch-sources-' + [DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss') } elseif ($CollectPersistenceEvidence) { 'persistence-evidence-' + [DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss') } elseif ($CollectProfileEvidence) { 'profile-evidence-' + [DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss') } else { 'game-evidence-legacy' }
     $OutputDirectory = Join-Path $root ('.research/' + $folder)
 }
 $out = [System.IO.Path]::GetFullPath($OutputDirectory)
@@ -63,6 +65,7 @@ try {
     if ($AssetMatch) { $arguments += $AssetMatch }
     if ($CollectInventoryPatchSources) { $arguments += '--inventory-patch-sources' }
     if ($CollectPersistenceEvidence) { $arguments += '--persistence-evidence' }
+    if ($CollectProfileEvidence) { $arguments += '--profile-evidence' }
     $code = Invoke-EvidenceProcess $DotNetPath $arguments (Join-Path $out 'Exporter.log')
     if ($code -ne 0) { $issues.Add("Legacy exporter returned $code; partial metadata and logs retained.") }
     if (-not (Test-Path (Join-Path $data 'EXPORT_REPORT.json'))) { $issues.Add('Exporter produced no completion manifest.') }
@@ -75,6 +78,7 @@ try {
     archiveReader = 'CUE4Parse from pinned UeBlueprintDumper 1.2.0'
     aesKeyProvided = $true
     inventoryPatchSources = [bool]$CollectInventoryPatchSources
+    profileEvidence = [bool]$CollectProfileEvidence
     issues = @($issues.ToArray())
     note = $(if ($CollectInventoryPatchSources) { 'Includes seven allowlisted cooked inventory UI packages and available .uexp companions for private patch development. No saves or executables inspected. Do not publish these game-owned files.' } else { 'Metadata/imports/Kismet only. Raw package companions are held in a temporary directory and removed by the exporter. No saves inspected.' })
 } | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $out 'REPORT.json')

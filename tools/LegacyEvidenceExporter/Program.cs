@@ -21,7 +21,7 @@ internal static class Program
                 return DumpAsset(args[1], args[2], Path.GetFileName(args[1])) ? 0 : 1;
             }
             if (args.Length < 5 || args[0] != "--paks")
-                throw new ArgumentException("Usage: --asset <uasset> <output-json> OR --paks <paks> <aes-key> <output-directory> <inspector-libraries> [path-match | --inventory-patch-sources | --persistence-evidence]");
+                throw new ArgumentException("Usage: --asset <uasset> <output-json> OR --paks <paks> <aes-key> <output-directory> <inspector-libraries> [path-match | --inventory-patch-sources | --persistence-evidence | --profile-evidence]");
             var libraries = Path.GetFullPath(args[4]);
             AssemblyLoadContext.Default.Resolving += (_, name) =>
             {
@@ -30,7 +30,8 @@ internal static class Program
             };
             var patchSources = args.Length == 6 && args[5] == "--inventory-patch-sources";
             var persistence = args.Length == 6 && args[5] == "--persistence-evidence";
-            return DumpPaks(args[1], args[2], args[3], libraries, patchSources || persistence ? null : args.Length > 5 ? args[5] : null, patchSources, persistence);
+            var profile = args.Length == 6 && args[5] == "--profile-evidence";
+            return DumpPaks(args[1], args[2], args[3], libraries, patchSources || persistence || profile ? null : args.Length > 5 ? args[5] : null, patchSources, persistence, profile);
         }
         catch (Exception ex) { Console.Error.WriteLine(ex); return 1; }
     }
@@ -99,7 +100,39 @@ internal static class Program
         "Dungeons/Content/UI/Inventory/Salvage/UMG_SalvageUndoButton.uasset"
     };
 
-    private static int DumpPaks(string paks, string key, string output, string libraries, string? fixtureMatch, bool patchSources, bool persistence)
+    // Exact packages observed in the supplied 131,164-path retail catalog.
+    // Imported declarations/call sites are evidence, never native ABI certification.
+    private static readonly string[] ProfilePackages =
+    {
+        "Dungeons/Content/Actors/Characters/Player/BP_PlayerCharacter.uasset",
+        "Dungeons/Content/Actors/Characters/Player/BP_PlayerCharacter_Interface.uasset",
+        "Dungeons/Content/GameModes/Menu/BP_3DPlayerCharacterSlot.uasset",
+        "Dungeons/Content/GameModes/Menu/BP_3DPlayerCharacterSlotMP.uasset",
+        "Dungeons/Content/GameModes/Menu/BP_3DPlayerCharacterSlotSP.uasset",
+        "Dungeons/Content/UI/Character/Button/UMG_CharacterNavigateButton.uasset",
+        "Dungeons/Content/UI/Character/Button/UMG_MenuOptionButton.uasset",
+        "Dungeons/Content/UI/Character/CrossSave/NewCloudSave_Button.uasset",
+        "Dungeons/Content/UI/Character/CrossSave/UMG_CloudSaveCharacterPreview.uasset",
+        "Dungeons/Content/UI/Character/CrossSave/UMG_CloudSavePicker.uasset",
+        "Dungeons/Content/UI/Character/CrossSave/UMG_CloudSaveRow.uasset",
+        "Dungeons/Content/UI/Character/Data/UMG_CharacterCounters.uasset",
+        "Dungeons/Content/UI/Character/Data/UMG_CharacterEmeraldCounter.uasset",
+        "Dungeons/Content/UI/Character/Data/UMG_CharacterGearPowerCounter.uasset",
+        "Dungeons/Content/UI/Character/Data/UMG_CharacterLevelCounter.uasset",
+        "Dungeons/Content/UI/Character/Data/UMG_CharacterName.uasset",
+        "Dungeons/Content/UI/Character/Data/UMG_CompactCharacterCounters.uasset",
+        "Dungeons/Content/UI/Character/Data/UMG_IconCounter.uasset",
+        "Dungeons/Content/UI/Character/UICharacterDataBind.uasset",
+        "Dungeons/Content/UI/Character/UMG_CharacterOptions.uasset",
+        "Dungeons/Content/UI/Character/UMG_CharacterPicker.uasset",
+        "Dungeons/Content/UI/Character/UMG_PlayerCharacterPickers.uasset",
+        "Dungeons/Content/UI/Hotbar/UIPlayerCharacterBind.uasset",
+        "Dungeons/Content/UI/Macro/BPL_PlayerCharacters.uasset",
+        "Dungeons/Content/UI/Menu/Buttons/UMG_SwitchProfileButton.uasset",
+        "Dungeons/Content/UI/Menu/UMG_SwitchProfile.uasset"
+    };
+
+    private static int DumpPaks(string paks, string key, string output, string libraries, string? fixtureMatch, bool patchSources, bool persistence, bool profile)
     {
         if (OperatingSystem.IsWindows())
         {
@@ -113,14 +146,16 @@ internal static class Program
         var aes = new FAesKey(key);
         foreach (var archive in provider.UnloadedVfs.ToArray()) provider.SubmitKey(archive.EncryptionKeyGuid, aes);
         provider.PostMount();
-        var matches = persistence ? new[] { "BP_GameInstance", "CharacterSelection", "CharacterSelect", "CharacterProfile", "SaveGame", "UserManager", "Blacksmith", "Storage" }
+        var matches = profile ? ProfilePackages : persistence ? new[] { "BP_GameInstance", "CharacterSelection", "CharacterSelect", "CharacterProfile", "SaveGame", "UserManager", "Blacksmith", "Storage" }
             : fixtureMatch != null ? new[] { fixtureMatch } : new[]
         {
             "Dungeons/Content/UI/Inventory/UMG_Inventory", "Dungeons/Content/UI/Inventory/Salvage/",
             "Dungeons/Content/UI/Inventory/UMG_Item", "Dungeons/Content/UI/Inventory/Inspector2/UMG_InventoryItem",
             "Dungeons/Content/UI/Grid/", "Dungeons/Content/Actors/Characters/Player/BP_PlayerController"
         };
-        var candidates = provider.Files.Keys.Where(x => patchSources
+        var candidates = provider.Files.Keys.Where(x => profile
+            ? ProfilePackages.Contains(x.Replace('\\', '/'), StringComparer.OrdinalIgnoreCase)
+            : patchSources
             ? PatchPackages.Contains(x.Replace('\\', '/'), StringComparer.OrdinalIgnoreCase)
             : x.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase)
                 && matches.Any(m => x.Contains(m, StringComparison.OrdinalIgnoreCase))).OrderBy(x => x).ToArray();
@@ -130,6 +165,9 @@ internal static class Program
         if (patchSources)
             foreach (var missing in PatchPackages.Where(x => !candidates.Select(p => p.Replace('\\', '/')).Contains(x, StringComparer.OrdinalIgnoreCase)))
                 errors.Add("Required patch source missing: " + missing);
+        if (profile)
+            foreach (var missing in ProfilePackages.Where(x => !candidates.Select(p => p.Replace('\\', '/')).Contains(x, StringComparer.OrdinalIgnoreCase)))
+                errors.Add("Required profile metadata missing: " + missing);
         var temp = Path.Combine(Path.GetTempPath(), "MCDQoL-evidence-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(temp);
         Directory.CreateDirectory(output);
@@ -180,7 +218,7 @@ internal static class Program
         if (candidates.Length == 0) errors.Add("No targeted assets visible. Check archive access/key.");
         File.WriteAllText(Path.Combine(output, "EXPORT_REPORT.json"), JsonConvert.SerializeObject(new
         { schemaVersion = 1, engine = "UE4_22", candidateCount = candidates.Length, completed, errors,
-            inventoryPatchSources = patchSources, persistenceEvidence = persistence, targetMatches = matches, sourceFiles }, Formatting.Indented));
+            inventoryPatchSources = patchSources, persistenceEvidence = persistence, profileEvidence = profile, targetMatches = matches, sourceFiles }, Formatting.Indented));
         return errors.Count == 0 ? 0 : 1;
     }
 }
