@@ -2,6 +2,10 @@
 
 Favorites persistence remains unfinished. Archive exports establish six profile call shapes and the salvage shape, but no permanent physical-item identifier. This project-authored experimental reader checks loaded native declarations without installing an injected loader. Keep UE4SS disabled.
 
+## Current result and object capacity correction
+
+The second capture (`legacy-names-256-v2`) validated a unique name table, then found zero object-array candidates. Revision `legacy-objects-capacity-v3` corrects source-verified reserved-capacity filters: Unreal 4.22's default object reservation rounds to 33 chunks / 2,162,688 slots, and preallocation can allocate more chunks than the live object count needs. Previously our reader rejected both. Live traversal/read/time limits remain; reserved capacity is bounded separately and must agree with its chunk table. 96 local checks pass; Windows adds an own-process read check. Retail discovery and persistence are still unverified. Update before repeating the camp command below; an unchanged v2 capture is not needed. Detailed source evidence and the supplied report hash are in RESEARCH_LOG.md.
+
 ## First result and corrected reader
 
 The first user capture reached discovery but found zero name-array matches; no declarations were accepted. Revision `legacy-names-256-v2` adds the 256-pointer layout defined by pinned Unreal 4.22 source, permits reserved capacity, and covers the larger header across scan boundaries. The previous collector omitted this source-defined layout. A repeat is useful only after updating to this revision; keep the working v8 gameplay pak. See the latest RESEARCH_LOG entry for evidence and source links. Retail discovery and permanent item identity remain unverified.
@@ -25,7 +29,7 @@ Upload the printed `.research/native-favorites-TIMESTAMP-SUFFIX.zip` privately, 
 - Accept a reflection layout only if seven observed call shapes match: Guid return; three int32 getters; index → CharacterSaveData; index/bool → PlayerCharacterSaveSlot; salvage slot/out-bool/undo-struct. This establishes consistency, not a complete native ABI.
 - Export eleven allowlisted `/Script/Dungeons` class/struct declarations only. No executable buffers, addresses, item/save values, account IDs, full object dump or complete SDK. Container/enum/subclass typing is partial; non-reflected C++ members are unavailable. A completed report does not certify GUID lifetime, clone behavior, permanent item identity or persistence.
 
-Fixtures test twenty-four legacy layout combinations, inline 256-chunk discovery, reserved capacity and corrupt entry indices,, Guid typing/export privacy, mismatch/cycle/partial read/index/count/range/budget failures. Windows CI also reads eight bytes from this test process's own allocation through the actual query/read handle. No tests attach to a game or require game assets. 89 local checks pass; Windows adds an own-process read check. Runtime Store discovery remains unverified.
+Fixtures test twenty-four legacy layout combinations, inline 256-chunk discovery, reserved capacity and corrupt entry indices, Guid typing/export privacy, mismatch/cycle/partial read/index/count/range/budget failures. Windows CI also reads eight bytes from this test process's own allocation through the actual query/read handle. No tests attach to a game or require game assets. 89 local checks pass; Windows adds an own-process read check. Runtime Store discovery remains unverified.
 
 ## Next gate
 

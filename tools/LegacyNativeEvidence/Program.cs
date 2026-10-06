@@ -21,7 +21,7 @@ try {
 }
 // No executable bytes, object addresses, item instances, saves, account IDs or local paths.
 File.WriteAllText(Path.Combine(output, "REPORT.json"), JsonSerializer.Serialize(new {
-    schemaVersion = 1, readerRevision = "legacy-names-256-v2", capture.Completed, capture.Issues, capture.Declarations,
+    schemaVersion = 1, readerRevision = "legacy-objects-capacity-v3", capture.Completed, capture.Issues, capture.Declarations,
     mode = "external-read-only-legacy-declarations", gameProcessModified = false,
     note = "Experimental reader; matching seven call shapes does not establish native ABI or favorite persistence. No instance values or memory dumps exported."
 }, new JsonSerializerOptions { WriteIndented = true }));

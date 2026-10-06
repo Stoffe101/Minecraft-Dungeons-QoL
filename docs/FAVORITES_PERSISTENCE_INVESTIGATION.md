@@ -1,5 +1,16 @@
 # Favorites persistence investigation
 
+## 2026-10-06: name table validated; object capacity filter corrected
+
+Inspected private native-favorites-20261006-132111-71d697.zip, SHA-256 `4fe92a78974593228c4a978013ce49653002ccb99aa7a57e6593218a6ad0079e`. REPORT.json identifies revision `legacy-names-256-v2`, Completed=false, zero declarations and `Legacy object array not uniquely validated (0 matches from 0 candidates); no declarations accepted.` Reaching this error means exactly one name table passed the three anchor-name checks. It does not establish the selected table capacity/string offset, native declaration layout, actual object capacity or permanent item identity. No access denial was reported.
+
+Pinned Epic-authored Unreal 4.22 UObjectArray.h defines TUObjectArray as FChunkedFixedUObjectArray. Its PreAllocate calculates MaxChunks = InMaxElements / 65536 + 1 and MaxElements = MaxChunks * 65536; optionally it allocates all chunks before live objects fill them. UObjectBase.cpp defaults MaxUObjects to 2 * 1024 * 1024. That default rounds to 33 chunks and 2,162,688 capacity, which our <=2,000,000 reserved-capacity and <=32 chunk filters rejected. Exact NumChunks == ceil(live count / 65536) also rejected fully preallocated arrays. These are source-verified collector defects; the runtime report alone does not prove which one rejected this game's table.
+
+Revision `legacy-objects-capacity-v3` separates reserved capacity from live traversal: capacity up to 4 Mi elements / 64 chunks, live count still <=2,000,000, sufficient allocated chunks bounded by reserved chunks, and capacity exactly consistent with the chunk table. It retains index/class validation, unique candidate selection, seven independent native call contracts, existing read/time budgets and declaration-only output. No native calls/game writes/assets or injected loader are added. Seven new tests cover default 33-chunk reservation, preallocated chunks, insufficient/excess chunks, inconsistent capacity, over-bound reservation and unchanged live-count limit. All 96 local checks pass; Windows adds its own-process read check. Retail object discovery still needs one report from the changed reader. Keep the working v8 pak; persistent favorites remain unfinished.
+
+Sources: [UObjectArray.h](https://github.com/folgerwang/UnrealEngine/blob/99a530d4ccbe6bea1e8f49df20acfeb294006962/Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectArray.h), [UObjectBase.cpp](https://github.com/folgerwang/UnrealEngine/blob/99a530d4ccbe6bea1e8f49df20acfeb294006962/Engine/Source/Runtime/CoreUObject/Private/UObject/UObjectBase.cpp). No engine implementation is copied.
+
+
 ## 2026-10-06: visual feedback and first external native capture
 
 User reports the updated appearance looks better and is acceptable. This confirms general visual feedback, not a six-slot equipment matrix, travel/restart persistence or host/join acceptance. Keep the working v8 pak.

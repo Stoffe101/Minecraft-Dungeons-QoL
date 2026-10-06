@@ -17,6 +17,15 @@ static class EvidenceTests
         var reserved = new Fixture(capacity: 256); reserved.Set(reserved.NameHeader + 2052, 2, 4); Check(reserved.Collect().Completed, "reserved name chunks allowed by engine Reserve");
         var inline = new Fixture(capacity: 256); inline.Set(Fixture.Base, 0); Check(inline.CollectInline().Completed, "256-chunk table discovered inline without global pointer");
         var corrupt = new Fixture(capacity: 256); corrupt.CorruptFirstName(); Reject(() => corrupt.Collect(), "256-chunk name entry index mismatch");
+        var defaultCapacity = new Fixture(capacity: 256); defaultCapacity.SetObjectCapacity(33, 1);
+        Check(defaultCapacity.Collect().Completed, "engine default 2Mi reservation rounds to 33 object chunks");
+        var preallocated = new Fixture(capacity: 256); preallocated.SetObjectCapacity(33, 33);
+        Check(preallocated.Collect().Completed, "preallocated object chunks may exceed live-count chunks");
+        var tooSmall = new Fixture(); tooSmall.SetObjectCapacity(1, 0); Reject(() => tooSmall.Collect(), "object chunks cannot cover live count");
+        var capacityMismatch = new Fixture(); capacityMismatch.Set(capacityMismatch.ObjectHeader + 16, 65535, 4); Reject(() => capacityMismatch.Collect(), "object capacity inconsistent with chunk table");
+        var overBound = new Fixture(); overBound.SetObjectCapacity(65, 1); Reject(() => overBound.Collect(), "object reserved capacity exceeds bound");
+        var tooManyChunks = new Fixture(); tooManyChunks.SetObjectCapacity(1, 2); Reject(() => tooManyChunks.Collect(), "allocated object chunks exceed reserved capacity");
+        var liveLimit = new Fixture(); liveLimit.SetObjectCapacity(33, 33); liveLimit.Set(liveLimit.ObjectHeader + 20, 2_000_001, 4); Reject(() => liveLimit.Collect(), "live traversal limit unchanged");
         var f1 = new Fixture(); f1.Set(f1.GuidReturn + 0x70, f1.Classes["CharacterSaveData"]); Reject(() => f1.Collect(), "wrong GUID target");
         var f2 = new Fixture(); f2.Set(f2.BoolInput + 56, 0x480); Reject(() => f2.Collect(), "input bool mistaken for return");
         var f3 = new Fixture(); f3.Set(f3.FirstFunction + 40, f3.FirstFunction); Reject(() => f3.Collect(), "cyclic child chain");
@@ -97,6 +106,7 @@ static class EvidenceTests
         void Add(ulong owner, ulong field) { if (last.TryGetValue(owner, out var prev)) Set(prev + 40, field); else Set(owner + (ulong)children, field); last[owner] = field; }
         ulong Function(string owner, string name) { var obj = Object(name, functionMeta, Classes[owner]); Add(Classes[owner], obj); return obj; }
         ulong Param(ulong fn, string name, string kind, ulong flags, ulong type = 0) { var obj = Object(name, Classes[kind], fn); Set(obj + 56, flags); Set(obj + (ulong)target, type); Add(fn, obj); return obj; }
+        public void SetObjectCapacity(int maximumChunks, int allocatedChunks) { Set(ObjectHeader + 16, (ulong)maximumChunks * 65536, 4); Set(ObjectHeader + 24, (ulong)maximumChunks, 4); Set(ObjectHeader + 28, (ulong)allocatedChunks, 4); }
         public void CorruptFirstName() => Set(BinaryPrimitives.ReadUInt64LittleEndian(Memory.Read(nameChunk, 8)) + 8, 4, 4);
         public Capture CollectInline() => new LegacyReader(new BoundedMemory(Memory)).Collect([new Region(Base, Memory.Read(Base, 4096)), new Region(NameHeader, Memory.Read(NameHeader, 4096))]);
         public Capture Collect() => new LegacyReader(new BoundedMemory(Memory)).Collect([new Region(Base, Memory.Read(Base, 4096))]);
