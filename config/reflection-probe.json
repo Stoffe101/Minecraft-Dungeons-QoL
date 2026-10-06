@@ -1,4 +1,6 @@
 {
+  "installEnabled": false,
+  "withdrawalReason": "User reports immediate Store game startup crash (0xc0000005) after probe installation. Collect logs and remove; compatibility remains unresolved.",
   "version": "3.0.1",
   "sourceCommit": "d935b5b23bac03b65c14ae38382b02007204cc2e",
   "url": "https://github.com/UE4SS-RE/RE-UE4SS/releases/download/v3.0.1/UE4SS_v3.0.1.zip",

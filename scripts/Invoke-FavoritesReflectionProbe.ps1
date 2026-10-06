@@ -55,6 +55,9 @@ function Read-State {
     return $state
 }
 if ($Action -eq 'Install') {
+    if (-not $config.installEnabled) {
+        throw "Reflection probe installation withdrawn: $($config.withdrawalReason)"
+    }
     # Do not replace another proxy, mod loader or configuration. Do not change
     # XboxGames ownership/ACLs if this Store installation denies writes.
     foreach ($name in @($owned) + @('Mods', 'xinput1_3.dll', 'UE4SS.log', 'UE4SS_ObjectDump.txt',
