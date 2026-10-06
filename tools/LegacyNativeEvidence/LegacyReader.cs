@@ -40,10 +40,13 @@ sealed class LegacyReader(IMemory memory)
                     }
                 } catch (ReadFailure) { }
             }
+            // Capacity is reserved independently of the live count. UE 4.22 PreAllocate
+            // rounds its default 2 Mi elements to 33 chunks (2,162,688 capacity).
             int countObjects = BinaryPrimitives.ReadInt32LittleEndian(region.Bytes.AsSpan(i + 20)), maxObjects = BinaryPrimitives.ReadInt32LittleEndian(region.Bytes.AsSpan(i + 16));
             int countChunks = BinaryPrimitives.ReadInt32LittleEndian(region.Bytes.AsSpan(i + 28)), maxChunks = BinaryPrimitives.ReadInt32LittleEndian(region.Bytes.AsSpan(i + 24));
-            if (MemoryValues.Pointer(p) && countObjects >= 128 && countObjects <= 2_000_000 && maxObjects >= countObjects && maxObjects <= 2_000_000
-                && countChunks == (countObjects + 65535) / 65536 && maxChunks >= countChunks && maxChunks <= 32) objectCandidates.Add(region.Address + (ulong)i);
+            if (MemoryValues.Pointer(p) && countObjects >= 128 && countObjects <= 2_000_000 && maxObjects >= countObjects && maxObjects <= 4 * 1024 * 1024
+                && countChunks >= (countObjects + 65535) / 65536 && maxChunks >= countChunks && maxChunks <= 64
+                && maxObjects == maxChunks * 65536) objectCandidates.Add(region.Address + (ulong)i);
         }
         if (nameCandidates.Count != 1) throw new ReadFailure($"Legacy name array not uniquely validated ({nameCandidates.Count} matches); no declarations accepted.");
         (names, charsOffset, nameCapacity) = nameCandidates.Single(); nameCount = memory.I32(names + (ulong)nameCapacity * 8); nameCache.Clear();
