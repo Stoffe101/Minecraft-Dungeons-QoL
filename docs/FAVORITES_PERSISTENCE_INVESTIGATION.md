@@ -1,5 +1,14 @@
 # Favorites persistence investigation
 
+## 2026-10-06: serializer declarations complete; native serialization mapping required
+
+The private v6 serialization report completed all fourteen declarations: 172 properties, 333 functions, zero issues. Diagnostics: 1,672,235 read calls / 49,038,117 requested bytes / 3,279 ms. CharacterSerializeComponent exposes only mDefaultSaveData/mSaveData references plus profile name/skin/cloud-ID/assignment methods. BaseCharacter adds no reflected save/item identity; EquipmentComponent exposes ItemSlot arrays and equipment events, not durable item records. The reflected bridge investigation has reached a concrete limit. No repeat declaration scan is needed. Favorites still do not survive item reconstruction/restart.
+
+Added LegacyNativeCodeEvidence and explicit -CollectSerializationCode. It first requires all fourteen declaration gates, corroborates source-derived UFunction flags/parameter counts/sizes/native-pointer variants against seven anchors, then samples nine exact functions and one level of decoded direct targets in the main image. No functions are invoked; attachment stays query/read-only. Each routine window is at most 4 KiB, at most 48 routines; only reachable decoded instruction bytes and main-image-relative RVAs are exported. Code is reread to detect changes, root metadata is refreshed, executable ranges must be readable and bounded by the main image; section write flags never grant this reader write access. Indirect calls, window boundaries, invalid instructions and external targets are explicit limitations. Collection success does not establish full control-flow coverage, native ABI or stable identity.
+
+This is private code evidence for reconstructing the serialization/load/slot-transfer mapping on the actual Store build. There is no new gameplay pak or injected loader. Existing v8 remains the user-confirmed visual/session-favorites version. All 111 core reader tests pass locally; Windows verifies 112 core-reader checks and 28 decoder checks. The sandbox cannot download NuGet for a local decoder run; Windows CI supplied the decoder verification. Do not guess offsets or release a persistence fix from reflection names alone.
+
+
 ## 2026-10-06: core native capture completed; serializer is the next gate
 
 The v5 report completed 11 declarations, 132 properties and 262 functions with zero issues and seven matching native call shapes. InventoryItemData has eleven fields: ItemId, ItemPower, Enchantments, ArmorProperties, Rarity, bIsUpgraded, bIsGifted, bIsModified, timesModified, bHasNetherite and NetheriteEnchantData. None is a reflected physical-item identifier; SerializableItemId contains only a type name. InventoryItemMetaData contains MarkedNew/Cloned; these gameplay flags must not be repurposed. Slot change indices are not durable identity. InventoryItem's reflected interface offers display/state/mutation APIs, not an instance UUID getter.

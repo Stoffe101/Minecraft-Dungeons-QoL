@@ -1,4 +1,4 @@
-param([int]$GameProcessId, [string]$DotNetPath, [switch]$CollectSerializationContracts)
+param([int]$GameProcessId, [string]$DotNetPath, [switch]$CollectSerializationContracts, [switch]$CollectSerializationCode)
 . (Join-Path $PSScriptRoot 'Common.ps1')
 if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT -or -not [Environment]::Is64BitOperatingSystem) { throw 'This experimental read-only collector requires Windows x64.' }
 $root = Get-ProjectRoot
@@ -12,16 +12,18 @@ if (-not $DotNetPath) { throw 'The existing .NET 8 SDK is needed. Supply -DotNet
 $games = @(Get-Process -Name Dungeons -ErrorAction SilentlyContinue)
 if ($GameProcessId) { $games = @($games | Where-Object { $_.Id -eq $GameProcessId }) }
 if ($games.Count -ne 1) { throw 'Expected one running Dungeons process in camp. For multiple instances supply -GameProcessId.' }
-$build = Join-Path $root '.tools/LegacyNativeEvidence'
+$tool = if ($CollectSerializationCode) { 'LegacyNativeCodeEvidence' } else { 'LegacyNativeEvidence' }
+$build = Join-Path $root ".tools/$tool"
 $logs = Join-Path $root ('.research/native-favorites-build-' + [Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory $logs | Out-Null
-$project = Join-Path $root 'tools/LegacyNativeEvidence/LegacyNativeEvidence.csproj'
+$project = Join-Path $root "tools/$tool/$tool.csproj"
 if ((Invoke-EvidenceProcess $DotNetPath @('build', $project, '-c', 'Release', '-o', $build) (Join-Path $logs 'Build.log')) -ne 0) { throw "Reader build failed; see $logs. No game files changed." }
 $out = Join-Path $root ('.research/native-favorites-' + [DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss') + '-' + [Guid]::NewGuid().ToString('N').Substring(0, 6))
 Push-Location $root
 try {
-    $readerArgs = @((Join-Path $build 'LegacyNativeEvidence.dll'), [string]$games[0].Id, $out)
-    if ($CollectSerializationContracts) { $readerArgs += '--serialization-contracts' }
+    $readerArgs = @((Join-Path $build "$tool.dll"), [string]$games[0].Id, $out)
+    if ($CollectSerializationContracts -and -not $CollectSerializationCode) { $readerArgs += '--serialization-contracts' }
+    if ($CollectSerializationCode) { Write-Host 'Reading bounded serialization code snippets; no game calls or writes. Keep the output private.' }
     $code = Invoke-EvidenceProcess $DotNetPath $readerArgs (Join-Path $logs 'Reader.log')
 } finally { Pop-Location }
 if (-not (Test-Path (Join-Path $out 'REPORT.json'))) { throw "No capture report; see $logs. Do not change game protections or install a loader." }

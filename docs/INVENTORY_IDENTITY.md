@@ -1,5 +1,10 @@
 # Inventory Identity Strategy
 
+## Expanded reflection result — 2026-10-06
+
+The successful fourteen-class report contains no reflected physical-item identifier or item-record-returning API in CharacterSerializeComponent, BaseCharacter or EquipmentComponent. Native serialization/load/transfer mapping is now the required gate. A native GUID method for the hero does not solve item identity. No repeat declaration scan is needed. The bounded code collector inspects exact known functions without calls/writes; it must establish actual record/slot relationships and reconstruction semantics before any persistence bridge is deployed.
+
+
 ## Completed native core evidence — 2026-10-06
 
 All eleven requested native declarations were returned with no issues. InventoryItemData's eleven reflected fields describe type and mutable item state; none is an individual-copy identifier. SerializableItemId.SerializedId is NameProperty, and InventoryItemSlot.GetIconTextureForItemId consumes this type ID. InventoryItemMetaData only exposes MarkedNew/Cloned. No reflected instance UUID or inventoryIndex is present in these collected item declarations. This does not rule out unreflected C++ members or inherited members outside the collected scope.

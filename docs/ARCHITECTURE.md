@@ -116,11 +116,11 @@ Preferred order:
 1. native stable item GUID / unique ID exposed at runtime
 2. another stable native item-instance identifier
 3. verified runtime `inventoryIndex` scoped by hero `uniqueSaveId`
-4. fingerprint fallback
+4. fingerprints as diagnostic sanity checks only; never as the permanent physical-item identity
 
 Open-source save-format code confirms that hero profiles contain `uniqueSaveId` and items contain `inventoryIndex`. This is promising but not sufficient by itself: storage transfers can change the index, and the highest deleted index can later be reused.
 
-If `inventoryIndex` becomes the fallback key, store sanity data such as item type and reconcile stale entries. Any ambiguous identity must fail closed.
+A verified inventoryIndex may serve as a current save-record locator, coupled to a bridge that follows slot transfers, reconstruction and index reuse. It is not a permanent item UUID. Sanity fingerprints cannot distinguish identical duplicates or replace that bridge. Ambiguous identity must fail closed.
 
 See `INVENTORY_IDENTITY.md`.
 

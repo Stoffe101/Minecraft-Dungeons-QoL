@@ -1,5 +1,12 @@
 # Installed-game API contracts
 
+## Completed serializer declaration scope — 2026-10-06
+
+CharacterSerializeComponent directly inherits Engine.ActorComponent. Its two properties are mDefaultSaveData/mSaveData, both CharacterSaveData objects. Ten functions: SetSkin(Name), SetName(String), SetLegendaryStatus(Enum), SetIsTowerLevel(), ReadSkin()->Name, ReadName()->String, HasProfile()->Bool, GetLegendaryStatus()->Enum, GetCloudPlayerId()->Guid, AssignCharacter(CharacterSaveData). GetCloudPlayerId return property flags are `0018001040000782`; this does not establish lifetime/clone semantics. There is no reflected record-returning serializer in this declaration. BaseCharacter also adds no reflected save identity. EquipmentComponent's EquipmentSlots/GetSlotsOfType use ItemSlot, distinct from InventoryItemSlot; do not substitute these object types.
+
+The optional native code collector inspects native flags/count/parameter sizes and source-derived function-pointer layouts, accepting a unique variant only when seven known anchors agree and pointers fall in readable executable main-image sections. This is evidence collection, not a callable native bridge. Raw snippets/RVAs remain private and are never embedded as guessed production offsets.
+
+
 ## Native declaration confirmation — 2026-10-06
 
 The completed private v5 report matches all six profile caller shapes below plus ItemStashComponent.SalvageItemInSlot(slot, out-success) returning ItemSalvageUndoInfo. GetCharacterSlotByIndex's bool parameter is named `forceRefreshSlot`; that name does not establish refresh/lifetime semantics. SerializeSaveState has no parameters or return. GetInventorySlots/GetStorageChestSlots return arrays of InventoryItemSlot; return property flags are `0010000008000782`. GetEquipmentSlots returns a map whose inner types this reader does not export. Save slot/controller reference CharacterSerializeComponent; save slot inherits BaseCharacter.

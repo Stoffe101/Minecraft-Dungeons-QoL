@@ -173,3 +173,7 @@ See MODDING_OPTIONS_REVIEW.md for pinned inspected sources and reuse decisions. 
 ## External reflection source review — 2026-10-06
 
 See [EXTERNAL_REFLECTION_REVIEW.md](EXTERNAL_REFLECTION_REVIEW.md) for pinned MIT source/license checks on Unreal-eXternalrEsolve, McDaived/UE-Dumper and Spuckwaffel/UEDumper. These are inspection references only: no code, binary or runtime dependency is copied, executed or bundled. Legacy UProperty parameter/layout gaps, overbroad process access and unconfigured game offsets prevent declaring a ready Dungeons Store collector. The withdrawn UE4SS Install remains disabled.
+
+## Bounded code evidence decoder — 2026-10-06
+
+[Iced](https://github.com/icedland/iced), MIT, NuGet version 1.21.0; v1.21.0 tag commit `c50f29b7bc305696895c075f3fc7719751426b12`. Retained license: third_party/Iced-LICENSE.txt. Used only by LegacyNativeCodeEvidence to decode private read-only snippets and follow actual direct control-flow instructions. No dependency or proprietary code snippet is packaged in the gameplay pak. Epic-authored UE4.22 Class.h at the existing `99a530d4ccbe6bea1e8f49df20acfeb294006962` reference pin informs candidate metadata layout; no engine implementation is copied.
