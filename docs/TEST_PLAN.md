@@ -1,5 +1,11 @@
 # Test Plan
 
+## Profile caller regression gate — 2026-10-06
+
+CookedGraphTests now includes 18 profile-owner checks and 38 profile caller checks. For each of the six observed methods, accept its typed layout and reject extra arguments, string results, missing RValue result fields and bare calls. For indexed getters, reject missing/string indices and wrong object result classes; reject an integer in the bool position and a Vector in place of the Guid result. Fixture is the licensed UE4.22 diagnostic actor; no private game assets are required by CI.
+
+Local direct Roslyn compilation: 142 checks passed. Regenerated combined native UI preserves 11,152 original exports and matches all four prior v8 files byte-for-byte. These checks do not prove native flags, GUID lifetime, independent hero clones, retail persistence or online client compatibility. Those remain required runtime gates; no additional gameplay pak is released.
+
 2026-10-06: the native reflection probe caused a reported immediate startup crash and is withdrawn. Production Install must reject before downloads/writes; Collect and Remove must still work for existing schema-v1 manifests. Historical install tests run only in a copied private fixture config/fake game directory. Retail recovery: close launcher/game, Collect if possible, Remove even if Collect fails, verify normal launch and upload private log/evidence. No further Ctrl+H/reinstall test until the startup failure is investigated.
 
 Native identity evidence gate: Test-FavoritesReflectionProbe.ps1 verifies the pinned release, collision/checksum rejection, metadata allowlist, incomplete capture reporting and hash-owned removal against a fake installation. Retail: install closed, enter camp/open inventory, Ctrl+H once, quit, collect and remove. Upload the private printed ZIP even if startup fails. Inspect native identity before implementing persistence; do not repeat the exhausted broad archive export or treat SDK generation as feature validation. See FAVORITES_PERSISTENCE_INVESTIGATION.md.

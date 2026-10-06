@@ -1,5 +1,19 @@
 # Research Log
 
+## 2026-10-06: verified profile call contracts and external tool review
+
+The uploaded private profile-evidence-20261006-013555.zip has SHA-256 `056d6178ddd194d421f05f926dacf01201416af9d2c467b86dec635d12d7264b`. All 26 targets completed with zero reported issues/export errors; metadata only, no raw patch sources. The exact collector succeeded on the user's installation. No repeat profile collection is needed.
+
+`UMG_CloudSavePicker.TrySelectCurrentSave` obtains the recent local save index (statement 53), calls `PlayerControllerBase.GetCharacterSlotByIndex(index, False)` (103), obtains `PlayerCharacterSaveSlot.GetCloudPlayerId()` into an FGuid local (155), copies it to CurrentGUID (205), and compares a cloud row's GUID (480) with CurrentGUID using KismetGuidLibrary.EqualEqual_GuidGuid (552). Return property exports 2793/2794 reference `/Script/CoreUObject.Guid` through import -391. This establishes a cloud matching identity candidate, **not** equivalence to the save file's uniqueSaveId, independent clone IDs, or permanent item identity. Do not convert it to FString or assign unobserved semantics to the second bool argument.
+
+`UMG_CharacterPicker` uses GetAvailableSaveDataByIndex(OriginalSaveIndex) at ExecuteUbergraph statement 5202, GetRecentSaveDataIndex at SetIsCurrentlyPicking statement 161, GetCharacterSlotByIndex(recentIndex, False) at OnRecentSaveDataIndexChanged statement 121, and GetSaveLocalUserNum at Confirm statement 148. BP_3DPlayerCharacterSlot also bounds profile access with GetNumProfiles. All six declaring owners and observed call layouts are now documented in GAME_API_CONTRACTS.md and guarded by the patcher's FunctionImportContracts/HeroProfileCallContracts. AssignSaveData, CloneCharacter, CreateNewCharacter, DeleteCharacterByIndex and SaveGlobalState are writers; none is used as a read-only getter.
+
+No permanent physical-item ID or usable record-returning serialization getter was found in these 26 packages. ItemStashComponent references and CharacterLazySaveComponent failure delegates do not establish serialization data access. The favorites array remains transient. Hero/cloud GUID evidence alone cannot safely fix travel/restart persistence or distinguish duplicate items.
+
+Local direct Roslyn compilation and 142 graph checks pass, including 18 added owner checks and 38 typed profile-call checks. Regenerated native combined UI reopens with 11,152 original exports preserved; all four generated asset files are byte-identical to the prior v8 output. No profile getter is newly emitted and no new gameplay pak/persistence fix is released. Retail v8 visuals, clone behavior, persistence and online host/join acceptance remain unverified.
+
+Read-only external reflection tools were inspected at pinned MIT sources, but none is validated for this Store installation. One auto-resolver's parameter collector omits legacy UProperty functions; its fallback does not reset the default FProperty mode. Two other tools request PROCESS_ALL_ACCESS, and one requires game-specific offsets that are placeholders. See EXTERNAL_REFLECTION_REVIEW.md. No external probe has been executed, deployed or bundled. UE4SS Install remains disabled.
+
 ## 2026-10-06: launch restored; three-line startup log; direct archive access
 
 User confirms normal launch after removing UE4SS. Inspected private reflection-evidence-20261006-011355-8ef156.zip (e9afa27a…ea4c51d): REPORT.json + UE4SS.log only, log 180 bytes/three initial banner lines; no ready/capture markers or headers/object dump. Pinned UE4SSProgram.cpp emits the last line before LoadLibrary IAT hooks/Unreal initialization, but a truncated log cannot pinpoint a faulting instruction. Retain withdrawal; no settings guesses justified. Recovery does not complete durable favorites.

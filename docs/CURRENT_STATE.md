@@ -2,6 +2,8 @@
 
 # Current State
 
+2026-10-06 profile evidence inspected: exact collection completed 26/26 with zero errors. Vanilla uses an FGuid from PlayerCharacterSaveSlot.GetCloudPlayerId to match the current local hero to a cloud row. Six observed profile call shapes now have declaring-owner and typed caller checks (142 graph tests pass locally). Cloud GUID lifetime/clone semantics and physical-item identity remain unresolved. Rebuilt v8 assets are byte-identical; no new gameplay/persistence release. External tools were reviewed, but legacy-layout/access gaps prevent treating them as a ready Dungeons probe. See FAVORITES_PERSISTENCE_INVESTIGATION.md and EXTERNAL_REFLECTION_REVIEW.md.
+
 2026-10-06 static investigation: recovered the earlier full 131,164-path catalog and found actual character-picker/profile package names missed by prior filters. Drive refuses the >1 GB base archives at its 256 MiB download limit. Added a metadata-only exact 26-package profile collector; no loader or save changes. Local exact-selection and legacy parsing fixtures pass; native identity/persistence and v8 retail visuals remain unverified. See FAVORITES_PERSISTENCE_INVESTIGATION.md.
 
 2026-10-06 recovery confirmed: user can launch again after collecting/removing the native reflection probe. Supplied ZIP contains only a 180-byte three-line startup banner and REPORT.json; no native headers/object dump/script-ready marker. It establishes early loader failure and successful rollback, not the failed instruction or stable item identity. Install remains disabled. Began direct Drive pak access: downloaded chunk99 and validated its 118-entry encrypted index/hash; no profile/save targets occur there. Full archive/payload integrity and persistence are still unverified. See FAVORITES_PERSISTENCE_INVESTIGATION.md.
@@ -12,7 +14,7 @@ Persistence evidence update (2026-10-05): the uploaded collection completed 88/8
 
 Latest status: user confirms v7 features and placement work, but favorites disappear after mission travel. This is the existing inspector-lifetime limitation, now explicitly reproduced. v8 doubles selection borders from 3 to 6 units, changes cyan to red, and includes the six equipment widgets in favorite marker updates. It does NOT fix persistence yet. Stable hero/item identity needs additional profile/save/storage metadata; a read-only collector is prepared. See [INVENTORY_IDENTITY.md](INVENTORY_IDENTITY.md) and [GAME_EVIDENCE.md](GAME_EVIDENCE.md). No GPU crash fix is established.
 
-Last updated: 2026-10-06 (v7 retail confirmation; v8 borders/equipment; persistence evidence required)
+Last updated: 2026-10-06 (profile GUID call sites verified; permanent item identity unresolved)
 
 ## Actual implementation
 

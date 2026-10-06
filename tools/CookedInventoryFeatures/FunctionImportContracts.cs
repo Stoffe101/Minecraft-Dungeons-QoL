@@ -2,7 +2,8 @@ using UAssetAPI;
 
 static class FunctionImportContracts
 {
-    // Reflected declaring owners, from the pinned UE 4.22.3 headers. A valid
+    // Reflected declaring owners, from pinned UE 4.22.3 headers and retail
+    // profile/inventory call sites. A valid
     // C++ inherited method is not necessarily a valid UFunction import on a subclass.
     static readonly Dictionary<string, (string package, string owner)> Owners = new() {
         ["GetOwningPlayer"] = ("/Script/UMG", "Widget"),
@@ -17,6 +18,12 @@ static class FunctionImportContracts
         ["SetBrushColor"] = ("/Script/UMG", "Border"),
         ["SetBackgroundColor"] = ("/Script/UMG", "Button"),
         ["SetOffsets"] = ("/Script/UMG", "CanvasPanelSlot"),
+        ["GetCloudPlayerId"] = ("/Script/Dungeons", "PlayerCharacterSaveSlot"),
+        ["GetRecentSaveDataIndex"] = ("/Script/Dungeons", "PlayerControllerBase"),
+        ["GetNumProfiles"] = ("/Script/Dungeons", "PlayerControllerBase"),
+        ["GetSaveLocalUserNum"] = ("/Script/Dungeons", "PlayerControllerBase"),
+        ["GetAvailableSaveDataByIndex"] = ("/Script/Dungeons", "PlayerControllerBase"),
+        ["GetCharacterSlotByIndex"] = ("/Script/Dungeons", "PlayerControllerBase"),
         ["SalvageItemInSlot"] = ("/Script/Dungeons", "ItemStashComponent"),
     };
     public static void Validate(UAsset asset)

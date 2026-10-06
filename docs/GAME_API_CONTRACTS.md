@@ -1,5 +1,22 @@
 # Installed-game API contracts
 
+## Profile call sites — 2026-10-06
+
+Private exact profile evidence SHA-256 `056d6178ddd194d421f05f926dacf01201416af9d2c467b86dec635d12d7264b`: 26/26 packages completed, zero reported errors. All owners below are `/Script/Dungeons` classes. These are caller layouts, not complete native declarations/flags or runtime lifetime guarantees.
+
+| Reflected declaring owner / function | Observed inputs | Typed result |
+|---|---|---|
+| PlayerCharacterSaveSlot.GetCloudPlayerId | none | FGuid (`/Script/CoreUObject.Guid`) |
+| PlayerControllerBase.GetRecentSaveDataIndex | none | int32 |
+| PlayerControllerBase.GetNumProfiles | none | int32 |
+| PlayerControllerBase.GetSaveLocalUserNum | none | int32 |
+| PlayerControllerBase.GetAvailableSaveDataByIndex | int32 index | CharacterSaveData object |
+| PlayerControllerBase.GetCharacterSlotByIndex | int32 index, bool | PlayerCharacterSaveSlot object |
+
+Legacy UAssetAPI `UIntProperty` is IntProperty/int32 here; its class name does not mean uint32. Cloud picker TrySelectCurrentSave statements 53/103/155/205/480/552 establish local-index → slot(index, False) → GUID → cloud row GUID comparison. The bool's native meaning is unresolved. CharacterPicker call anchors and return properties are recorded in FAVORITES_PERSISTENCE_INVESTIGATION.md.
+
+HeroProfileCallContracts rejects wrong argument count, non-int index, non-bool second argument, wrong/missing typed result and bare final-function calls. FunctionImportContracts rejects wrong declaring class/script package. No new getter call is emitted by this pass. Cloud GUID is not yet a certified durable hero key, and no physical-item ID was found. CloneCharacter/CreateNewCharacter/DeleteCharacterByIndex/AssignSaveData/SaveGlobalState are mutation APIs, not getters.
+
 Persistence evidence (2026-10-05): storage chest ExecuteUbergraph statement 1370 calls /Script/Dungeons.ItemStashComponent.SerializeSaveState with zero parameters and no assigned return. It is a save writer, not an FString/JSON getter. The new 88-package collection imports user-manager/controller APIs but establishes no stable hero/item-instance identifier. See FAVORITES_PERSISTENCE_INVESTIGATION.md.
 
 Evidence: user `game-evidence-legacy.zip`, SHA-256 `20b5f51b085b3c8b80f285e14896d26e7c677e4b43a82ca917f431e35de31545`, collected 2026-10-04. All 31 targeted packages completed, containing 5,298 legacy properties and 824 Blueprint functions, with zero reported export errors. Raw metadata/Kismet stays under ignored research; this document records only necessary technical findings.

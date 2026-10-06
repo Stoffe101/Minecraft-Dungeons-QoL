@@ -17,6 +17,14 @@ static class FunctionOwnerTests
             } catch (InvalidDataException) { if (accepted) throw; }
             Console.WriteLine($"[PASS] {(accepted ? "accepts" : "rejects")} {package}.{owner}.{method}");
         }
+        foreach (var method in HeroProfileCallContracts.ControllerMethods) {
+            Check(method, "PlayerControllerBase", "/Script/Dungeons", true);
+            Check(method, "PlayerController", "/Script/Dungeons", false);
+            Check(method, "PlayerControllerBase", "/Script/Engine", false);
+        }
+        Check("GetCloudPlayerId", "PlayerCharacterSaveSlot", "/Script/Dungeons", true);
+        Check("GetCloudPlayerId", "CharacterSaveData", "/Script/Dungeons", false);
+        Check("GetCloudPlayerId", "PlayerCharacterSaveSlot", "/Script/Engine", false);
         Check("GetOwningPlayer", "Widget", "/Script/UMG", true);
         Check("GetOwningPlayer", "UserWidget", "/Script/UMG", false);
         Check("GetOwningPlayer", "Widget", "/Script/Engine", false);
