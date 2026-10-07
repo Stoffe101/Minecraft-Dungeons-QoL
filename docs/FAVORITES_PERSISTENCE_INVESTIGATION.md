@@ -1,5 +1,7 @@
 # Favorites persistence investigation
 
+> 2026-10-07 update: requested serialization capture and private character save received and inspected. No further collector run is requested. Source-only saved-record/journal validation is implemented; native runtime persistence remains unfinished. See [SERIALIZATION_CODE_FINDINGS.md](SERIALIZATION_CODE_FINDINGS.md).
+
 ## 2026-10-06: serializer declarations complete; native serialization mapping required
 
 The private v6 serialization report completed all fourteen declarations: 172 properties, 333 functions, zero issues. Diagnostics: 1,672,235 read calls / 49,038,117 requested bytes / 3,279 ms. CharacterSerializeComponent exposes only mDefaultSaveData/mSaveData references plus profile name/skin/cloud-ID/assignment methods. BaseCharacter adds no reflected save/item identity; EquipmentComponent exposes ItemSlot arrays and equipment events, not durable item records. The reflected bridge investigation has reached a concrete limit. No repeat declaration scan is needed. Favorites still do not survive item reconstruction/restart.

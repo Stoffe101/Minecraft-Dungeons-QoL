@@ -68,6 +68,12 @@ jobs:
           dotnet run --project tools/LegacyNativeCodeEvidence/LegacyNativeCodeEvidence.csproj -c Release -- --self-test
           if ($LASTEXITCODE -ne 0) { throw "Native code evidence fixture tests failed." }
 
+      - name: Test save and favorites journal contracts without private saves
+        shell: pwsh
+        run: |
+          dotnet run --project tools/FavoritesPersistenceCore/FavoritesPersistenceCore.csproj -c Release -- --self-test
+          if ($LASTEXITCODE -ne 0) { throw "Favorites persistence contract tests failed." }
+
       - name: Build cooked runtime tools
         shell: pwsh
         run: |

@@ -1,8 +1,13 @@
 # Documentation Index
 
-- [Native favorites evidence](NATIVE_FAVORITES_EVIDENCE.md): bounded external read-only reader and private camp capture gate; persistence is still unfinished.
+- [Serialization code and save findings](SERIALIZATION_CODE_FINDINGS.md): completed private capture, source-only journal validation and remaining native integration gates.
+
+- [Favorites persistence reassessment](FAVORITES_PERSISTENCE_REASSESSMENT.md): reused evidence, precise remaining blocker, and paused capture requests.
+- [Native favorites evidence](NATIVE_FAVORITES_EVIDENCE.md): bounded external read-only tools; no further capture is currently requested.
 
 This folder is the canonical project record.
+
+- [Native persistence route and reuse review](PERSISTENCE_NATIVE_BRIDGE_RESEARCH.md): online mod/tool research, licenses, selected bridge route and specific next evidence.
 
 ## Canonical documents
 

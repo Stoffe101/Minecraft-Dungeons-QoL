@@ -2,6 +2,12 @@
 
 # Current State
 
+2026-10-07 supplied serialization code and character save inspected: capture completed with nine roots / twenty code samples and no issues. Serializer loops establish separate inventory/storage and equipment conversion paths; final converter, reconstruction, save completion and native thread/lifecycle contracts remain unresolved. Added source-only FavoritesPersistenceCore with 31 synthetic save/journal checks; the private save copy passes schema validation (30 inventory / 32 storage / 6 equipped). No save changes or new gameplay release. No further collector command is requested. See [SERIALIZATION_CODE_FINDINGS.md](SERIALIZATION_CODE_FINDINGS.md). The next-input request below is fulfilled.
+
+2026-10-07 native route review: MIT Dungeons 1 Archipelago bridge is a useful implementation reference, with partially corroborated item-field layout; its basename-selected addresses and ProcessEvent scheduling are not certified for this installation. Selected route: existing UI pak plus a minimal verified native bridge and hero-scoped item-GUID sidecar. The remaining input is targeted serialization code, not another declaration scan. Newer supplied native report and minidump were reused; neither includes the missing bodies. UE4SS remains disabled; no new gameplay build. See [PERSISTENCE_NATIVE_BRIDGE_RESEARCH.md](PERSISTENCE_NATIVE_BRIDGE_RESEARCH.md).
+
+2026-10-06 reassessment: additional captures are paused; no command is requested. Reused the existing Rebalance field-layout report alongside completed QoL v5/v6 evidence. No reflected permanent item ID or proven live-item-to-save-record mapping was found. Reference SubItemID is used for Eye-of-Ender subtype semantics. Keep v8; no persistence release is available. See [FAVORITES_PERSISTENCE_REASSESSMENT.md](FAVORITES_PERSISTENCE_REASSESSMENT.md). Older collection instructions below are historical and superseded by this pause.
+
 2026-10-06 expanded native capture completed: all 14 declarations, 172 properties / 333 functions, zero issues. CharacterSerializeComponent has profile APIs and CharacterSaveData references, but no reflected item-record/custom-data getter; BaseCharacter/EquipmentComponent do not supply permanent item identity. Default/expanded declaration scans need not repeat. Added explicit bounded read-only native code evidence mode for the serialization/load/transfer path; keep v8 and UE4SS disabled. Core 111 local checks pass; Windows verifies 112 core-reader and 28 decoder checks; live code collection is the next gate. Persistent favorites remain unfinished. See NATIVE_FAVORITES_EVIDENCE.md.
 
 
@@ -30,7 +36,7 @@ Persistence evidence update (2026-10-05): the uploaded collection completed 88/8
 
 Latest status: user confirms v7 features and placement work, but favorites disappear after mission travel. This is the existing inspector-lifetime limitation, now explicitly reproduced. v8 doubles selection borders from 3 to 6 units, changes cyan to red, and includes the six equipment widgets in favorite marker updates. It does NOT fix persistence yet. Stable hero/item identity needs additional profile/save/storage metadata; a read-only collector is prepared. See [INVENTORY_IDENTITY.md](INVENTORY_IDENTITY.md) and [GAME_EVIDENCE.md](GAME_EVIDENCE.md). No GPU crash fix is established.
 
-Last updated: 2026-10-06 (profile GUID call sites verified; permanent item identity unresolved)
+Last updated: 2026-10-07 (serialization paths and source-only journal validation; runtime persistence unresolved)
 
 ## Actual implementation
 

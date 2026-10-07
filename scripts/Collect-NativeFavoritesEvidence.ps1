@@ -28,5 +28,6 @@ try {
 } finally { Pop-Location }
 if (-not (Test-Path (Join-Path $out 'REPORT.json'))) { throw "No capture report; see $logs. Do not change game protections or install a loader." }
 Compress-Archive -LiteralPath (Join-Path $out 'REPORT.json') -DestinationPath "$out.zip"
-Write-Host "Private native declaration evidence: $out.zip"
+$evidenceKind = if ($CollectSerializationCode) { 'serialization code' } else { 'declaration' }
+Write-Host "Private native $evidenceKind evidence: $out.zip"
 if ($code -ne 0) { Write-Warning 'Capture is incomplete. Keep the report, including access denial or unsupported layout; do not retry with ACL/ownership changes.' }
