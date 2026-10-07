@@ -1,5 +1,7 @@
 # Test Plan
 
+> Current persistence gate (2026-10-07): serialization code and private save supplied; no repeat collector or UE4SS install is requested. Run FavoritesPersistenceCore synthetic tests in CI. Its saved-binding approval does not authorize live salvage; runtime adapter/lifecycle, save completion and acceptance tests remain required. Earlier collection instructions are historical.
+
 ## Equipped marker and native reader checks — 2026-10-06
 
 Graph tests cover all six equipped widgets, grid/equipment deduplication, copying containers without modifying native arrays, and skipping a missing widget. Fixtures assume valid widget classes; actual casts/root canvas/rendering still require retail testing. Red border/star artwork is unchanged.

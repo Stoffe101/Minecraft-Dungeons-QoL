@@ -1,8 +1,18 @@
 # Read-only native favorites evidence
 
+> 2026-10-07 update: requested serialization capture and private character save received and inspected. No further collector run is requested. Source-only saved-record/journal validation is implemented; native runtime persistence remains unfinished. See [SERIALIZATION_CODE_FINDINGS.md](SERIALIZATION_CODE_FINDINGS.md).
+
 Favorites persistence remains unfinished. Archive exports establish six profile call shapes and the salvage shape, but no permanent physical-item identifier. This project-authored experimental reader checks loaded native declarations without installing an injected loader. Keep UE4SS disabled.
 
-## Current gate: inspect bounded native serialization code
+## 2026-10-07: targeted code input under renewed user request
+
+The user asked what additional input can help and authorized native tools/code reuse. The useful next input is one `-CollectSerializationCode` report from idle camp, not another default/expanded declaration scan. That existing tool records bounded native instruction snippets; it does not install a DLL or invoke/write the game. See [PERSISTENCE_NATIVE_BRIDGE_RESEARCH.md](PERSISTENCE_NATIVE_BRIDGE_RESEARCH.md) for the online source review, selected bridge route, precise missing mapping, optional closed-game save copy, and collection limitations. Earlier requests remain historical; do not repeat declaration collection.
+
+## 2026-10-06: collection pause (historical)
+
+No further command is requested. Completed v5/v6 declarations and the existing related-project field-layout capture have been reviewed. Repeating declaration collection will not resolve the live-item-to-save-record mapping. The serialization code collector remains an optional research tool; its previous user-run recommendation is paused. See [FAVORITES_PERSISTENCE_REASSESSMENT.md](FAVORITES_PERSISTENCE_REASSESSMENT.md).
+
+## Available code research tool (not a current action)
 
 The supplied v6 report completed all fourteen declarations (172 properties, 333 functions) with no issues. It confirms that CharacterSerializeComponent provides profile metadata and save-object assignment, not a reflected item-record getter/custom save-data API. BaseCharacter and EquipmentComponent do not expose durable physical-item identity either. Neither default nor expanded declaration collection needs repeating.
 
@@ -22,16 +32,9 @@ The second capture (`legacy-names-256-v2`) validated a unique name table, then f
 
 The first user capture reached discovery but found zero name-array matches; no declarations were accepted. Revision `legacy-names-256-v2` adds the 256-pointer layout defined by pinned Unreal 4.22 source, permits reserved capacity, and covers the larger header across scan boundaries. The previous collector omitted this source-defined layout. A repeat is useful only after updating to this revision; keep the working v8 gameplay pak. See the latest RESEARCH_LOG entry for evidence and source links. Retail discovery and permanent item identity remain unverified.
 
-## Collect the bounded serialization code once from camp
+## Earlier camp capture request — paused
 
-Update the repository, launch normally with the working QoL pak, and enter camp. Leave the game idle while running this from the repository's PowerShell terminal:
-
-```powershell
-git pull
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Collect-NativeFavoritesEvidence.ps1 -CollectSerializationCode
-```
-
-Upload the printed `.research/native-favorites-TIMESTAMP-SUFFIX.zip` privately, including an incomplete report. It contains REPORT.json only; in code mode that includes private native instruction snippets. If the build fails before a report, provide the terminal message. Do not copy the protected executable, change ACL/ownership, elevate to bypass denial, or reinstall UE4SS. There is nothing to remove afterward: no files are installed into the game folder. Code mode builds a separate tool and restores the pinned Iced NuGet package on first use. The wrapper reuses the SDK installed by the prior archive collector or an installed dotnet SDK; `-DotNetPath` can select that existing SDK. For multiple instances, `-GameProcessId` selects one Dungeons process.
+Do not run another collector on the strength of earlier instructions in this file. The code tool remains available in source, but no further run is requested during this reassessment. Keep UE4SS disabled and retain the working v8 gameplay pak. Nothing needs installing or removing for this review.
 
 ## Declaration-only implementation and limits (default / -CollectSerializationContracts)
 

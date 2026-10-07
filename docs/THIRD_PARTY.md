@@ -177,3 +177,8 @@ See [EXTERNAL_REFLECTION_REVIEW.md](EXTERNAL_REFLECTION_REVIEW.md) for pinned MI
 ## Bounded code evidence decoder — 2026-10-06
 
 [Iced](https://github.com/icedland/iced), MIT, NuGet version 1.21.0; v1.21.0 tag commit `c50f29b7bc305696895c075f3fc7719751426b12`. Retained license: third_party/Iced-LICENSE.txt. Used only by LegacyNativeCodeEvidence to decode private read-only snippets and follow actual direct control-flow instructions. No dependency or proprietary code snippet is packaged in the gameplay pak. Epic-authored UE4.22 Class.h at the existing `99a530d4ccbe6bea1e8f49df20acfeb294006962` reference pin informs candidate metadata layout; no engine implementation is copied.
+
+
+## 2026-10-07 native bridge and save-source review
+
+Minecraft-Dungeons-Apworld at 6a2ceb26df39eb84742ffd078357217fcd4b4ee6 has MIT root/mcdungeons licenses; native reader/pipe/hook source is eligible for future adaptation with notices. MinHook's reviewed root LICENSE blob 74dea27229c05b53b095aa22b9ee7ee9f549e414 is BSD-2-Clause with HDE notices, not MIT. MCDSaveEdit at 58fe34efa4cd458992f7dc5af7258450f2e4a1bf is MIT, but its DungeonTools submodule is AGPL-3.0 and must not be represented as MIT. No root license was found in inspected DungeonsEditor or DungeonsLevelLoader checkouts; their implementation is not copied. No third-party native DLL, source implementation or additional dependency is bundled by this pass. See PERSISTENCE_NATIVE_BRIDGE_RESEARCH.md for compatibility/lifetime findings and complete reviewed paths.

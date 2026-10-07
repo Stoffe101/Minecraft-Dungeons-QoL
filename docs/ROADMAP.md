@@ -1,3 +1,7 @@
+> 2026-10-07 implementation update: targeted capture received; saved-record and journal validation implemented with 31 checks. Native live/load mapping and durable save completion remain gates; no additional collector requested. See [SERIALIZATION_CODE_FINDINGS.md](SERIALIZATION_CODE_FINDINGS.md).
+
+> 2026-10-07 persistence route: keep v8 UI; develop a minimal native bridge and hero-scoped item-GUID sidecar after verifying actual serialization/load/transfer mapping. Dungeons 1 MIT Archipelago source is a reference candidate, not a compatible installed dependency. See [PERSISTENCE_NATIVE_BRIDGE_RESEARCH.md](PERSISTENCE_NATIVE_BRIDGE_RESEARCH.md). Declaration collection is complete; only targeted code evidence is currently useful.
+
 # Roadmap
 
 ## Phase 0: Foundation [MOSTLY COMPLETE]
